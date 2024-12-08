@@ -145,7 +145,8 @@ We welcome contributions to Roomly! Please check out the [CONTRIBUTING.md](CONTR
 
 ## **License**
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [GNU AFFERO GENERAL PUBLIC LICENSE
+](LICENSE).
 
 ---
 
