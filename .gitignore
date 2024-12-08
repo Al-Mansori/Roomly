@@ -1,0 +1,75 @@
+# General OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Build files
+build/
+target/
+*.war
+*.jar
+
+# IDE and Editor settings
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# Dependency directories
+node_modules/
+.bower_components/
+.venv/
+env/
+venv/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.swo
+*.~lock.*
+*.orig
+*.rej
+*.class
+
+# Spring Boot-specific
+*.class
+*.project
+*.settings/
+*.springBeans
+out/
+
+# Angular-specific
+dist/
+.angular/
+coverage/
+
+# Flutter-specific
+.build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+pubspec.lock
+
+# Environment variables
+.env
+.env.*
+
+# Generated files
+*.g.dart
+*.meta
+
+# Cache and Logs
+.cache/
+*.log
+
+# Miscellaneous
+*.lock
+*.gz
+*.zip
