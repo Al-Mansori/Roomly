@@ -2,6 +2,7 @@ package org.example.roomly.model;
 
 import java.util.Date;
 
+
 public class Reservation {
     private String id;
     private Date startTime;

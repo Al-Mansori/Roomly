@@ -1,18 +1,43 @@
 package org.example.roomly.model;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import org.springframework.data.annotation.Id;
+
 import java.util.Date;
 import java.util.List;
 
-
+@Entity
+@Table(name = "workspace")
 public class Workspace {
-    private String id;
+
+    @jakarta.persistence.Id
+    @Id
+    @Column(name = "WorkspaceId")
+    private String workspaceId;
+
+    @Column(name = "Name")
     private String name;
+
+    @Column(name = "Description")
     private String description;
-    private Location location;
+
+    @Column(name = "Location")
+    private String location;
+
+    @Column(name = "CreationDate")
     private Date creationDate;
+
+    @Column(name = "AvgRating")
     private double avgRating;
+
+    @Column(name = "Type")
     private String type;
-    private List<Room> rooms;
-    private List<Image> workspaceImages;
+
+
+    // !! Have An Issue Here !!
+//    private List<Room> rooms;
+//    private List<Image> workspaceImages;
     //private Analytics workspaceAnalytics;
     //private List<Review> reviews ;
 
@@ -20,12 +45,12 @@ public class Workspace {
 
     // Getters and Setters
 
-    public String getId() {
-        return id;
+    public void setWorkspaceId(String workspaceId) {
+        this.workspaceId = workspaceId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getWorkspaceId() {
+        return workspaceId;
     }
 
     public String getName() {
@@ -44,11 +69,11 @@ public class Workspace {
         this.description = description;
     }
 
-    public Location getLocation() {
+    public String getLocation() {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(String location) {
         this.location = location;
     }
 
@@ -76,19 +101,20 @@ public class Workspace {
         this.type = type;
     }
 
-    public List<Room> getRooms() {
-        return rooms;
-    }
-
-    public void setRooms(List<Room> rooms) {
-        this.rooms = rooms;
-    }
-
-    public List<Image> getWorkspaceImages() {
-        return workspaceImages;
-    }
-
-    public void setWorkspaceImages(List<Image> workspaceImages) {
-        this.workspaceImages = workspaceImages;
-    }
+    // !! Have An Issue Here !!
+//    public List<Room> getRooms() {
+//        return rooms;
+//    }
+//
+//    public void setRooms(List<Room> rooms) {
+//        this.rooms = rooms;
+//    }
+//
+//    public List<Image> getWorkspaceImages() {
+//        return workspaceImages;
+//    }
+//
+//    public void setWorkspaceImages(List<Image> workspaceImages) {
+//        this.workspaceImages = workspaceImages;
+//    }
 }
