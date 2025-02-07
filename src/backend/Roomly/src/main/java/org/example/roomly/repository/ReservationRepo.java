@@ -25,7 +25,7 @@ public class ReservationRepo {
     }
 
     public List<Reservation> findByRangeDate(Date start, Date end){
-        TypedQuery<Reservation> query = entityManager.createQuery("FROM reservation WHERE StartTime >=:theStart and StartTime<=:theEnd",Reservation.class);
+        TypedQuery<Reservation> query = entityManager.createQuery("FROM reservation WHERE startTime >=:theStart and startTime<=:theEnd",Reservation.class);
         query.setParameter("theStart",start);
         query.setParameter("theEnd",end);
         return query.getResultList();

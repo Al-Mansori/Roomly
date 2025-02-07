@@ -26,7 +26,7 @@ public class PaymentRepo {
     }
 
     public List<Payment> findByStatus(PaymentStatus paymentStatus){
-        TypedQuery<Payment> query = entityManager.createQuery("FROM payment WHERE PaymentStatus =:theStatus",Payment.class);
+        TypedQuery<Payment> query = entityManager.createQuery("FROM Payment WHERE status =:theStatus",Payment.class);
         query.setParameter("theStatus",paymentStatus);
         return query.getResultList();
     }

@@ -23,7 +23,7 @@ public class OfferRepo {
         return "Offer saved successfully";
     }
     public List<Offer> findActiveOffers(){
-        TypedQuery<Offer> query = entityManager.createQuery("FROM offer WHERE Status='Active'",Offer.class);
+        TypedQuery<Offer> query = entityManager.createQuery("FROM Offer WHERE status='Active'",Offer.class);
         return query.getResultList();
     }
     public double applayOfferToBooking(int offerId, Reservation reservation){
