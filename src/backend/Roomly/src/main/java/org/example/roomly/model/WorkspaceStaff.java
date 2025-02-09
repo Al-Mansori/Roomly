@@ -14,12 +14,35 @@ public class WorkspaceStaff extends User {
     @JoinColumn(name = "WorkspaceId")
     private Workspace workspace;
 
+    @Column(name = "Type")
     private WorkspaceStaffType type;
 
-    public Workspace getAssignedWorkspace() {
+    public WorkspaceStaff() {
+    }
+
+    public WorkspaceStaff(Workspace workspace, WorkspaceStaffType type) {
+        // Call the super class constructor
+        super();
+        this.workspace = workspace;
+        this.type = type;
+    }
+
+    public Workspace getWorkspace() {
         return workspace;
     }
-    public void setAssignedWorkspace(Workspace workspace) {
+
+    public void setWorkspace(Workspace workspace) {
         this.workspace = workspace;
     }
+
+    public WorkspaceStaffType getType() {
+        return type;
+    }
+
+    public void setType(WorkspaceStaffType type) {
+        this.type = type;
+    }
+
+
+
 }
