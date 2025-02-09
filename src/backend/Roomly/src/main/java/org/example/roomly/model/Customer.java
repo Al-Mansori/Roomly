@@ -1,30 +1,22 @@
 package org.example.roomly.model;
 
 import jakarta.persistence.*;
-
 import java.util.List;
 
+
 @Entity
-@Table(name = "user")
-public class Customer extends User{
+@Table(name = "User")
+public class Customer extends User {
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "UserId", cascade = CascadeType.ALL)
     private Preference preference;
-
-    @Column(name = "RewardsPoints")
-    private int rewardPoints;
-
-    // !! Need To Fix !!
-//    @OneToMany(mappedBy = "customer")
-//    private List<Reservation> reservationHistory;
 
     public Customer() {
     }
 
-    public Customer(String userId, String name, String email, String password, String phone, String address, Preference preference, int rewardPoints) {
-        super(userId, name, email, password, phone, address);
+    public Customer(String userId, String firstName, String lastName, String email, String password, String phone, Preference preference) {
+        super(userId, firstName, lastName, email, password, phone);
         this.preference = preference;
-        this.rewardPoints = rewardPoints;
     }
 
     public Preference getPreference() {
@@ -35,19 +27,11 @@ public class Customer extends User{
         this.preference = preference;
     }
 
-    public int getRewardPoints() {
-        return rewardPoints;
-    }
-
-    public void setRewardPoints(int rewardPoints) {
-        this.rewardPoints = rewardPoints;
-    }
 
     @Override
     public String toString() {
         return super.toString() + ", Customer{" +
                 "preference=" + preference +
-                ", rewardPoints=" + rewardPoints +
                 '}';
     }
 }

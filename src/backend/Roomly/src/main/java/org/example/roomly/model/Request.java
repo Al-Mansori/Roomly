@@ -1,94 +1,65 @@
 package org.example.roomly.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "request")
+@Table(name = "Request") // Map to the "Request" table
 public class Request {
 
     @Id
-    @Column(name = "RequestId")
-    private String requestID;
+    @Column(name = "Id") // Map to the "Id" column in the SQL schema
+    private String requestId;
 
-    @Column(name = "UserId")
-    private String userID;
-
-    @Column(name = "StaffId")
-    private String staffId;
-
-    @Column(name = "Details")
-    private String details;
-
-    @Column(name = "Status")
-    private RequestStatus status;
-
-    @Column(name = "RequestType")
+    @Column(name = "RequestType") // Map to the "RequestType" column
     private String requestType;
 
-    @Column(name = "RequestDate")
+    @Column(name = "RequestDate") // Map to the "RequestDate" column
     private Date requestDate;
 
-    @Column(name = "ResponseDate")
+    @Column(name = "ResponseDate") // Map to the "ResponseDate" column
     private Date responseDate;
 
-    public Request() {}
+    @Column(name = "Details") // Map to the "Details" column
+    private String details;
 
-    public Request(String requestID, String userID, String staffId, String details, RequestStatus status,
-                   String requestType, Date requestDate, Date responseDate) {
-        this.requestID = UUID.randomUUID().toString();
-        this.userID = userID;
-        this.staffId = staffId;
-        this.details = details;
-        this.status = status;
+    @Column(name = "Status") // Map to the "Status" column
+    private String status;
+
+    @Column(name = "RequestResponse") // Map to the "RequestResponse" column
+    private String requestResponse;
+
+    @ManyToOne
+    @JoinColumn(name = "UserId") // Foreign key to the "User" table
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "StaffId") // Foreign key to the "WorkspaceStaff" table
+    private WorkspaceStaff staff;
+
+    public Request() {
+    }
+
+    public Request(String requestId, String requestType, Date requestDate, Date responseDate, String details, String status, String requestResponse, User user, WorkspaceStaff staff) {
+        this.requestId = requestId;
         this.requestType = requestType;
         this.requestDate = requestDate;
         this.responseDate = responseDate;
-    }
-
-    public String getRequestID() {
-        return requestID;
-    }
-
-    public void setRequestID(String requestID) {
-        this.requestID = requestID;
-    }
-
-    public String getUserID() {
-        return userID;
-    }
-
-    public void setUserID(String userID) {
-        this.userID = userID;
-    }
-
-    public String getStaffId() {
-        return staffId;
-    }
-
-    public void setStaffId(String staffId) {
-        this.staffId = staffId;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
         this.details = details;
-    }
-
-    public RequestStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(RequestStatus status) {
         this.status = status;
+        this.requestResponse = requestResponse;
+        this.user = user;
+        this.staff = staff;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
     public String getRequestType() {
@@ -115,17 +86,58 @@ public class Request {
         this.responseDate = responseDate;
     }
 
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getRequestResponse() {
+        return requestResponse;
+    }
+
+    public void setRequestResponse(String requestResponse) {
+        this.requestResponse = requestResponse;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public WorkspaceStaff getStaff() {
+        return staff;
+    }
+
+    public void setStaff(WorkspaceStaff staff) {
+        this.staff = staff;
+    }
+
     @Override
     public String toString() {
         return "Request{" +
-                "requestID='" + requestID + '\'' +
-                ", userID='" + userID + '\'' +
-                ", workspaceStaffId='" + staffId + '\'' +
-                ", details='" + details + '\'' +
-                ", status='" + status + '\'' +
+                "requestId='" + requestId + '\'' +
                 ", requestType='" + requestType + '\'' +
                 ", requestDate=" + requestDate +
                 ", responseDate=" + responseDate +
+                ", details='" + details + '\'' +
+                ", status='" + status + '\'' +
+                ", requestResponse='" + requestResponse + '\'' +
+                ", user=" + user +
+                ", staff=" + staff +
                 '}';
     }
 }

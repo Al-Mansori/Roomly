@@ -8,28 +8,29 @@ import jakarta.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(name = "preference")
+@Table(name = "Preference")
 public class Preference {
+
     @Id
-    @Column(name = "PreferenceId")
+    @Column(name = "Id")
     private String preferenceId;
 
     @Column(name = "BudgetPreference")
-    private Double budgetPreference;
-
-    @Column(name = "LanguagePreference")
-    private String languagePreference;
+    private String budgetPreference;
 
     @Column(name = "WorkspaceTypePreference")
     private String workspaceTypePreference;
 
+    @Column(name = "UserId")
+    private String userId;
+
     public Preference() {}
 
-    public Preference(String preferenceId, Double budgetPreference, String languagePreference, String workspaceTypePreference) {
-        this.preferenceId = UUID.randomUUID().toString();
+    public Preference(String preferenceId, String budgetPreference, String workspaceTypePreference, String userId) {
+        this.preferenceId = preferenceId;
         this.budgetPreference = budgetPreference;
-        this.languagePreference = languagePreference;
         this.workspaceTypePreference = workspaceTypePreference;
+        this.userId = userId;
     }
 
     public String getPreferenceId() {
@@ -40,20 +41,12 @@ public class Preference {
         this.preferenceId = preferenceId;
     }
 
-    public Double getBudgetPreference() {
+    public String getBudgetPreference() {
         return budgetPreference;
     }
 
-    public void setBudgetPreference(Double budgetPreference) {
+    public void setBudgetPreference(String budgetPreference) {
         this.budgetPreference = budgetPreference;
-    }
-
-    public String getLanguagePreference() {
-        return languagePreference;
-    }
-
-    public void setLanguagePreference(String languagePreference) {
-        this.languagePreference = languagePreference;
     }
 
     public String getWorkspaceTypePreference() {
@@ -64,13 +57,21 @@ public class Preference {
         this.workspaceTypePreference = workspaceTypePreference;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     @Override
     public String toString() {
         return "Preference{" +
                 "preferenceId='" + preferenceId + '\'' +
-                ", budgetPreference=" + budgetPreference +
-                ", languagePreference='" + languagePreference + '\'' +
+                ", budgetPreference='" + budgetPreference + '\'' +
                 ", workspaceTypePreference='" + workspaceTypePreference + '\'' +
+                ", userId='" + userId + '\'' +
                 '}';
     }
 }

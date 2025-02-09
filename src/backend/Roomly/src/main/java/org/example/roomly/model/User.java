@@ -1,18 +1,18 @@
 package org.example.roomly.model;
 
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Id;
 
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "user")
+@Table(name = "User")
 public abstract class User {
 
-    @jakarta.persistence.Id
     @Id
-    @Column(name = "UserId")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "Id", nullable = false, updatable = false)
     private String userId;
 
     @Column(name = "FName")
@@ -30,12 +30,9 @@ public abstract class User {
     @Column(name = "Phone")
     private String phone;
 
-    @Column(name = "Location")
-    private String location;
-
     @ManyToMany
     @JoinTable(
-            name = "favoriteworkspaces",
+            name = "FavouriteWorkspaces",
             joinColumns = @JoinColumn(name = "UserId"),
             inverseJoinColumns = @JoinColumn(name = "WorkspaceId")
     )
@@ -43,15 +40,13 @@ public abstract class User {
 
     public User() {}
 
-    public User(String firstName, String lastName, String email, String password,
-                String phone, String location) {
-        this.userId = UUID.randomUUID().toString();
+    public User(String userId, String firstName, String lastName, String email, String password, String phone) {
+        this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.phone = phone;
-        this.location = location;
     }
 
     public String getUserId() {
@@ -102,24 +97,16 @@ public abstract class User {
         this.phone = phone;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
     @Override
     public String toString() {
         return "User{" +
-                "userId=" + userId +
+                "userId='" + userId + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", phone='" + phone + '\'' +
-                ", location='" + location + '\'' +
                 '}';
     }
+
 }

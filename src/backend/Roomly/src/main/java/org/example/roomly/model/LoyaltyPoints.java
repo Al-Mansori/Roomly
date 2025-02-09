@@ -8,32 +8,32 @@ import jakarta.persistence.Table;
 import java.util.Date;
 
 @Entity
-@Table(name = "loyaltypoints")
+@Table(name = "LoyaltyPoints")
 public class LoyaltyPoints {
 
     @Id
-    @Column(name = "PointsId")
+    @Column(name = "Id")
     private String pointsId;
 
-    @Column(name = "Points")
-    private int points;
+    @Column(name = "TotalPoints")
+    private int totalPoints;
 
-    @Column(name = "StartDate")
-    private Date startDate;
+    @Column(name = "LastAddedPoint")
+    private int lastAddedPoint;
 
-    @Column(name = "ExpiryDate")
-    private Date expiryDate;
+    @Column(name = "LastUpdatedDate")
+    private Date lastUpdatedDate;
 
     @Column(name = "UserId")
     private String userId;
 
     public LoyaltyPoints() {}
 
-    public LoyaltyPoints(String pointsId, int points, Date startDate, Date expiryDate, String userId) {
+    public LoyaltyPoints(String pointsId, int totalPoints, int lastAddedPoint, Date lastUpdatedDate, String userId) {
         this.pointsId = pointsId;
-        this.points = points;
-        this.startDate = startDate;
-        this.expiryDate = expiryDate;
+        this.totalPoints = totalPoints;
+        this.lastAddedPoint = lastAddedPoint;
+        this.lastUpdatedDate = lastUpdatedDate;
         this.userId = userId;
     }
 
@@ -45,28 +45,28 @@ public class LoyaltyPoints {
         this.pointsId = pointsId;
     }
 
-    public int getPoints() {
-        return points;
+    public int getTotalPoints() {
+        return totalPoints;
     }
 
-    public void setPoints(int points) {
-        this.points = points;
+    public void setTotalPoints(int totalPoints) {
+        this.totalPoints = totalPoints;
     }
 
-    public Date getStartDate() {
-        return startDate;
+    public int getLastAddedPoint() {
+        return lastAddedPoint;
     }
 
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
+    public void setLastAddedPoint(int lastAddedPoint) {
+        this.lastAddedPoint = lastAddedPoint;
     }
 
-    public Date getExpiryDate() {
-        return expiryDate;
+    public Date getLastUpdatedDate() {
+        return lastUpdatedDate;
     }
 
-    public void setExpiryDate(Date expiryDate) {
-        this.expiryDate = expiryDate;
+    public void setLastUpdatedDate(Date lastUpdatedDate) {
+        this.lastUpdatedDate = lastUpdatedDate;
     }
 
     public String getUserId() {
@@ -81,9 +81,9 @@ public class LoyaltyPoints {
     public String toString() {
         return "LoyaltyPoints{" +
                 "pointsId='" + pointsId + '\'' +
-                ", points=" + points +
-                ", startDate=" + startDate +
-                ", expiryDate=" + expiryDate +
+                ", totalPoints=" + totalPoints +
+                ", lastAddedPoint=" + lastAddedPoint +
+                ", lastUpdatedDate=" + lastUpdatedDate +
                 ", userId='" + userId + '\'' +
                 '}';
     }
