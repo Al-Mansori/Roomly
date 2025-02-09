@@ -5,150 +5,85 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
-@Table(name = "Offer")
+@Table(name = "offers") // Updated table name to match MySQL
 public class Offer {
-    @Id
-    @Column(name = "OfferId")
-    private String offerId;
 
-    @Column(name="OfferTitle")
+    // Getters and Setters
+    @Getter
+    @Id
+    @Column(name = "Id") // Updated column name
+    private String id;
+
+    @Column(name = "OfferTitle")
     private String offerTitle;
 
-    @Column(name="DiscountPercentage")
-    private double discountPercentage;
-
-    @Column(name="ValidFrom")
-    private Date validFrom;
-
-    @Column(name="ValidTo")
-    private Date validTo;
-
-    @Column(name="Status")
-    private String status;
-
-    @Column(name="Description")
+    @Column(name = "Description")
     private String description;
 
-    @Column(name="MaxRedemptions")
-    private int maxRedemptions;
+    @Column(name = "DiscountPercentage")
+    private double discountPercentage; // Changed to BigDecimal for precision
 
-    @Column(name="RoomId")
-    private String roomId;
+    @Column(name = "ValidFrom")
+    private Date validFrom; // Changed from Date to LocalDate
 
-    @Column(name="StaffId")
-    private String staffId;
+    @Column(name = "ValidTo")
+    private Date validTo; // Changed from Date to LocalDate
 
-    //constructors
+    @Column(name = "Status")
+    private String status;
 
+    public void setId(String id) { this.id = id;}
 
-    public Offer(){
-
-    }
-
-    public Offer(String offerId, String offerTitle,
-                 double discountPercentage,
-                 Date validFrom,
-                 Date validTo,
-                 String status, String description,
-                 int maxRedemptions, String roomId, String staffId) {
-        this.offerId = offerId;
-        this.offerTitle = offerTitle;
-        this.discountPercentage = discountPercentage;
-        this.validFrom = validFrom;
-        this.validTo = validTo;
-        this.status = status;
-        this.description = description;
-        this.maxRedemptions = maxRedemptions;
-        this.roomId = roomId;
-        this.staffId = staffId;
-    }
-
-    // setters
-
-
-    public void setOfferId(String offerId) {
-        this.offerId = offerId;
+    public String getOfferTitle() {
+        return offerTitle;
     }
 
     public void setOfferTitle(String offerTitle) {
         this.offerTitle = offerTitle;
     }
 
-    public void setDiscountPercentage(double discountPercentage) {
-        this.discountPercentage = discountPercentage;
-    }
-
-    public void setValidFrom(Date validFrom) {
-        this.validFrom = validFrom;
-    }
-
-    public void setValidTo(Date validTo) {
-        this.validTo = validTo;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public void setMaxRedemptions(int maxRedemptions) {
-        this.maxRedemptions = maxRedemptions;
-    }
-
-    public void setRoomId(String roomId) {
-        this.roomId = roomId;
-    }
-
-    public void setStaffId(String staffId) {
-        this.staffId = staffId;
-    }
-
-    // getters
-
-    public String getOfferId() {
-        return offerId;
-    }
-
-    public String getOfferTitle() {
-        return offerTitle;
-    }
-
     public double getDiscountPercentage() {
         return discountPercentage;
+    }
+
+    public void setDiscountPercentage(double discountPercentage) {
+        this.discountPercentage = discountPercentage;
     }
 
     public Date getValidFrom() {
         return validFrom;
     }
 
+    public void setValidFrom(Date validFrom) {
+        this.validFrom = validFrom;
+    }
+
     public Date getValidTo() {
         return validTo;
+    }
+
+    public void setValidTo(Date validTo) {
+        this.validTo = validTo;
     }
 
     public String getStatus() {
         return status;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public int getMaxRedemptions() {
-        return maxRedemptions;
-    }
-
-    public String getRoomId() {
-        return roomId;
-    }
-
-    public String getStaffId() {
-        return staffId;
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
