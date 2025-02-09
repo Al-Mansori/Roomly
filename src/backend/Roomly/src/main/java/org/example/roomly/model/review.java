@@ -4,55 +4,56 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Entity
-@Table(name="Review")
+@Table(name="review")
 public class review {
     @Id
-    @Column(name="ReviewId")
-    private int reviewId;
+    @Column(name = "Id")
+    private String id;
 
-    @Column(name="UserId")
-    private int userId;
-
-    @Column(name="WorkspaceId")
-    private int workspaceId;
-
-    @Column(name="Rating")
+    @Column(name = "Rating")
     private double rating;
 
-    @Column(name="Comments")
-    private String comments;
+    @Column(name = "Comment")
+    private String comment;
 
-    @Column(name="ReviewDate")
-    private Date reviewDate;
+    @Column(name = "ReviewDate")
+    private LocalDate reviewDate;
+
+    @Column(name = "userId")
+    private String userId;
+
+    @Column(name = "workspaceId")
+    private String workspaceId;
 
     // constructors
     public review(){}
-
-    public review(int reviewId, int userId, int workspaceId, double rating, String comments, Date reviewDate) {
-        this.reviewId = reviewId;
+    public review(String reviewId, String userId, String workspaceId, double rating, String comment, LocalDate reviewDate) {
+        this.id = reviewId;
         this.userId = userId;
         this.workspaceId = workspaceId;
         this.rating = rating;
-        this.comments = comments;
+        this.comment = comment;
         this.reviewDate = reviewDate;
     }
 
     //setters
 
 
-    public void setReviewId(int reviewId) {
-        this.reviewId = reviewId;
+    public void setReviewId(String reviewId) {
+        this.id = reviewId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public void setWorkspaceId(int workspaceId) {
+    public void setWorkspaceId(String workspaceId) {
         this.workspaceId = workspaceId;
     }
 
@@ -61,25 +62,25 @@ public class review {
     }
 
     public void setComments(String comments) {
-        this.comments = comments;
+        this.comment = comments;
     }
 
-    public void setReviewDate(Date reviewDate) {
+    public void setReviewDate(LocalDate reviewDate) {
         this.reviewDate = reviewDate;
     }
 
     //getters
 
 
-    public int getReviewId() {
-        return reviewId;
+    public String getReviewId() {
+        return id;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public int getWorkspaceId() {
+    public String getWorkspaceId() {
         return workspaceId;
     }
 
@@ -88,10 +89,10 @@ public class review {
     }
 
     public String getComments() {
-        return comments;
+        return comment;
     }
 
-    public Date getReviewDate() {
+    public LocalDate getReviewDate() {
         return reviewDate;
     }
 }
