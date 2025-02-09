@@ -1,18 +1,59 @@
 package org.example.roomly.model;
+
 import java.util.List;
+import jakarta.persistence.*;
 
-
+@Entity
+@Table(name = "Room") // Match the table name in SQL schema
 public class Room {
+    @Id
+    @Column(name = "Id") // Match the column name in SQL schema
     private String id;
+
+    @Column(name = "Name")
     private String name;
+
+    @Column(name = "Type") // Match the column name in SQL schema
     private String type;
-    private int capacity;
-    private double pricePerHour;
-    private String status;
+
+    @Column(name = "Description") // Match the column name in SQL schema
     private String description;
-    private List<Amenity> Amenities;
+
+    @Column(name = "Capacity") // Match the column name in SQL schema
+    private int capacity;
+
+    @Column(name = "PricePerHour") // Match the column name in SQL schema
+    private double pricePerHour;
+
+    @Column(name = "RoomStatus") // Match the column name in SQL schema
+    private String status;
+
+    @Column(name = "workspaceId") // Match the column name in SQL schema
+    private String workspaceId; // Add workspaceId to match SQL schema
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "roomId") // Match the foreign key in SQL schema
+    private List<Amenity> amenities;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "roomId") // Match the foreign key in SQL schema
     private List<Image> roomImages;
     //private List<Offer> offers;
+
+    // Constructors, Getters, and Setters
+    public Room() {}
+
+    public Room(String id, String name, String type, int capacity, double pricePerHour, String status, String description, List<Amenity> amenities, List<Image> roomImages) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.capacity = capacity;
+        this.pricePerHour = pricePerHour;
+        this.status = status;
+        this.description = description;
+        this.amenities = amenities;
+        this.roomImages = roomImages;
+    }
 
     // Getters and Setters
 
@@ -73,11 +114,11 @@ public class Room {
     }
 
     public List<Amenity> getAmenities() {
-        return Amenities;
+        return amenities;
     }
 
     public void setAmenities(List<Amenity> amenities) {
-        Amenities = amenities;
+        amenities = amenities;
     }
 
     public List<Image> getRoomImages() {

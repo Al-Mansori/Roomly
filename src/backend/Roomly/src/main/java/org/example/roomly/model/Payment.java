@@ -1,17 +1,32 @@
 package org.example.roomly.model;
 
+import jakarta.persistence.*;
 import java.util.Date;
 
+@Entity
+@Table(name = "Payment") // Match the table name in SQL schema
 public class Payment {
-    private String paymentId;
-    private String paymentMethod;
-    private Date paymentDate;
-    private double amount;
-    private PaymentStatus status;
+    @Id
+    @Column(name = "Id") // Match the column name in SQL schema
+    private String id; // Change type to String to match SQL schema
 
-    // Constructor
-    public Payment(String paymentId, String paymentMethod, Date paymentDate, double amount, PaymentStatus status) {
-        this.paymentId = paymentId;
+    @Column(name = "PaymentMethod") // Match the column name in SQL schema
+    private String paymentMethod;
+
+    @Column(name = "PaymentDate") // Match the column name in SQL schema
+    private Date paymentDate;
+
+    @Column(name = "Amount") // Match the column name in SQL schema
+    private double amount;
+
+    @Column(name = "Status") // Match the column name in SQL schema
+    private PaymentStatus status; // Change type to String to match SQL schema
+
+    // Constructors
+    public Payment() {}
+
+    public Payment(String id, String paymentMethod, Date paymentDate, double amount, PaymentStatus status) {
+        this.id = id;
         this.paymentMethod = paymentMethod;
         this.paymentDate = paymentDate;
         this.amount = amount;
@@ -19,12 +34,13 @@ public class Payment {
     }
 
     // Getters and Setters
+
     public String getPaymentId() {
-        return paymentId;
+        return id;
     }
 
     public void setPaymentId(String paymentId) {
-        this.paymentId = paymentId;
+        this.id = paymentId;
     }
 
     public String getPaymentMethod() {

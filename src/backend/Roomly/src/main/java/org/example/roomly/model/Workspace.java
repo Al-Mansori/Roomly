@@ -1,20 +1,15 @@
 package org.example.roomly.model;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import org.springframework.data.annotation.Id;
-
 import java.util.Date;
 import java.util.List;
+import jakarta.persistence.*;
 
 @Entity
-@Table(name = "workspace")
+@Table(name = "Workspace")
 public class Workspace {
-
-    @jakarta.persistence.Id
     @Id
-    @Column(name = "WorkspaceId")
-    private String workspaceId;
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "Id")
+    private String id;
 
     @Column(name = "Name")
     private String name;
@@ -22,8 +17,12 @@ public class Workspace {
     @Column(name = "Description")
     private String description;
 
-    @Column(name = "Location")
-    private String location;
+    @Column(name = "Address")
+    private String address;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "Id")
+    private Location location;
 
     @Column(name = "CreationDate")
     private Date creationDate;
@@ -34,23 +33,40 @@ public class Workspace {
     @Column(name = "Type")
     private String type;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "workspaceId")
+    private List<Room> rooms;
 
-    // !! Have An Issue Here !!
-//    private List<Room> rooms;
-//    private List<Image> workspaceImages;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "workspaceId")
+    private List<Image> workspaceImages;
     //private Analytics workspaceAnalytics;
     //private List<Review> reviews ;
 
+    // Constructors
+    public Workspace() {}
 
+    public Workspace(List<Image> workspaceImages, List<Room> rooms, String type, double avgRating, Date creationDate, Location location, String address, String description, String name, String id) {
+        this.workspaceImages = workspaceImages;
+        this.rooms = rooms;
+        this.type = type;
+        this.avgRating = avgRating;
+        this.creationDate = creationDate;
+        this.location = location;
+        this.address = address;
+        this.description = description;
+        this.name = name;
+        this.id = id;
+    }
 
     // Getters and Setters
 
-    public void setWorkspaceId(String workspaceId) {
-        this.workspaceId = workspaceId;
+    public String getId() {
+        return id;
     }
 
-    public String getWorkspaceId() {
-        return workspaceId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -69,11 +85,19 @@ public class Workspace {
         this.description = description;
     }
 
-    public String getLocation() {
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
@@ -101,20 +125,19 @@ public class Workspace {
         this.type = type;
     }
 
-    // !! Have An Issue Here !!
-//    public List<Room> getRooms() {
-//        return rooms;
-//    }
-//
-//    public void setRooms(List<Room> rooms) {
-//        this.rooms = rooms;
-//    }
-//
-//    public List<Image> getWorkspaceImages() {
-//        return workspaceImages;
-//    }
-//
-//    public void setWorkspaceImages(List<Image> workspaceImages) {
-//        this.workspaceImages = workspaceImages;
-//    }
+    public List<Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(List<Room> rooms) {
+        this.rooms = rooms;
+    }
+
+    public List<Image> getWorkspaceImages() {
+        return workspaceImages;
+    }
+
+    public void setWorkspaceImages(List<Image> workspaceImages) {
+        this.workspaceImages = workspaceImages;
+    }
 }
