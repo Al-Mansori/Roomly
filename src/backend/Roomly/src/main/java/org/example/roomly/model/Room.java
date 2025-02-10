@@ -1,46 +1,20 @@
 package org.example.roomly.model;
 
 import java.util.List;
-import jakarta.persistence.*;
 
-@Entity
-@Table(name = "Room") // Match the table name in SQL schema
 public class Room {
-    @Id
-    @Column(name = "Id") // Match the column name in SQL schema
     private String id;
-
-    @Column(name = "Name")
     private String name;
-
-    @Column(name = "Type") // Match the column name in SQL schema
     private String type;
-
-    @Column(name = "Description") // Match the column name in SQL schema
     private String description;
-
-    @Column(name = "Capacity") // Match the column name in SQL schema
     private int capacity;
-
-    @Column(name = "PricePerHour") // Match the column name in SQL schema
     private double pricePerHour;
-
-    @Column(name = "RoomStatus") // Match the column name in SQL schema
     private String status;
-
-    @Column(name = "workspaceId") // Match the column name in SQL schema
-    private String workspaceId; // Add workspaceId to match SQL schema
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "roomId") // Match the foreign key in SQL schema
     private List<Amenity> amenities;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "roomId") // Match the foreign key in SQL schema
     private List<Image> roomImages;
     //private List<Offer> offers;
 
-    // Constructors, Getters, and Setters
+    // Constructors
     public Room() {}
 
     public Room(String id, String name, String type, int capacity, double pricePerHour, String status, String description, List<Amenity> amenities, List<Image> roomImages) {
