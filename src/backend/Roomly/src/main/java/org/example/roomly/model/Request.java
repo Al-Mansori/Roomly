@@ -1,42 +1,16 @@
 package org.example.roomly.model;
 
-import jakarta.persistence.*;
-
 import java.util.Date;
-import java.util.UUID;
 
-@Entity
-@Table(name = "Request") // Map to the "Request" table
 public class Request {
-
-    @Id
-    @Column(name = "Id") // Map to the "Id" column in the SQL schema
     private String requestId;
-
-    @Column(name = "RequestType") // Map to the "RequestType" column
     private String requestType;
-
-    @Column(name = "RequestDate") // Map to the "RequestDate" column
     private Date requestDate;
-
-    @Column(name = "ResponseDate") // Map to the "ResponseDate" column
     private Date responseDate;
-
-    @Column(name = "Details") // Map to the "Details" column
     private String details;
-
-    @Column(name = "Status") // Map to the "Status" column
     private String status;
-
-    @Column(name = "RequestResponse") // Map to the "RequestResponse" column
     private String requestResponse;
-
-    @ManyToOne
-    @JoinColumn(name = "UserId") // Foreign key to the "User" table
     private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "StaffId") // Foreign key to the "WorkspaceStaff" table
     private WorkspaceStaff staff;
 
     public Request() {

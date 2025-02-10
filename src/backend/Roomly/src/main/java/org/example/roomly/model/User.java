@@ -1,41 +1,14 @@
 package org.example.roomly.model;
 
-import jakarta.persistence.*;
-import jakarta.persistence.Id;
-
 import java.util.List;
-import java.util.UUID;
 
-@Entity
-@Table(name = "User")
 public abstract class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "Id", nullable = false, updatable = false)
     private String userId;
-
-    @Column(name = "FName")
     private String firstName;
-
-    @Column(name = "LName")
     private String lastName;
-
-    @Column(name = "Email")
     private String email;
-
-    @Column(name = "Password")
     private String password;
-
-    @Column(name = "Phone")
     private String phone;
-
-    @ManyToMany
-    @JoinTable(
-            name = "FavouriteWorkspaces",
-            joinColumns = @JoinColumn(name = "UserId"),
-            inverseJoinColumns = @JoinColumn(name = "WorkspaceId")
-    )
     private List<Workspace> workspaces;
 
     public User() {}
