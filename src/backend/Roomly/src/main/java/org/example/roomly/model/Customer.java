@@ -1,37 +1,30 @@
 package org.example.roomly.model;
 
-import jakarta.persistence.*;
-import java.util.List;
 
-
-@Entity
-@Table(name = "User")
 public class Customer extends User {
-
-    @OneToOne(mappedBy = "UserId", cascade = CascadeType.ALL)
-    private Preference preference;
+    private String address;
 
     public Customer() {
     }
 
-    public Customer(String userId, String firstName, String lastName, String email, String password, String phone, Preference preference) {
+    public Customer(String userId, String firstName, String lastName, String email, String password, String phone, String address) {
         super(userId, firstName, lastName, email, password, phone);
-        this.preference = preference;
+        this.address = address;
     }
 
-    public Preference getPreference() {
-        return preference;
+    public String getAddress() {
+        return address;
     }
 
-    public void setPreference(Preference preference) {
-        this.preference = preference;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
 
     @Override
     public String toString() {
         return super.toString() + ", Customer{" +
-                "preference=" + preference +
+                "address=" + address +
                 '}';
     }
 }
