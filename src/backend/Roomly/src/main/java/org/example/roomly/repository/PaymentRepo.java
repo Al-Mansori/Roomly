@@ -4,6 +4,7 @@ import org.example.roomly.model.Payment;
 import org.example.roomly.model.PaymentStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.Date;
 import java.util.List;
 
 public class PaymentRepo {
@@ -41,6 +42,11 @@ public class PaymentRepo {
                 rs.getDouble("Amount"),
                 PaymentStatus.valueOf(rs.getString("Status")) // Convert String to Enum
         ));
+    }
+
+    public int update(String id, Date paymentDate, String paymentMethod, double amount, String status) {
+        String sql = "UPDATE payment SET PaymentDate = ?, PaymentMethod = ?, Amount = ?, Status = ? WHERE Id = ?";
+        return jdbcTemplate.update(sql, paymentDate, paymentMethod, amount, status, id);
     }
 
     // Delete a payment by ID
