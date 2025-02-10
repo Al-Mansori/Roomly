@@ -9,32 +9,22 @@ import lombok.Getter;
 
 import java.util.Date;
 
-@Entity
-@Table(name = "offers") // Updated table name to match MySQL
 public class Offer {
 
     // Getters and Setters
-    @Getter
-    @Id
-    @Column(name = "Id") // Updated column name
+
     private String id;
 
-    @Column(name = "OfferTitle")
     private String offerTitle;
 
-    @Column(name = "Description")
     private String description;
 
-    @Column(name = "DiscountPercentage")
     private double discountPercentage; // Changed to BigDecimal for precision
 
-    @Column(name = "ValidFrom")
     private Date validFrom; // Changed from Date to LocalDate
 
-    @Column(name = "ValidTo")
     private Date validTo; // Changed from Date to LocalDate
 
-    @Column(name = "Status")
     private String status;
 
     public void setId(String id) { this.id = id;}

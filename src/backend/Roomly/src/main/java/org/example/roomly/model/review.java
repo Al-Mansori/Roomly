@@ -9,26 +9,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.sql.Date;
 import java.time.LocalDate;
 
-@Entity
-@Table(name="review")
 public class review {
-    @Id
-    @Column(name = "Id")
     private String id;
 
-    @Column(name = "Rating")
     private double rating;
 
-    @Column(name = "Comment")
     private String comment;
 
-    @Column(name = "ReviewDate")
     private LocalDate reviewDate;
 
-    @Column(name = "userId")
     private String userId;
 
-    @Column(name = "workspaceId")
     private String workspaceId;
 
     // constructors

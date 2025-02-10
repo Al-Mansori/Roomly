@@ -3,23 +3,15 @@ package org.example.roomly.model;
 import jakarta.persistence.*;
 import java.util.Date;
 
-@Entity
-@Table(name = "Payment") // Match the table name in SQL schema
 public class Payment {
-    @Id
-    @Column(name = "Id") // Match the column name in SQL schema
     private String id; // Change type to String to match SQL schema
 
-    @Column(name = "PaymentMethod") // Match the column name in SQL schema
     private String paymentMethod;
 
-    @Column(name = "PaymentDate") // Match the column name in SQL schema
     private Date paymentDate;
 
-    @Column(name = "Amount") // Match the column name in SQL schema
     private double amount;
 
-    @Column(name = "Status") // Match the column name in SQL schema
     private PaymentStatus status; // Change type to String to match SQL schema
 
     // Constructors
