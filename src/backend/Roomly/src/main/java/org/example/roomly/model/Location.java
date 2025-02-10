@@ -1,30 +1,12 @@
 package org.example.roomly.model;
-import jakarta.persistence.*;
 
-@Entity
-@Table(name = "Location")
 public class Location {
-    @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id")
     private Long id;
-
-    @Column(name = "Address")
     private String address;
-
-    @Column(name = "City")
     private String city;
-
-    @Column(name = "Town")
     private String town;
-
-    @Column(name = "Country")
     private String country;
-
-    @Column(name = "Longitude")
     private double longitude;
-
-    @Column(name = "Latitude")
     private double latitude;
 
     // Constructors

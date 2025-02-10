@@ -1,44 +1,17 @@
 package org.example.roomly.model;
 import java.util.Date;
 import java.util.List;
-import jakarta.persistence.*;
 
-@Entity
-@Table(name = "Workspace")
 public class Workspace {
-    @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id")
     private String id;
-
-    @Column(name = "Name")
     private String name;
-
-    @Column(name = "Description")
     private String description;
-
-    @Column(name = "Address")
     private String address;
-
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "Id")
     private Location location;
-
-    @Column(name = "CreationDate")
     private Date creationDate;
-
-    @Column(name = "AvgRating")
     private double avgRating;
-
-    @Column(name = "Type")
     private String type;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "workspaceId")
     private List<Room> rooms;
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "workspaceId")
     private List<Image> workspaceImages;
     //private Analytics workspaceAnalytics;
     //private List<Review> reviews ;
