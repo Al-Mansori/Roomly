@@ -3,7 +3,7 @@ package org.example.roomly.model;
 import java.util.Date;
 
 public class Request {
-    private String requestId;
+    private String Id;
     private String requestType;
     private Date requestDate;
     private Date responseDate;
@@ -17,7 +17,7 @@ public class Request {
     }
 
     public Request(String requestId, String requestType, Date requestDate, Date responseDate, String details, String status, String requestResponse, User user, WorkspaceStaff staff) {
-        this.requestId = requestId;
+        this.Id = requestId;
         this.requestType = requestType;
         this.requestDate = requestDate;
         this.responseDate = responseDate;
@@ -29,11 +29,11 @@ public class Request {
     }
 
     public String getRequestId() {
-        return requestId;
+        return Id;
     }
 
     public void setRequestId(String requestId) {
-        this.requestId = requestId;
+        this.Id = requestId;
     }
 
     public String getRequestType() {
@@ -103,7 +103,7 @@ public class Request {
     @Override
     public String toString() {
         return "Request{" +
-                "requestId='" + requestId + '\'' +
+                "requestId='" + Id + '\'' +
                 ", requestType='" + requestType + '\'' +
                 ", requestDate=" + requestDate +
                 ", responseDate=" + responseDate +
