@@ -1,39 +1,24 @@
 package org.example.roomly.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.sql.Date;
 import java.time.LocalDate;
 
-@Entity
-@Table(name="review")
 public class review {
-    @Id
-    @Column(name = "Id")
     private String id;
 
-    @Column(name = "Rating")
     private double rating;
 
-    @Column(name = "Comment")
     private String comment;
 
-    @Column(name = "ReviewDate")
-    private LocalDate reviewDate;
+    private Date reviewDate;
 
-    @Column(name = "userId")
     private String userId;
 
-    @Column(name = "workspaceId")
     private String workspaceId;
 
     // constructors
     public review(){}
-    public review(String reviewId, String userId, String workspaceId, double rating, String comment, LocalDate reviewDate) {
+    public review(String reviewId, String userId, String workspaceId, double rating, String comment, Date reviewDate) {
         this.id = reviewId;
         this.userId = userId;
         this.workspaceId = workspaceId;
@@ -65,7 +50,7 @@ public class review {
         this.comment = comments;
     }
 
-    public void setReviewDate(LocalDate reviewDate) {
+    public void setReviewDate(Date reviewDate) {
         this.reviewDate = reviewDate;
     }
 
@@ -92,7 +77,7 @@ public class review {
         return comment;
     }
 
-    public LocalDate getReviewDate() {
+    public Date getReviewDate() {
         return reviewDate;
     }
 }
