@@ -24,6 +24,9 @@ public class RoomlyApplication {
     @Bean
     public CommandLineRunner commandLineRunner(JdbcTemplate jdbcTemplate){
         return runner ->{
+            //test REservation repo
+//            testReservationRepository(jdbcTemplate);
+
             // test customer repo
             //CustomerRepository customerRepository = new CustomerRepository(jdbcTemplate);
             //testCustomerRepository(customerRepository);
@@ -291,5 +294,33 @@ public class RoomlyApplication {
         // test delete
         loyalPointsRepository.deleteById(loyalPoints.getUserId());
         System.out.println("✅ LoyaltyPoints deleted successfully!");
+    }
+
+    public void testReservationRepository(JdbcTemplate jdbcTemplate) {
+        ReservationRepository reservationRepository = new ReservationRepository(jdbcTemplate);
+        String id = "334599";
+        Date bookingDate = new Date();
+        Date startTime = new Date();
+        Date endTime = new Date(startTime.getTime() + 3600000); // 1 hour later
+        String status = "Pending";
+        Double totalCost = 100.0;
+
+        // Step 1: Add a new reservation
+        reservationRepository.save(id, bookingDate, startTime, endTime, status, totalCost);
+        System.out.println("Saved.........");
+        // Step 2: Find the reservation
+        Reservation found = reservationRepository.find(id);
+
+        // Step 3: Update the reservation
+        String newStatus = "Confirmed";
+        Double newTotalCost = 150.0;
+        int rowsUpdated = reservationRepository.update(id, bookingDate, startTime, endTime, newStatus, newTotalCost);
+
+        // Step 4: Find the updated reservation
+        Reservation updated = reservationRepository.find(id);
+
+        // Step 5: Delete the reservation
+        int rowsDeleted = reservationRepository.delete(id);
+
     }
 }
