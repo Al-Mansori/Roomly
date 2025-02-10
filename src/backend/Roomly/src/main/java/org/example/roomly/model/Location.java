@@ -2,7 +2,6 @@ package org.example.roomly.model;
 
 public class Location {
     private Long id;
-    private String address;
     private String city;
     private String town;
     private String country;
@@ -12,9 +11,8 @@ public class Location {
     // Constructors
     public Location() {}
 
-    public Location(Long id, String address, String city, String town, String country, double longitude, double latitude) {
+    public Location(Long id, String city, String town, String country, double longitude, double latitude) {
         this.id = id;
-        this.address = address;
         this.city = city;
         this.town = town;
         this.country = country;
@@ -30,14 +28,6 @@ public class Location {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
     }
 
     public String getCity() {
