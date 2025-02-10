@@ -1,9 +1,6 @@
 package org.example.roomly.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.UUID;
 
@@ -20,17 +17,17 @@ public class Preference {
 
     @Column(name = "WorkspaceTypePreference")
     private String workspaceTypePreference;
-
-    @Column(name = "UserId")
-    private String userId;
+    @OneToOne
+    @JoinColumn(name = "userId")
+    private Customer user;
 
     public Preference() {}
 
-    public Preference(String preferenceId, String budgetPreference, String workspaceTypePreference, String userId) {
+    public Preference(String preferenceId, String budgetPreference, String workspaceTypePreference, Customer user) {
         this.preferenceId = preferenceId;
         this.budgetPreference = budgetPreference;
         this.workspaceTypePreference = workspaceTypePreference;
-        this.userId = userId;
+        this.user = user;
     }
 
     public String getPreferenceId() {
@@ -57,12 +54,12 @@ public class Preference {
         this.workspaceTypePreference = workspaceTypePreference;
     }
 
-    public String getUserId() {
-        return userId;
+    public Customer getUser() {
+        return user;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserId(Customer userId) {
+        this.user = userId;
     }
 
     @Override
@@ -71,7 +68,7 @@ public class Preference {
                 "preferenceId='" + preferenceId + '\'' +
                 ", budgetPreference='" + budgetPreference + '\'' +
                 ", workspaceTypePreference='" + workspaceTypePreference + '\'' +
-                ", userId='" + userId + '\'' +
+                ", userId='" + user + '\'' +
                 '}';
     }
 }

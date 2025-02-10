@@ -1,7 +1,10 @@
 package org.example.roomly;
 
+import org.example.roomly.model.WorkspaceStaff;
+import org.example.roomly.model.WorkspaceStaffType;
 import org.example.roomly.model.review;
 import org.example.roomly.repository.ReviewRepo;
+import org.example.roomly.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,14 +20,16 @@ public class RoomlyApplication {
         SpringApplication.run(RoomlyApplication.class, args);
     }
 
-
-    public CommandLineRunner commandLineRunner(ReviewRepo reviewRepo){
+    @Bean
+    public CommandLineRunner commandLineRunner(UserRepository userRepository){
         return runner ->{
-                saveReview(reviewRepo);
+                save(userRepository);
         };
     }
-    public void saveReview(ReviewRepo reviewRepo){
-        review r = new review("oppad1234","oppad123","oppad12",5,"very nice", LocalDate.now());
-        reviewRepo.save(r);
+    public void save(UserRepository userRepository){
+        System.out.println("saving review................");
+//        WorkspaceStaff workspaceStaff = new WorkspaceStaff("1234","oppad","nasser","oppad@gmail.com","1234","01030452252",null,WorkspaceStaffType.ADMIN);
+//        userRepository.save(workspaceStaff);
+//        userRepository.flush();
     }
 }

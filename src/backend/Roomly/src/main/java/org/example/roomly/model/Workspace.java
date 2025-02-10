@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 public class Workspace {
     @Id
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Column(name = "Id")
     private String id;
 
@@ -21,7 +22,7 @@ public class Workspace {
     private String address;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "Id")
+    @JoinColumn(name = "Id", insertable = false, updatable = false)
     private Location location;
 
     @Column(name = "CreationDate")
@@ -34,11 +35,11 @@ public class Workspace {
     private String type;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "workspaceId")
+    @JoinColumn(name = "workspaceId", insertable = false, updatable = false)
     private List<Room> rooms;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "workspaceId")
+    @JoinColumn(name = "workspaceId", insertable = false, updatable = false)
     private List<Image> workspaceImages;
     //private Analytics workspaceAnalytics;
     //private List<Review> reviews ;

@@ -8,7 +8,7 @@ import java.util.List;
 @Table(name = "User")
 public class Customer extends User {
 
-    @OneToOne(mappedBy = "UserId", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user")
     private Preference preference;
 
     public Customer() {

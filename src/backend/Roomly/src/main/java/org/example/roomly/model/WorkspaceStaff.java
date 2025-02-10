@@ -3,7 +3,7 @@ package org.example.roomly.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "WorkspaceStaff") // Maps to the "WorkspaceStaff" table
+@Table(name = "workspacestaff") // Maps to the "WorkspaceStaff" table
 @AttributeOverride( // Override the "id" column name to "StaffId"
         name = "userId",
         column = @Column(name = "StaffId")
@@ -20,9 +20,9 @@ public class WorkspaceStaff extends User {
     public WorkspaceStaff() {
     }
 
-    public WorkspaceStaff(Workspace workspace, WorkspaceStaffType type) {
+    public WorkspaceStaff(String userId, String firstName, String lastName, String email, String password, String phone,Workspace workspace, WorkspaceStaffType type) {
         // Call the super class constructor
-        super();
+        super(userId, firstName, lastName, email, password, phone);
         this.workspace = workspace;
         this.type = type;
     }

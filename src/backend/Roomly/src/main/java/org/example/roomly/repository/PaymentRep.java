@@ -13,6 +13,6 @@ public interface PaymentRep extends JpaRepository<Payment,Integer> {
     List<Payment> findByStatus(@Param("status")PaymentStatus status);
 
     //findByBookingId postponed//
-    @Query("UPDATE payment set PaymentStatus=:newStatus")
+    @Query("UPDATE Payment set status=:newStatus")
     Payment updateStatus(@Param("newStatus")PaymentStatus newStatus);
 }

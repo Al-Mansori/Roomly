@@ -6,8 +6,7 @@ import jakarta.persistence.Id;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
-@Table(name = "User")
+@MappedSuperclass
 public abstract class User {
 
     @Id

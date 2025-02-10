@@ -32,8 +32,8 @@ public class Request {
     private String requestResponse;
 
     @ManyToOne
-    @JoinColumn(name = "UserId") // Foreign key to the "User" table
-    private User user;
+    @JoinColumn(name = "userId") // Foreign key to the "User" table
+    private WorkspaceStaff user;
 
     @ManyToOne
     @JoinColumn(name = "StaffId") // Foreign key to the "WorkspaceStaff" table
@@ -42,7 +42,7 @@ public class Request {
     public Request() {
     }
 
-    public Request(String requestId, String requestType, Date requestDate, Date responseDate, String details, String status, String requestResponse, User user, WorkspaceStaff staff) {
+    public Request(String requestId, String requestType, Date requestDate, Date responseDate, String details, String status, String requestResponse, WorkspaceStaff user, WorkspaceStaff staff) {
         this.requestId = requestId;
         this.requestType = requestType;
         this.requestDate = requestDate;
@@ -114,7 +114,7 @@ public class Request {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(WorkspaceStaff user) {
         this.user = user;
     }
 
