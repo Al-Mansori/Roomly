@@ -3,37 +3,33 @@ package org.example.roomly.model;
 import java.util.Date;
 
 public class Request {
-    private String Id;
+    private String requestId;
     private String requestType;
     private Date requestDate;
     private Date responseDate;
     private String details;
-    private String status;
+    private RequestStatus status;
     private String requestResponse;
-    private User user;
-    private WorkspaceStaff staff;
 
     public Request() {
     }
 
-    public Request(String requestId, String requestType, Date requestDate, Date responseDate, String details, String status, String requestResponse, User user, WorkspaceStaff staff) {
-        this.Id = requestId;
+    public Request(String requestId, String requestType, Date requestDate, Date responseDate, String details, RequestStatus status, String requestResponse) {
+        this.requestId = requestId;
         this.requestType = requestType;
         this.requestDate = requestDate;
         this.responseDate = responseDate;
         this.details = details;
         this.status = status;
         this.requestResponse = requestResponse;
-        this.user = user;
-        this.staff = staff;
     }
 
     public String getRequestId() {
-        return Id;
+        return requestId;
     }
 
     public void setRequestId(String requestId) {
-        this.Id = requestId;
+        this.requestId = requestId;
     }
 
     public String getRequestType() {
@@ -68,11 +64,11 @@ public class Request {
         this.details = details;
     }
 
-    public String getStatus() {
+    public RequestStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(RequestStatus status) {
         this.status = status;
     }
 
@@ -84,34 +80,17 @@ public class Request {
         this.requestResponse = requestResponse;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public WorkspaceStaff getStaff() {
-        return staff;
-    }
-
-    public void setStaff(WorkspaceStaff staff) {
-        this.staff = staff;
-    }
 
     @Override
     public String toString() {
         return "Request{" +
-                "requestId='" + Id + '\'' +
+                "requestId='" + requestId + '\'' +
                 ", requestType='" + requestType + '\'' +
                 ", requestDate=" + requestDate +
                 ", responseDate=" + responseDate +
                 ", details='" + details + '\'' +
                 ", status='" + status + '\'' +
                 ", requestResponse='" + requestResponse + '\'' +
-                ", user=" + user +
-                ", staff=" + staff +
                 '}';
     }
 }

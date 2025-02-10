@@ -7,9 +7,8 @@ public class WorkspaceStaff extends User {
     public WorkspaceStaff() {
     }
 
-    public WorkspaceStaff(String workspaceId, WorkspaceStaffType type) {
-        // Call the super class constructor
-        super();
+    public WorkspaceStaff(String userId, String firstName, String lastName, String email, String password, String phone, WorkspaceStaffType type) {
+        super(userId, firstName, lastName, email, password, phone);
         this.type = type;
     }
 
@@ -21,6 +20,10 @@ public class WorkspaceStaff extends User {
         this.type = type;
     }
 
-
-
+    @Override
+    public String toString() {
+        return "WorkspaceStaff{" +
+                "type=" + type +
+                '}';
+    }
 }
