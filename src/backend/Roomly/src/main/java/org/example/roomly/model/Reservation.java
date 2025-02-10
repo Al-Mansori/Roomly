@@ -1,6 +1,5 @@
 package org.example.roomly.model;
 
-import jakarta.persistence.*;
 import java.util.Date;
 
 public class Reservation {
@@ -16,18 +15,16 @@ public class Reservation {
 
     private double totalCost;
 
-    private Payment payment;
 
     public Reservation(){}
 
-    public Reservation(String id, Date bookingDate, Date startTime, Date endTime, String status, double totalCost, Payment payment) {
+    public Reservation(String id, Date bookingDate, Date startTime, Date endTime, String status, double totalCost) {
         this.id = id;
         this.bookingDate = bookingDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.status = status;
         this.totalCost = totalCost;
-        this.payment = payment;
     }
 
     public String getId() {
@@ -76,13 +73,5 @@ public class Reservation {
 
     public void setTotalCost(double totalCost) {
         this.totalCost = totalCost;
-    }
-
-    public Payment getPayment() {
-        return payment;
-    }
-
-    public void setPayment(Payment payment) {
-        this.payment = payment;
     }
 }

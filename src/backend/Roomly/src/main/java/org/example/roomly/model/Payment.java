@@ -1,14 +1,13 @@
 package org.example.roomly.model;
 
-import jakarta.persistence.*;
 import java.util.Date;
 
 public class Payment {
     private String id; // Change type to String to match SQL schema
 
+    private Date paymentDate;
     private String paymentMethod;
 
-    private Date paymentDate;
 
     private double amount;
 

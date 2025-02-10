@@ -18,13 +18,12 @@ public class RoomlyApplication {
     }
 
 
-    public CommandLineRunner commandLineRunner(ReviewRepo reviewRepo){
+    public CommandLineRunner commandLineRunner(){
         return runner ->{
-                saveReview(reviewRepo);
+                saveReview();
         };
     }
-    public void saveReview(ReviewRepo reviewRepo){
-        review r = new review("oppad1234","oppad123","oppad12",5,"very nice", LocalDate.now());
-        reviewRepo.save(r);
+    public void saveReview(){
+        System.out.println("hello");
     }
 }
