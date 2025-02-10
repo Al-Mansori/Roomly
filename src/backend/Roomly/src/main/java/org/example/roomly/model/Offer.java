@@ -7,7 +7,7 @@ public class Offer {
 
     // Getters and Setters
 
-    private String id;
+    private String Id;
 
     private String offerTitle;
 
@@ -21,7 +21,8 @@ public class Offer {
 
     private String status;
 
-    public void setId(String id) { this.id = id;}
+    public void setId(String id) { this.Id = id;}
+    public String getId(){return this.Id;}
 
     public String getOfferTitle() {
         return offerTitle;
