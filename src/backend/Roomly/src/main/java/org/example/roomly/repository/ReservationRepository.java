@@ -42,6 +42,11 @@ public class ReservationRepository {
                 rs.getDouble("TotalCost")
         ));
     }
+    public int update(String id, String bookingDate, Date startTime, Date endTime, String status, Double totalCost) {
+        String sql = "UPDATE reservation SET BookingDate = ?, StartTime = ?, EndTime = ?, Status = ?, TotalCost = ? WHERE Id = ?";
+        return jdbcTemplate.update(sql, bookingDate, startTime, endTime, status, totalCost, id);
+    }
+
     public int delete(String id) {
         String sql = "DELETE FROM reservation WHERE Id = ?";
         return jdbcTemplate.update(sql, id);
