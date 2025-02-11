@@ -22,9 +22,9 @@ public class WorkspaceRepository {
     }
 
     // Save Workspace
-    public void save(Workspace workspace) {
-        String sql = "INSERT INTO Workspace (Id, Name, Description, Address, CreatedDate, AvgRating, Type) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, workspace.getId(), workspace.getName(), workspace.getDescription(), workspace.getAddress(), workspace.getCreationDate(), workspace.getAvgRating(), workspace.getType());
+    public void save(Workspace workspace, String locationId) {
+        String sql = "INSERT INTO Workspace (Id, Name, Description, Address, CreatedDate, AvgRating, Type, LocationId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, workspace.getId(), workspace.getName(), workspace.getDescription(), workspace.getAddress(), workspace.getCreationDate(), workspace.getAvgRating(), workspace.getType(), locationId);
     }
 
     // Delete Workspace by ID

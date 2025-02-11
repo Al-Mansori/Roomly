@@ -21,9 +21,9 @@ public class AmenityRepository {
     }
 
     // Save Amenity
-    public void save(Amenity amenity) {
-        String sql = "INSERT INTO Amenity (Id, Name, Type, Description, TotalCount, AvailableCount) VALUES (?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, amenity.getId(), amenity.getName(), amenity.getType(), amenity.getDescription(), amenity.getTotalCount(), amenity.getAvailableCount());
+    public void save(Amenity amenity, String roomId) {
+        String sql = "INSERT INTO Amenity (Id, Name, Type, Description, TotalCount, AvailableCount) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, amenity.getId(), amenity.getName(), amenity.getType(), amenity.getDescription(), amenity.getTotalCount(), amenity.getAvailableCount(), roomId);
     }
 
     // Delete Amenity by ID
