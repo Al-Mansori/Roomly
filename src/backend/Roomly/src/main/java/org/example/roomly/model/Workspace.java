@@ -14,22 +14,23 @@ public class Workspace {
     private List<Room> rooms;
     private List<Image> workspaceImages;
     //private Analytics workspaceAnalytics;
-    //private List<Review> reviews ;
+    private List<Review> reviews ;
 
     // Constructors
     public Workspace() {}
 
-    public Workspace(List<Image> workspaceImages, List<Room> rooms, String type, double avgRating, Date creationDate, Location location, String address, String description, String name, String id) {
-        this.workspaceImages = workspaceImages;
-        this.rooms = rooms;
-        this.type = type;
-        this.avgRating = avgRating;
-        this.creationDate = creationDate;
-        this.location = location;
-        this.address = address;
-        this.description = description;
-        this.name = name;
+    public Workspace(String id, String name, String description, String address, Location location, Date creationDate, double avgRating, String type, List<Room> rooms, List<Image> workspaceImages, List<Review> reviews) {
         this.id = id;
+        this.name = name;
+        this.description = description;
+        this.address = address;
+        this.location = location;
+        this.creationDate = creationDate;
+        this.avgRating = avgRating;
+        this.type = type;
+        this.rooms = rooms;
+        this.workspaceImages = workspaceImages;
+        this.reviews = reviews;
     }
 
     // Getters and Setters
@@ -112,5 +113,13 @@ public class Workspace {
 
     public void setWorkspaceImages(List<Image> workspaceImages) {
         this.workspaceImages = workspaceImages;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 }

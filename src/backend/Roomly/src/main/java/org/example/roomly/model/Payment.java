@@ -20,14 +20,12 @@ public class Payment {
         this.status = status;
     }
 
-    // Getters and Setters
-
-    public String getPaymentId() {
+    public String getId() {
         return id;
     }
 
-    public void setPaymentId(String paymentId) {
-        this.id = paymentId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getPaymentMethod() {
