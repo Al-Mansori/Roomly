@@ -3,27 +3,18 @@ import java.util.Date;
 
 public class Reservation {
     private String id;
-    private Date bookingDate;
+    private Date reservationDate;
     private Date startTime;
     private Date endTime;
-    private String status;
+    private ReservationStatus status;
     private double totalCost;
     private Payment payment;
 
     public Reservation(){}
 
-    public Reservation(String id, Date bookingDate, Date startTime, Date endTime, String status, double totalCost) {
+    public Reservation(String id, Date reservationDate, Date startTime, Date endTime, ReservationStatus status, double totalCost, Payment payment) {
         this.id = id;
-        this.bookingDate = bookingDate;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.status = status;
-        this.totalCost = totalCost;
-    }
-
-    public Reservation(String id, Date bookingDate, Date startTime, Date endTime, String status, double totalCost, Payment payment) {
-        this.id = id;
-        this.bookingDate = bookingDate;
+        this.reservationDate = reservationDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.status = status;
@@ -39,12 +30,12 @@ public class Reservation {
         this.id = id;
     }
 
-    public Date getBookingDate() {
-        return bookingDate;
+    public Date getReservationDate() {
+        return reservationDate;
     }
 
-    public void setBookingDate(Date bookingDate) {
-        this.bookingDate = bookingDate;
+    public void setReservationDate(Date reservationDate) {
+        this.reservationDate = reservationDate;
     }
 
     public Date getStartTime() {
@@ -63,11 +54,11 @@ public class Reservation {
         this.endTime = endTime;
     }
 
-    public String getStatus() {
+    public ReservationStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ReservationStatus status) {
         this.status = status;
     }
 

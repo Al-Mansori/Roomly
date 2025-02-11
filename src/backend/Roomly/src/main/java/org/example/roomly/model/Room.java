@@ -12,21 +12,22 @@ public class Room {
     private String status;
     private List<Amenity> amenities;
     private List<Image> roomImages;
-    //private List<Offer> offers;
+    private List<Offer> offers;
 
     // Constructors
     public Room() {}
 
-    public Room(String id, String name, String type, int capacity, double pricePerHour, String status, String description, List<Amenity> amenities, List<Image> roomImages) {
+    public Room(String id, String name, String type, String description, int capacity, double pricePerHour, String status, List<Amenity> amenities, List<Image> roomImages, List<Offer> offers) {
         this.id = id;
         this.name = name;
         this.type = type;
+        this.description = description;
         this.capacity = capacity;
         this.pricePerHour = pricePerHour;
         this.status = status;
-        this.description = description;
         this.amenities = amenities;
         this.roomImages = roomImages;
+        this.offers = offers;
     }
 
     // Getters and Setters
@@ -55,6 +56,14 @@ public class Room {
         this.type = type;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public int getCapacity() {
         return capacity;
     }
@@ -79,20 +88,12 @@ public class Room {
         this.status = status;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public List<Amenity> getAmenities() {
         return amenities;
     }
 
     public void setAmenities(List<Amenity> amenities) {
-        amenities = amenities;
+        this.amenities = amenities;
     }
 
     public List<Image> getRoomImages() {
@@ -101,5 +102,13 @@ public class Room {
 
     public void setRoomImages(List<Image> roomImages) {
         this.roomImages = roomImages;
+    }
+
+    public List<Offer> getOffers() {
+        return offers;
+    }
+
+    public void setOffers(List<Offer> offers) {
+        this.offers = offers;
     }
 }
