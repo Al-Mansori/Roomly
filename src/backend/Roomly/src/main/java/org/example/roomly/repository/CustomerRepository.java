@@ -62,4 +62,9 @@ public class CustomerRepository {
         String sql = "DELETE FROM User WHERE Id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    public boolean existsByEmail(String email) {
+        String sql = "SELECT COUNT(*) FROM User WHERE Email = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{email}, Integer.class) > 0;
+    }
 }
