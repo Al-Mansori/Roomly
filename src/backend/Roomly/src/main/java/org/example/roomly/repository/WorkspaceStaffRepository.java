@@ -65,4 +65,9 @@ public class WorkspaceStaffRepository {
         String sql = "DELETE FROM WorkspaceStaff WHERE Id = ?";
         jdbcTemplate.update(sql, id);
     }
+
+    public boolean existsByEmail(String email) {
+        String sql = "SELECT COUNT(*) FROM WorkspaceStaff WHERE Email = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{email}, Integer.class) > 0;
+    }
 }
