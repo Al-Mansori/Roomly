@@ -1,54 +1,73 @@
 package org.example.roomly.repository;
 
 import org.example.roomly.model.Reservation;
+import org.example.roomly.model.ReservationStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+@Repository
 public class ReservationRepository {
+
+    @Autowired
     private final JdbcTemplate jdbcTemplate;
 
-    public ReservationRepository(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public ReservationRepository() {
+        this.jdbcTemplate = new JdbcTemplate();
     }
 
-    public int save(String id, Date bookingDate, Date startTime, Date endTime, String status, Double totalCost) {
+    public int save(Reservation reservation) {
         String sql = "INSERT INTO reservation (Id, BookingDate, StartTime, EndTime, Status, TotalCost) VALUES (?, ?, ?, ?, ?, ?)";
-        return jdbcTemplate.update(sql, id, bookingDate, startTime, endTime, status, totalCost);
+        return jdbcTemplate.update(sql, reservation.getId(), reservation.getReservationDate(), reservation.getStartTime(), reservation.getEndTime(), reservation.getStatus(), reservation.getTotalCost());
     }
 
     public Reservation find(String id) {
         String sql = "SELECT * FROM reservation WHERE Id = ?";
-        return jdbcTemplate.queryForObject(sql,(rs, rowNum) ->
-                new Reservation(
-                        rs.getString("Id"),
-                        rs.getDate("BookingDate"),
-                        rs.getTime("StartTime"),
-                        rs.getTime("EndTime"),
-                        rs.getString("Status"),
-                        rs.getDouble("TotalCost")
-                ),id);
+        return jdbcTemplate.queryForObject(sql, new ReservationRowMapper(), id);
     }
 
     public List<Reservation> findAll() {
         String sql = "SELECT * FROM reservation";
-        return jdbcTemplate.query(sql,(rs, rowNum) -> new Reservation(
-                rs.getString("Id"),
-                rs.getTimestamp("BookingDate"),
-                rs.getTimestamp("StartTime"),
-                rs.getTimestamp("EndTime"),
-                rs.getString("Status"),
-                rs.getDouble("TotalCost")
-        ));
+        return jdbcTemplate.query(sql, new ReservationRowMapper());
     }
-    public int update(String id, Date bookingDate, Date startTime, Date endTime, String status, Double totalCost) {
+    public int update(Reservation reservation) {
         String sql = "UPDATE reservation SET BookingDate = ?, StartTime = ?, EndTime = ?, Status = ?, TotalCost = ? WHERE Id = ?";
-        return jdbcTemplate.update(sql, bookingDate, startTime, endTime, status, totalCost, id);
+        return jdbcTemplate.update(sql, reservation.getReservationDate(), reservation.getStartTime(), reservation.getEndTime(), reservation.getStatus(), reservation.getTotalCost(), reservation.getId());
     }
 
     public int delete(String id) {
         String sql = "DELETE FROM reservation WHERE Id = ?";
         return jdbcTemplate.update(sql, id);
+    }
+
+    public void addBooking(String userId, String reservationId, String workspaceId, String roomId) {
+        String sql = "INSERT INTO Booking (UserId, ReservationId, WorkspaceId, RoomId) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql, userId, reservationId, workspaceId, roomId);
+    }
+
+    // Delete a booking by UserId and ReservationId
+    public void deleteBooking(String userId, String reservationId) {
+        String sql = "DELETE FROM Booking WHERE UserId = ? AND ReservationId = ?";
+        jdbcTemplate.update(sql, userId, reservationId);
+    }
+
+    private static class ReservationRowMapper implements RowMapper<Reservation> {
+        @Override
+        public Reservation mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Reservation reservation = new Reservation();
+            reservation.setId(rs.getString("Id"));
+            reservation.setReservationDate(rs.getTimestamp("BookingDate"));
+            reservation.setStartTime(rs.getTimestamp("StartTime"));
+            reservation.setEndTime(rs.getTimestamp("EndTime"));
+            reservation.setStatus(ReservationStatus.valueOf(rs.getString("Status")));
+            reservation.setTotalCost(rs.getDouble("TotalCost"));
+            return reservation;
+        }
     }
 }

@@ -21,9 +21,9 @@ public class RoomRepository {
     }
 
     // Save Room
-    public void save(Room room) {
-        String sql = "INSERT INTO Room (Id, Name, Type, Description, Capacity, PricePerHour, RoomStatus) VALUES (?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, room.getId(), room.getName(), room.getType(), room.getDescription(), room.getCapacity(), room.getPricePerHour(), room.getStatus());
+    public void save(Room room, String workspaceId) {
+        String sql = "INSERT INTO Room (Id, Name, Type, Description, Capacity, PricePerHour, RoomStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, room.getId(), room.getName(), room.getType(), room.getDescription(), room.getCapacity(), room.getPricePerHour(), room.getStatus(), workspaceId);
     }
 
     // Delete Room by ID
@@ -35,7 +35,7 @@ public class RoomRepository {
     // Update Room
     public void update(Room room) {
         String sql = "UPDATE Room SET Name = ?, Type = ?, Description = ?, Capacity = ?, PricePerHour = ?, RoomStatus = ? WHERE Id = ?";
-        jdbcTemplate.update(sql, room.getType(), room.getDescription(), room.getCapacity(), room.getPricePerHour(), room.getStatus(), room.getId());
+        jdbcTemplate.update(sql, room.getName(), room.getType(), room.getDescription(), room.getCapacity(), room.getPricePerHour(), room.getStatus(), room.getId());
     }
 
 //    public void update(Room room) {
