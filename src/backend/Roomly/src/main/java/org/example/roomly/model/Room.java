@@ -30,8 +30,6 @@ public class Room {
         this.offers = offers;
     }
 
-    // Getters and Setters
-
     public String getId() {
         return id;
     }
@@ -110,5 +108,21 @@ public class Room {
 
     public void setOffers(List<Offer> offers) {
         this.offers = offers;
+    }
+
+    @Override
+    public String toString() {
+        return "Room{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", description='" + description + '\'' +
+                ", capacity=" + capacity +
+                ", pricePerHour=" + pricePerHour +
+                ", status='" + status + '\'' +
+                ", amenities=" + amenities +
+                ", roomImages=" + roomImages +
+                ", offers=" + offers +
+                '}';
     }
 }

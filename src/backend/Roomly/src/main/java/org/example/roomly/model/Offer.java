@@ -71,4 +71,17 @@ public class Offer {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "Offer{" +
+                "Id='" + Id + '\'' +
+                ", offerTitle='" + offerTitle + '\'' +
+                ", description='" + description + '\'' +
+                ", discountPercentage=" + discountPercentage +
+                ", validFrom=" + validFrom +
+                ", validTo=" + validTo +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }
