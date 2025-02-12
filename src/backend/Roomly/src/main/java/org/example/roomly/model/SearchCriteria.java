@@ -3,7 +3,7 @@ package org.example.roomly.model;
 
 import java.util.List;
 
-public class searchCriteria {
+public class SearchCriteria {
     private String location;
     private double minPrice;
     private double maxPrice;
@@ -12,11 +12,11 @@ public class searchCriteria {
 
     // Constructors
 
-    public searchCriteria(){
+    public SearchCriteria(){
 
     }
 
-    public searchCriteria(String location, double minPrice, double maxPrice, List<String> requiredAmenities, String name) {
+    public SearchCriteria(String location, double minPrice, double maxPrice, List<String> requiredAmenities, String name) {
         this.location = location;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;

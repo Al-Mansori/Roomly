@@ -102,4 +102,35 @@ public class UserService {
         System.out.println("Account verified successfully! You can now log in.");
         return "Account verified successfully! You can now log in.";
     }
+    public String LogIn(String email , String password, boolean isStaff){
+        if(isStaff){
+            if(authenticationService.checkEmail(email)){
+                WorkspaceStaff workspaceStaff = workspaceStaffRepository.findByEmail(email);
+                if(workspaceStaff.getPassword().equals(password)){
+                    return "login successfully";
+                }
+                else{
+                    return "Wrong password";
+                }
+            }
+            else{
+                return "user Not found";
+            }
+        }
+        else{
+            if(authenticationService.checkEmail(email)){
+                Customer customer = customerRepository.findByEmail(email);
+                if(customer.getPassword().equals(password)){
+                    return "login successfully";
+                }
+                else{
+                    return "Wrong password";
+                }
+            }
+            else{
+                return "user Not found";
+            }
+
+        }
+    }
 }

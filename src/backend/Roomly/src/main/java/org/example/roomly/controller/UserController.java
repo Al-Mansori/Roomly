@@ -1,6 +1,7 @@
 package org.example.roomly.controller;
 
 
+import org.example.roomly.model.LogInRequest;
 import org.example.roomly.model.RegistrationRequest;
 import org.example.roomly.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,13 @@ public class UserController {
         String response = userService.verifyUser(token);
 
         System.out.println("Response from Controller : " + response);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/auth/login")
+    public ResponseEntity<String> logIn(@RequestBody LogInRequest logInRequest){
+        System.out.println("Logging in........");
+        String response = userService.LogIn(logInRequest.getEmail(),logInRequest.getPassword(),logInRequest.isStaff());
         return ResponseEntity.ok(response);
     }
 }

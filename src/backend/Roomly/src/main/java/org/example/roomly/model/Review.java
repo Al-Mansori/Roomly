@@ -1,9 +1,8 @@
 package org.example.roomly.model;
 
 import java.sql.Date;
-import java.time.LocalDate;
 
-public class review {
+public class Review {
     private String id;
 
     private double rating;
@@ -17,8 +16,8 @@ public class review {
     private String workspaceId;
 
     // constructors
-    public review(){}
-    public review(String reviewId, String userId, String workspaceId, double rating, String comment, Date reviewDate) {
+    public Review(){}
+    public Review(String reviewId, String userId, String workspaceId, double rating, String comment, Date reviewDate) {
         this.id = reviewId;
         this.userId = userId;
         this.workspaceId = workspaceId;
