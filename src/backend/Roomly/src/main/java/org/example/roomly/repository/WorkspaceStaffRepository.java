@@ -1,5 +1,6 @@
 package org.example.roomly.repository;
 
+import org.example.roomly.model.Customer;
 import org.example.roomly.model.WorkspaceStaff;
 import org.example.roomly.model.WorkspaceStaffType;
 
@@ -28,6 +29,21 @@ public class WorkspaceStaffRepository {
     public WorkspaceStaff findById(String id) {
         String sql = "SELECT * FROM WorkspaceStaff WHERE Id = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{id},
+                (rs, rowNum) -> new WorkspaceStaff(
+                        rs.getString("Id"),
+                        rs.getString("FName"),
+                        rs.getString("LName"),
+                        rs.getString("Email"),
+                        rs.getString("Password"),
+                        rs.getString("Phone"),
+                        WorkspaceStaffType.valueOf(rs.getString("Type"))
+                )
+        );
+    }
+
+    public WorkspaceStaff findByEmail(String email) {
+        String sql = "SELECT * FROM WorkspaceStaff WHERE email = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{email},
                 (rs, rowNum) -> new WorkspaceStaff(
                         rs.getString("Id"),
                         rs.getString("FName"),

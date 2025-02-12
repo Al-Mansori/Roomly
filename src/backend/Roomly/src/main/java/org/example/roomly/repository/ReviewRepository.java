@@ -1,6 +1,6 @@
 package org.example.roomly.repository;
 
-import org.example.roomly.model.review;
+import org.example.roomly.model.Review;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Date;
@@ -18,9 +18,9 @@ public class ReviewRepository {
         return jdbcTemplate.update(sql, id, rating, comment, reviewDate, userId, workspaceId);
     }
 
-    public review find(String id) {
+    public Review find(String id) {
         String sql = "SELECT * FROM review WHERE Id = ?";
-        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new review(
+        return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> new Review(
                 rs.getString("Id"),
                 rs.getString("UserId"),
                 rs.getString("WorkspaceId"),
@@ -30,9 +30,9 @@ public class ReviewRepository {
         ), id);
     }
 
-    public List<review> findAll() {
+    public List<Review> findAll() {
         String sql = "SELECT * FROM review";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new review(
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new Review(
                 rs.getString("Id"),
                 rs.getString("UserId"),
                 rs.getString("WorkspaceId"),

@@ -69,6 +69,7 @@ public class SearchCriteria {
         return name;
     }
 
+
     @Override
     public String toString() {
         return "SearchCriteria{" +

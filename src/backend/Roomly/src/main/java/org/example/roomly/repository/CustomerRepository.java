@@ -37,6 +37,21 @@ public class CustomerRepository {
         );
     }
 
+    public Customer findByEmail(String email) {
+        String sql = "SELECT * FROM User WHERE Email = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{email},
+                (rs, rowNum) -> new Customer(
+                        rs.getString("Id"),
+                        rs.getString("FName"),
+                        rs.getString("LName"),
+                        rs.getString("Email"),
+                        rs.getString("Password"),
+                        rs.getString("Phone"),
+                        rs.getString("Address")
+                )
+        );
+    }
+
     public List<Customer> findAll() {
         String sql = "SELECT * FROM User";
         return jdbcTemplate.query(sql,
