@@ -14,6 +14,12 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private ReservationService reservationService;
+
+    @Autowired
+    private PaymentService paymentService;
 
     @PostMapping("/auth/register")
     public ResponseEntity<String> registerUser(@RequestBody RegistrationRequest request) {
@@ -42,5 +48,42 @@ public class UserController {
 
         System.out.println("Response from Controller : " + response);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/reserve")
+    public void createReservation(@RequestBody Map<String, Object> reservationData) {
+        System.out.println("Received reservation: " + reservationData);
+
+        try {
+            // Extract data
+            String userId = (String) reservationData.get("userId");
+            String workspaceId = (String) reservationData.get("workspaceId");
+            String roomId = (String) reservationData.get("roomId");
+            String paymentMethod = (String) reservationData.get("paymentMethod");
+            int amenitiesCount = (Integer) reservationData.get("amenitiesCount");
+
+            // Parse dates
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date startTime = dateFormat.parse((String) reservationData.get("startTime"));
+            Date endTime = dateFormat.parse((String) reservationData.get("endTime"));
+
+
+            // Generate random total cost
+            Random random = new Random();
+            double totalCost = 15 + (9999 - 15) * random.nextDouble();
+
+            // Create payment and reservation
+            Payment payment = paymentService.createPayment(paymentMethod, totalCost, PaymentStatus.CONFIRMED);
+            Reservation reservation = reservationService.createReservation(startTime, endTime, totalCost, ReservationStatus.CONFIRMED, payment);
+
+            // Save payment and reservation
+            reservationService.saveReservation(reservation);
+            paymentService.savePayment(payment, reservation.getId());
+            reservationService.addBooking(userId, reservation.getId(), workspaceId, roomId);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to process reservation: " + e.getMessage());
+        }
     }
 }
