@@ -14,12 +14,13 @@ import java.util.UUID;
 @Service
 public class ReservationService {
 
+    @Autowired
     private ReservationRepository reservationRepository ;
 
-    @Autowired
-    public ReservationService(ReservationRepository reservationRepository) {
-        this.reservationRepository = reservationRepository;
-    }
+//    @Autowired
+//    public ReservationService(ReservationRepository reservationRepository) {
+//        this.reservationRepository = reservationRepository;
+//    }
 
     public  Reservation createReservation(Date startTime, Date endTime, double totalCost, ReservationStatus status, Payment payment){
         String reseervationId = UUID.randomUUID().toString();

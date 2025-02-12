@@ -1,12 +1,18 @@
 package org.example.roomly.controller;
 
 
-import org.example.roomly.model.LogInRequest;
-import org.example.roomly.model.RegistrationRequest;
+import org.example.roomly.model.*;
+import org.example.roomly.service.PaymentService;
+import org.example.roomly.service.ReservationService;
 import org.example.roomly.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+import java.util.Random;
 
 
 @RestController
@@ -15,7 +21,7 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    
+
     @Autowired
     private ReservationService reservationService;
 
@@ -42,12 +48,14 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/auth/verify")
-    public ResponseEntity<String> verifyUser(@RequestParam String token) {
+    @PostMapping("/auth/verify")
+    public ResponseEntity<String> verifyUser(@RequestParam int otp) {
         System.out.println("Verifying user from User Controller ...");
-        String response = userService.verifyUser(token);
+
+        String response = userService.verifyUser(otp);
 
         System.out.println("Response from Controller : " + response);
+
         return ResponseEntity.ok(response);
     }
 
@@ -55,10 +63,10 @@ public class UserController {
     @PostMapping("/auth/login")
     public ResponseEntity<String> logIn(@RequestBody LogInRequest logInRequest){
         System.out.println("Logging in........");
-        String response = userService.LogIn(logInRequest.getEmail(),logInRequest.getPassword(),logInRequest.isStaff());
+        String response = userService.logIn(logInRequest.getEmail(),logInRequest.getPassword(),logInRequest.isStaff());
         return ResponseEntity.ok(response);
     }
-}
+
     @PostMapping("/reserve")
     public void createReservation(@RequestBody Map<String, Object> reservationData) {
         System.out.println("Received reservation: " + reservationData);
@@ -96,4 +104,3 @@ public class UserController {
         }
     }
 }
-

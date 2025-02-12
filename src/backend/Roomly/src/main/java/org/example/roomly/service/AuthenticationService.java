@@ -37,13 +37,13 @@ public class AuthenticationService {
         return Pattern.matches(egyptianPhonePattern, phone);
     }
 
-    public void sendVerificationEmail(String email, String verificationLink) {
+    public void sendVerificationEmail(String email, int otp) {
         // Simulate sending an email (replace this with actual email sending logic)
         System.out.println("Sending email to: " + email);
-        System.out.println("Click the following link to verify your account: " + verificationLink);
+        System.out.println("Your OTP for verification: " + otp);
 
         // Send email
-        emailSenderService.sendMail(email, "Roomly Account Verification", "Click the following link to verify your account: " + verificationLink);
+        emailSenderService.sendMail(email, "Roomly Account Verification", "Your OTP for verification: " + otp);
 
         System.out.println("Email sent successfully to: " + email);
     }
