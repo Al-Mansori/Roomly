@@ -12,37 +12,38 @@ import java.util.UUID;
 
 @Service
 public class PaymentService {
-    @Autowired
-    private static PaymentRepository paymentRepository ;
 
-    public PaymentService() {
-        paymentRepository = new PaymentRepository() ;
+    private PaymentRepository paymentRepository ;
+
+    @Autowired
+    public PaymentService(PaymentRepository paymentRepository) {
+        this.paymentRepository = paymentRepository;
     }
 
-    public static Payment createPayment(String paymentMethod, double amount, PaymentStatus status){
+    public Payment createPayment(String paymentMethod, double amount, PaymentStatus status){
         String paymentId = UUID.randomUUID().toString();
         Date paymentDate = new Date();
         Payment payment = new Payment(paymentId, paymentMethod, paymentDate, amount, status);
         return payment;
     }
 
-    public static void savePayment(Payment payment, String reservationId){
+    public void savePayment(Payment payment, String reservationId){
         paymentRepository.save(payment, reservationId);
     }
 
-    public static void deletePayment(String id){
+    public void deletePayment(String id){
         paymentRepository.delete(id);
     }
 
-    public static void updatePayment(Payment payment){
+    public void updatePayment(Payment payment){
         paymentRepository.update(payment);
     }
 
-    public static Payment getPayment(String id){
+    public Payment getPayment(String id){
         return paymentRepository.find(id);
     }
 
-    public static List<Payment> getAll(){
+    public List<Payment> getAll(){
         return paymentRepository.findAll();
     }
 }
