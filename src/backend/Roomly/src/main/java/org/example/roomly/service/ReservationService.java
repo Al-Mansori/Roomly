@@ -14,53 +14,52 @@ import java.util.UUID;
 @Service
 public class ReservationService {
 
+    private ReservationRepository reservationRepository ;
+
     @Autowired
-    private static ReservationRepository reservationRepository ;
-
-
-    public ReservationService() {
-        reservationRepository = new ReservationRepository() ;
+    public ReservationService(ReservationRepository reservationRepository) {
+        this.reservationRepository = reservationRepository;
     }
 
-    public static Reservation createReservation(Date startTime, Date endTime, double totalCost, ReservationStatus status, Payment payment){
+    public  Reservation createReservation(Date startTime, Date endTime, double totalCost, ReservationStatus status, Payment payment){
         String reseervationId = UUID.randomUUID().toString();
         Date reservationDate = new Date();
         Reservation reservation = new Reservation(reseervationId, reservationDate, startTime, endTime, status, totalCost, payment);
         return reservation;
     }
 
-    public static void addPayment(Reservation reservation,Payment payment){
+    public void addPayment(Reservation reservation,Payment payment){
         reservation.setPayment(payment);
     }
 
-    public static void deletePayment(Reservation reservation){
+    public void deletePayment(Reservation reservation){
         reservation.setPayment(null);
     }
 
-    public static void saveReservation(Reservation reservation){
+    public void saveReservation(Reservation reservation){
         reservationRepository.save(reservation);
     }
 
-    public static void deleteRservation(String id){
+    public void deleteRservation(String id){
         reservationRepository.delete(id);
     }
 
-    public static void updateReservation(Reservation reservation){
+    public void updateReservation(Reservation reservation){
         reservationRepository.update(reservation);
     }
 
-    public static Reservation getReservation(String id){
+    public Reservation getReservation(String id){
         return reservationRepository.find(id);
     }
 
-    public static List<Reservation> getAll(){
+    public List<Reservation> getAll(){
         return reservationRepository.findAll();
     }
 
-    public static void addBooking(String userId, String reservationId, String workspaceId, String roomId){
+    public void addBooking(String userId, String reservationId, String workspaceId, String roomId){
         reservationRepository.addBooking(userId, reservationId, workspaceId, roomId);
     }
-    public static void deleteBooking(String userId, String reservationId){
+    public void deleteBooking(String userId, String reservationId){
         reservationRepository.deleteBooking(userId, reservationId);
     }
 }
