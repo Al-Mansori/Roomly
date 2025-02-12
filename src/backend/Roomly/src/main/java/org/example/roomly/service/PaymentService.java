@@ -13,12 +13,13 @@ import java.util.UUID;
 @Service
 public class PaymentService {
 
+    @Autowired
     private PaymentRepository paymentRepository ;
 
-    @Autowired
-    public PaymentService(PaymentRepository paymentRepository) {
-        this.paymentRepository = paymentRepository;
-    }
+//    @Autowired
+//    public PaymentService(PaymentRepository paymentRepository) {
+//        this.paymentRepository = paymentRepository;
+//    }
 
     public Payment createPayment(String paymentMethod, double amount, PaymentStatus status){
         String paymentId = UUID.randomUUID().toString();

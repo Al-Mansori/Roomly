@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -26,7 +27,9 @@ public class UserService {
     @Autowired
     private AuthenticationService authenticationService;
 
-    private final Map<String, User> pendingUsers = new HashMap<>(); // Temp storage for unverified users
+    private final Map<Integer, User> pendingUsers = new HashMap<Integer, User>(); // Temp storage for unverified users
+    private final Random random = new Random();
+
 
     public String registerUser(String firstName, String lastName, String email, String password, String confirmPassword, String phone, boolean isStaff) {
         System.out.println("Registering user from User Service ...");
@@ -56,39 +59,41 @@ public class UserService {
         }
 
         // Generate verification token
-        String token = UUID.randomUUID().toString();
+        String id = UUID.randomUUID().toString();
+
+        // Generate 6-digit OTP
+        int otp = 100000 + random.nextInt(900000); // Ensures a 6-digit OTP
+
 
         // Create user object
         User user;
         if (isStaff) {
-            user = new WorkspaceStaff(token, firstName, lastName, email, password, phone, WorkspaceStaffType.DEFAULT);
+            user = new WorkspaceStaff(id, firstName, lastName, email, password, phone, WorkspaceStaffType.DEFAULT);
             System.out.println("Staff user created.");
         } else {
-            user = new Customer(token, firstName, lastName, email, password, phone, "Default Address");
+            user = new Customer(id, firstName, lastName, email, password, phone, "Default Address");
             System.out.println("Customer user created.");
         }
 
         // Store user temporarily
-        pendingUsers.put(token, user);
+        pendingUsers.put(otp, user);
         System.out.println("User stored temporarily.");
-        System.out.println("Verification token: " + token);
-        System.out.println("Verification link: http://localhost:8080/api/users/auth/verify?token=" + token);
+        System.out.println("Verification OTP: " + otp);
 
-        // Send confirmation email with verification link
-        String verificationLink = "http://localhost:8080/api/users/auth/verify?token=" + token;
-        authenticationService.sendVerificationEmail(email, verificationLink);
+        // Send confirmation email with otp
+        authenticationService.sendVerificationEmail(email, otp);
 
-        System.out.println("Registration initiated. Please check your email for verification.");
-        return "Registration initiated. Please check your email for verification.";
+        System.out.println("OTP sent to your email. Please verify to complete registration.");
+        return "OTP sent to your email. Please verify to complete registration.";
     }
 
-    public String verifyUser(String token) {
-        if (!pendingUsers.containsKey(token)) {
+    public String verifyUser(int otp) {
+        if (!pendingUsers.containsKey(otp)) {
             System.out.println("Invalid or expired verification link.");
             return "Invalid or expired verification link.";
         }
 
-        User user = pendingUsers.remove(token); // Remove from pending users
+        User user = pendingUsers.remove(otp); // Remove from pending users
 
         // Save user to the appropriate repository
         if (user instanceof WorkspaceStaff) {
@@ -102,7 +107,8 @@ public class UserService {
         System.out.println("Account verified successfully! You can now log in.");
         return "Account verified successfully! You can now log in.";
     }
-    public String LogIn(String email , String password, boolean isStaff){
+
+    public String logIn(String email , String password, boolean isStaff){
         if(isStaff){
             if(authenticationService.checkEmail(email)){
                 WorkspaceStaff workspaceStaff = workspaceStaffRepository.findByEmail(email);
