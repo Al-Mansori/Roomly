@@ -122,4 +122,21 @@ public class Workspace {
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
     }
+
+    @Override
+    public String toString() {
+        return "Workspace{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", address='" + address + '\'' +
+                ", location=" + location +
+                ", creationDate=" + creationDate +
+                ", avgRating=" + avgRating +
+                ", type='" + type + '\'' +
+                ", rooms=" + rooms +
+                ", workspaceImages=" + workspaceImages +
+                ", reviews=" + reviews +
+                '}';
+    }
 }

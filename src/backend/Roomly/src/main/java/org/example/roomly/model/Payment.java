@@ -59,4 +59,15 @@ public class Payment {
     public void setStatus(PaymentStatus status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "Payment{" +
+                "id='" + id + '\'' +
+                ", paymentMethod='" + paymentMethod + '\'' +
+                ", paymentDate=" + paymentDate +
+                ", amount=" + amount +
+                ", status=" + status +
+                '}';
+    }
 }
