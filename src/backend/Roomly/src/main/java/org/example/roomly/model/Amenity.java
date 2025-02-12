@@ -81,4 +81,17 @@ public class Amenity {
     public void setAmenityImages(List<Image> amenityImages) {
         this.amenityImages = amenityImages;
     }
+
+    @Override
+    public String toString() {
+        return "Amenity{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", description='" + description + '\'' +
+                ", totalCount=" + totalCount +
+                ", availableCount=" + availableCount +
+                ", amenityImages=" + amenityImages +
+                '}';
+    }
 }

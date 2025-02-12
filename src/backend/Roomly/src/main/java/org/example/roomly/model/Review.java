@@ -79,4 +79,17 @@ public class Review {
     public Date getReviewDate() {
         return reviewDate;
     }
+
+
+    @Override
+    public String toString() {
+        return "Review{" +
+                "id='" + id + '\'' +
+                ", rating=" + rating +
+                ", comment='" + comment + '\'' +
+                ", reviewDate=" + reviewDate +
+                ", userId='" + userId + '\'' +
+                ", workspaceId='" + workspaceId + '\'' +
+                '}';
+    }
 }

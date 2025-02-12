@@ -68,4 +68,16 @@ public class SearchCriteria {
     public String getName() {
         return name;
     }
+
+
+    @Override
+    public String toString() {
+        return "SearchCriteria{" +
+                "location='" + location + '\'' +
+                ", minPrice=" + minPrice +
+                ", maxPrice=" + maxPrice +
+                ", requiredAmenities=" + requiredAmenities +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

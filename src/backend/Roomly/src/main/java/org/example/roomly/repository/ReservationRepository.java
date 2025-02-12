@@ -15,16 +15,16 @@ import java.util.List;
 @Repository
 public class ReservationRepository {
 
-    @Autowired
     private final JdbcTemplate jdbcTemplate;
 
-    public ReservationRepository() {
-        this.jdbcTemplate = new JdbcTemplate();
+    @Autowired
+    public ReservationRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     public int save(Reservation reservation) {
         String sql = "INSERT INTO reservation (Id, BookingDate, StartTime, EndTime, Status, TotalCost) VALUES (?, ?, ?, ?, ?, ?)";
-        return jdbcTemplate.update(sql, reservation.getId(), reservation.getReservationDate(), reservation.getStartTime(), reservation.getEndTime(), reservation.getStatus(), reservation.getTotalCost());
+        return jdbcTemplate.update(sql, reservation.getId(), reservation.getReservationDate(), reservation.getStartTime(), reservation.getEndTime(), reservation.getStatus().toString(), reservation.getTotalCost());
     }
 
     public Reservation find(String id) {

@@ -15,10 +15,12 @@ import java.util.List;
 @Repository
 public class PaymentRepository {
 
-    @Autowired
     private final JdbcTemplate jdbcTemplate;
 
-    public PaymentRepository() {this.jdbcTemplate = new JdbcTemplate();}
+    @Autowired
+    public PaymentRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     // Save a new payment
     public int save(Payment payment, String reservationId) {

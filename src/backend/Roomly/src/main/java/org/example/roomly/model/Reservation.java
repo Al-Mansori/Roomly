@@ -77,4 +77,17 @@ public class Reservation {
     public void setPayment(Payment payment) {
         this.payment = payment;
     }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "id='" + id + '\'' +
+                ", reservationDate=" + reservationDate +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", status=" + status +
+                ", totalCost=" + totalCost +
+                ", payment=" + payment +
+                '}';
+    }
 }
