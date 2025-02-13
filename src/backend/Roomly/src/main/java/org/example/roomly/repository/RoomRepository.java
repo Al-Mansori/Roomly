@@ -91,6 +91,11 @@ public class RoomRepository {
         return jdbcTemplate.query(sql, new RoomRowMapper());
     }
 
+    public List<Room> getWorkspaceRooms(String workspaceId){
+        String sql = "SELECT * FROM Room WHERE WorkspaceId = ?";
+        return jdbcTemplate.query(sql, new RoomRowMapper(), workspaceId);
+    }
+
     // RowMapper for Room
     private static class RoomRowMapper implements RowMapper<Room> {
         @Override

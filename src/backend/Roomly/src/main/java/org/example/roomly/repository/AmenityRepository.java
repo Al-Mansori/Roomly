@@ -86,6 +86,11 @@ public class AmenityRepository {
         return jdbcTemplate.query(sql, new AmenityRowMapper());
     }
 
+    public List<Amenity> getRoomAmenities(String roomId){
+        String sql = "SELECT * FROM Amenity WHERE RoomId = ?";
+        return jdbcTemplate.query(sql, new AmenityRowMapper(), roomId);
+    }
+
     // RowMapper for Amenities
     private static class AmenityRowMapper implements RowMapper<Amenity> {
         @Override
