@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -29,7 +30,7 @@ public class UserController {
     private PaymentService paymentService;
 
     @PostMapping("/auth/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegistrationRequest request) {
+    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody RegistrationRequest request) {
         System.out.println("Registering user from User Controller ...");
         System.out.println("Print IsSteff: " + request.isStaff());
 
@@ -45,18 +46,36 @@ public class UserController {
 
         System.out.println("Response from Controller : " + response);
 
-        return ResponseEntity.ok(response);
+        Map<String, Object> responseBody = new HashMap<>();
+        if (response.startsWith("OTP sent")) {
+            responseBody.put("message", response);
+            responseBody.put("registrationStatus", true);
+        } else {
+            responseBody.put("error", response);
+            responseBody.put("registrationStatus", false);
+        }
+
+        return ResponseEntity.ok(responseBody);
     }
 
     @PostMapping("/auth/verify")
-    public ResponseEntity<String> verifyUser(@RequestParam int otp) {
+    public ResponseEntity<Map<String, Object>> verifyUser(@RequestParam int otp) {
         System.out.println("Verifying user from User Controller ...");
 
         String response = userService.verifyUser(otp);
 
         System.out.println("Response from Controller : " + response);
 
-        return ResponseEntity.ok(response);
+        Map<String, Object> responseBody = new HashMap<>();
+        if (response.startsWith("Account verified")) {
+            responseBody.put("message", response);
+            responseBody.put("registrationStatus", true);
+        } else {
+            responseBody.put("error", response);
+            responseBody.put("registrationStatus", false);
+        }
+
+        return ResponseEntity.ok(responseBody);
     }
 
 
