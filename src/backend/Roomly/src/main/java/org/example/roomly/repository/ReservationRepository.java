@@ -23,8 +23,8 @@ public class ReservationRepository {
     }
 
     public int save(Reservation reservation) {
-        String sql = "INSERT INTO reservation (Id, BookingDate, StartTime, EndTime, Status, TotalCost) VALUES (?, ?, ?, ?, ?, ?)";
-        return jdbcTemplate.update(sql, reservation.getId(), reservation.getReservationDate(), reservation.getStartTime(), reservation.getEndTime(), reservation.getStatus().toString(), reservation.getTotalCost());
+        String sql = "INSERT INTO reservation (Id, BookingDate, StartTime, EndTime, Status, TotalCost, AmenitiesCount) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        return jdbcTemplate.update(sql, reservation.getId(), reservation.getReservationDate(), reservation.getStartTime(), reservation.getEndTime(), reservation.getStatus().toString(), reservation.getTotalCost(), reservation.getAmenitiesCount());
     }
 
     public Reservation find(String id) {
@@ -37,8 +37,8 @@ public class ReservationRepository {
         return jdbcTemplate.query(sql, new ReservationRowMapper());
     }
     public int update(Reservation reservation) {
-        String sql = "UPDATE reservation SET BookingDate = ?, StartTime = ?, EndTime = ?, Status = ?, TotalCost = ? WHERE Id = ?";
-        return jdbcTemplate.update(sql, reservation.getReservationDate(), reservation.getStartTime(), reservation.getEndTime(), reservation.getStatus(), reservation.getTotalCost(), reservation.getId());
+        String sql = "UPDATE reservation SET BookingDate = ?, StartTime = ?, EndTime = ?, Status = ?, TotalCost = ?, AmenitiesCount = ? WHERE Id = ?";
+        return jdbcTemplate.update(sql, reservation.getReservationDate(), reservation.getStartTime(), reservation.getEndTime(), reservation.getStatus(), reservation.getTotalCost(), reservation.getAmenitiesCount(), reservation.getId());
     }
 
     public int delete(String id) {
@@ -67,6 +67,7 @@ public class ReservationRepository {
             reservation.setEndTime(rs.getTimestamp("EndTime"));
             reservation.setStatus(ReservationStatus.valueOf(rs.getString("Status")));
             reservation.setTotalCost(rs.getDouble("TotalCost"));
+            reservation.setAmenitiesCount(rs.getInt("AmenitiesCount"));
             return reservation;
         }
     }

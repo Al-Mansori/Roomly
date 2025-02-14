@@ -22,8 +22,8 @@ public class AmenityRepository {
 
     // Save Amenity
     public void save(Amenity amenity, String roomId) {
-        String sql = "INSERT INTO Amenity (Id, Name, Type, Description, TotalCount, AvailableCount) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, amenity.getId(), amenity.getName(), amenity.getType(), amenity.getDescription(), amenity.getTotalCount(), amenity.getAvailableCount(), roomId);
+        String sql = "INSERT INTO Amenity (Id, Name, Type, Description, TotalCount, RoomId) VALUES (?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, amenity.getId(), amenity.getName(), amenity.getType(), amenity.getDescription(), amenity.getTotalCount(), roomId);
     }
 
     // Delete Amenity by ID
@@ -34,8 +34,8 @@ public class AmenityRepository {
 
     // Update Amenity
     public void update(Amenity amenity) {
-        String sql = "UPDATE Amenity SET Name = ?, Type = ?, Description = ?, TotalCount = ?, AvailableCount = ? WHERE Id = ?";
-        jdbcTemplate.update(sql, amenity.getName(), amenity.getType(), amenity.getDescription(), amenity.getTotalCount(), amenity.getAvailableCount(), amenity.getId());
+        String sql = "UPDATE Amenity SET Name = ?, Type = ?, Description = ?, TotalCount = ? WHERE Id = ?";
+        jdbcTemplate.update(sql, amenity.getName(), amenity.getType(), amenity.getDescription(), amenity.getTotalCount(), amenity.getId());
     }
 
 //    public void update(Amenity amenity) {
@@ -101,7 +101,6 @@ public class AmenityRepository {
             amenity.setType(rs.getString("Type"));
             amenity.setDescription(rs.getString("Description"));
             amenity.setTotalCount(rs.getInt("TotalCount"));
-            amenity.setAvailableCount(rs.getInt("AvailableCount"));
             return amenity;
         }
     }
