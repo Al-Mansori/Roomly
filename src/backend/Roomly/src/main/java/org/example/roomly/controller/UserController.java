@@ -80,9 +80,16 @@ public class UserController {
 
 
     @PostMapping("/auth/login")
-    public ResponseEntity<String> logIn(@RequestBody LogInRequest logInRequest){
+    public ResponseEntity<Map<String, Object>> logIn(@RequestBody LogInRequest logInRequest){
         System.out.println("Logging in........");
-        String response = userService.logIn(logInRequest.getEmail(),logInRequest.getPassword(),logInRequest.isStaff());
+        User result = userService.logIn(logInRequest.getEmail(),logInRequest.getPassword(),logInRequest.isStaff());
+        Map<String , Object> response = new HashMap<>();
+        if(result == null){
+            response.put("Error","Wrong Credentials");
+        }
+        else{
+            response.put("User",result);
+        }
         return ResponseEntity.ok(response);
     }
 

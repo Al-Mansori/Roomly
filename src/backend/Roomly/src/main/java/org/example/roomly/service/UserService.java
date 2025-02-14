@@ -108,33 +108,33 @@ public class UserService {
         return "Account verified successfully! You can now log in.";
     }
 
-    public String logIn(String email , String password, boolean isStaff){
+    public User logIn(String email , String password, boolean isStaff){
         if(isStaff){
             if(authenticationService.checkEmail(email)){
                 WorkspaceStaff workspaceStaff = workspaceStaffRepository.findByEmail(email);
                 if(workspaceStaff.getPassword().equals(password)){
-                    return "login successfully";
+                    return workspaceStaff;
                 }
                 else{
-                    return "Wrong password";
+                    return null;
                 }
             }
             else{
-                return "user Not found";
+                return null;
             }
         }
         else{
             if(authenticationService.checkEmail(email)){
                 Customer customer = customerRepository.findByEmail(email);
                 if(customer.getPassword().equals(password)){
-                    return "login successfully";
+                    return customer;
                 }
                 else{
-                    return "Wrong password";
+                    return null;
                 }
             }
             else{
-                return "user Not found";
+                return null;
             }
 
         }
