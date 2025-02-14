@@ -80,12 +80,12 @@ public class ImageService {
     }
 
     // Get all room images
-    public List<Image> getRoomImages(String workspaceId, String roomId) {
-        return imageRepository.getRoomImages(workspaceId, roomId);
+    public List<Image> getRoomImages(String roomId) {
+        return imageRepository.getRoomImages(roomId);
     }
 
     // Get all amenity images
-    public List<Image> getAmenityImages(String workspaceId, String roomId, String amenityId) {
-        return imageRepository.getAmenityImages(workspaceId, roomId, amenityId);
+    public List<Image> getAmenityImages(String amenityId) {
+        return imageRepository.getAmenityImages(amenityId);
     }
 }
