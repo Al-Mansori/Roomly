@@ -1,20 +1,15 @@
 package org.example.roomly.controller;
 
-import org.example.roomly.model.Amenity;
-import org.example.roomly.model.Image;
-import org.example.roomly.model.Room;
-import org.example.roomly.model.Workspace;
-import org.example.roomly.service.AmenityService;
-import org.example.roomly.service.ImageService;
-import org.example.roomly.service.RoomService;
-import org.example.roomly.service.WorkspaceService;
+import org.example.roomly.model.*;
+import org.example.roomly.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("api/customer")
@@ -31,6 +26,12 @@ public class CustomerController {
 
     @Autowired
     private AmenityService amenityService;
+
+    @Autowired
+    ReservationService reservationService;
+
+    @Autowired
+    PaymentService paymentService;
 
     @GetMapping("/images/workspace")
     public List<Image> getWorkspaceImages(@RequestParam String workspaceId) {
@@ -78,5 +79,56 @@ public class CustomerController {
         }
         room.setAmenities(amenities);
         return room;
+    }
+
+    @PostMapping("/reserve")
+    public String createReservation(@RequestBody Map<String, Object> reservationData) {
+        System.out.println("Received reservation: " + reservationData);
+
+        try {
+            // Extract data
+            String userId = (String) reservationData.get("userId");
+            String workspaceId = (String) reservationData.get("workspaceId");
+            String roomId = (String) reservationData.get("roomId");
+            String paymentMethod = (String) reservationData.get("paymentMethod");
+            int amenitiesCount = (Integer) reservationData.get("amenitiesCount");
+
+            // Parse dates
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Date startTime = dateFormat.parse((String) reservationData.get("startTime"));
+            Date endTime = dateFormat.parse((String) reservationData.get("endTime"));
+
+            // Calculate the difference in milliseconds
+            long diffInMillis = endTime.getTime() - startTime.getTime();
+
+            // Convert milliseconds to hours
+            long reservedHours = TimeUnit.MILLISECONDS.toHours(diffInMillis);
+
+            Room room = roomService.getRoomById(roomId);
+            if(room.getStatus().toString().equals("Unavailable") || room.getAvailableCount() < amenitiesCount){
+                return "Room is unavailable for reservation";
+            }
+
+            room.setAvailableCount(room.getAvailableCount()-amenitiesCount);
+            double hourPrice = room.getPricePerHour();
+            double totalCost = hourPrice * amenitiesCount * reservedHours;
+
+            // Create payment and reservation
+            Payment payment = paymentService.createPayment(paymentMethod, totalCost, PaymentStatus.CONFIRMED);
+            Reservation reservation = reservationService.createReservation(startTime, endTime, totalCost, ReservationStatus.CONFIRMED, amenitiesCount, payment);
+
+            roomService.updateRoom(room);
+
+            // Save payment and reservation
+            reservationService.saveReservation(reservation);
+            paymentService.savePayment(payment, reservation.getId());
+            reservationService.addBooking(userId, reservation.getId(), workspaceId, roomId);
+
+            return "Successful reservation";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to process reservation: " + e.getMessage());
+        }
     }
 }
