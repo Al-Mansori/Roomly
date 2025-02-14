@@ -1,6 +1,7 @@
 package org.example.roomly.repository;
 
 import org.example.roomly.model.Room;
+import org.example.roomly.model.RoomStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,8 +23,8 @@ public class RoomRepository {
 
     // Save Room
     public void save(Room room, String workspaceId) {
-        String sql = "INSERT INTO Room (Id, Name, Type, Description, Capacity, PricePerHour, RoomStatus) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, room.getId(), room.getName(), room.getType(), room.getDescription(), room.getCapacity(), room.getPricePerHour(), room.getStatus(), workspaceId);
+        String sql = "INSERT INTO Room (Id, Name, Type, Description, Capacity, PricePerHour, RoomStatus, AvailableCount, WorkspaceId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, room.getId(), room.getName(), room.getType(), room.getDescription(), room.getCapacity(), room.getPricePerHour(), room.getStatus().toString(), room.getAvailableCount(), workspaceId);
     }
 
     // Delete Room by ID
@@ -34,8 +35,8 @@ public class RoomRepository {
 
     // Update Room
     public void update(Room room) {
-        String sql = "UPDATE Room SET Name = ?, Type = ?, Description = ?, Capacity = ?, PricePerHour = ?, RoomStatus = ? WHERE Id = ?";
-        jdbcTemplate.update(sql, room.getName(), room.getType(), room.getDescription(), room.getCapacity(), room.getPricePerHour(), room.getStatus(), room.getId());
+        String sql = "UPDATE Room SET Name = ?, Type = ?, Description = ?, Capacity = ?, PricePerHour = ?, RoomStatus = ?, AvailableCount = ? WHERE Id = ?";
+        jdbcTemplate.update(sql, room.getName(), room.getType(), room.getDescription(), room.getCapacity(), room.getPricePerHour(), room.getStatus().toString(), room.getAvailableCount(), room.getId());
     }
 
 //    public void update(Room room) {
@@ -107,7 +108,8 @@ public class RoomRepository {
             room.setDescription(rs.getString("Description"));
             room.setCapacity(rs.getInt("Capacity"));
             room.setPricePerHour(rs.getDouble("PricePerHour"));
-            room.setStatus(rs.getString("RoomStatus"));
+            room.setStatus(RoomStatus.valueOf(rs.getString("RoomStatus")));
+            room.setAvailableCount(rs.getInt("AvailableCount"));
             return room;
         }
     }
