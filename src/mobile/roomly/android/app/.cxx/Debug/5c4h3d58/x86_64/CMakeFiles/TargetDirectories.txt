@@ -1,0 +1,2 @@
+C:/Users/user/Desktop/Roomly/Roomly/src/mobile/roomly/android/app/.cxx/Debug/5c4h3d58/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/user/Desktop/Roomly/Roomly/src/mobile/roomly/android/app/.cxx/Debug/5c4h3d58/x86_64/CMakeFiles/rebuild_cache.dir
