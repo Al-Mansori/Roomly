@@ -22,10 +22,10 @@ public class ReservationService {
 //        this.reservationRepository = reservationRepository;
 //    }
 
-    public  Reservation createReservation(Date startTime, Date endTime, double totalCost, ReservationStatus status, Payment payment){
+    public  Reservation createReservation(Date startTime, Date endTime, double totalCost, ReservationStatus status, int amenitiesCount, Payment payment){
         String reseervationId = UUID.randomUUID().toString();
         Date reservationDate = new Date();
-        Reservation reservation = new Reservation(reseervationId, reservationDate, startTime, endTime, status, totalCost, payment);
+        Reservation reservation = new Reservation(reseervationId, reservationDate, startTime, endTime, status, amenitiesCount, totalCost, payment);
         return reservation;
     }
 
