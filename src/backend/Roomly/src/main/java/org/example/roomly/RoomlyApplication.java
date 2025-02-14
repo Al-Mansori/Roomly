@@ -1,10 +1,15 @@
 package org.example.roomly;
 
+import org.example.roomly.model.Review;
+import org.example.roomly.repository.CustomerRepository;
+import org.example.roomly.repository.ReviewRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.sql.Date;
 
 
 @SpringBootApplication
@@ -17,6 +22,8 @@ public class RoomlyApplication {
     @Bean
     public CommandLineRunner commandLineRunner(JdbcTemplate jdbcTemplate){
         return runner ->{
+//            //test Review repo
+//            testReviewRepo(jdbcTemplate);
             //test REservation repo
 //            testReservationRepository(jdbcTemplate);
 
@@ -315,6 +322,19 @@ public class RoomlyApplication {
 //
 //        // Step 5: Delete the reservation
 //        int rowsDeleted = reservationRepository.delete(id);
+//
+//    }
+
+    // test review repo
+//    public void testReviewRepo(JdbcTemplate jdbcTemplate){
+//        ReviewRepository reviewRepository = new ReviewRepository(jdbcTemplate);
+//        Review review = new Review("RE001","1234","WS001",3.2,"Not bad",new Date(2025,2,14));
+//        reviewRepository.save(review);
+//        Review updated = review;
+//        updated.setComments("nice");
+//        reviewRepository.update(updated);
+//        Review found = reviewRepository.find(review.getReviewId());
+//        System.out.println(found);
 //
 //    }
 

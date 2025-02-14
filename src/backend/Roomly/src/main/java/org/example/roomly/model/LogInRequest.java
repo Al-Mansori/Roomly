@@ -1,8 +1,11 @@
 package org.example.roomly.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class LogInRequest {
     private String email;
     private String password;
+    @JsonProperty("isStaff")
     private boolean isStaff;
 
     public LogInRequest(String email, String password,boolean isStaff) {
