@@ -8,8 +8,9 @@ public class Room {
     private String type;
     private String description;
     private int capacity;
+    private int availableCount;
     private double pricePerHour;
-    private String status;
+    private RoomStatus status;
     private List<Amenity> amenities;
     private List<Image> roomImages;
     private List<Offer> offers;
@@ -17,12 +18,13 @@ public class Room {
     // Constructors
     public Room() {}
 
-    public Room(String id, String name, String type, String description, int capacity, double pricePerHour, String status, List<Amenity> amenities, List<Image> roomImages, List<Offer> offers) {
+    public Room(String id, String name, String type, String description, int capacity, int availableCount, double pricePerHour, RoomStatus status, List<Amenity> amenities, List<Image> roomImages, List<Offer> offers) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.description = description;
         this.capacity = capacity;
+        this.availableCount = availableCount;
         this.pricePerHour = pricePerHour;
         this.status = status;
         this.amenities = amenities;
@@ -70,6 +72,14 @@ public class Room {
         this.capacity = capacity;
     }
 
+    public int getAvailableCount() {
+        return availableCount;
+    }
+
+    public void setAvailableCount(int availableCount) {
+        this.availableCount = availableCount;
+    }
+
     public double getPricePerHour() {
         return pricePerHour;
     }
@@ -78,11 +88,11 @@ public class Room {
         this.pricePerHour = pricePerHour;
     }
 
-    public String getStatus() {
+    public RoomStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(RoomStatus status) {
         this.status = status;
     }
 
@@ -118,8 +128,9 @@ public class Room {
                 ", type='" + type + '\'' +
                 ", description='" + description + '\'' +
                 ", capacity=" + capacity +
+                ", availableCount=" + availableCount +
                 ", pricePerHour=" + pricePerHour +
-                ", status='" + status + '\'' +
+                ", status=" + status +
                 ", amenities=" + amenities +
                 ", roomImages=" + roomImages +
                 ", offers=" + offers +
