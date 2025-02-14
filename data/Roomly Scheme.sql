@@ -63,7 +63,6 @@ CREATE TABLE Amenity (
     Type VARCHAR(255),
     Description TEXT,
     TotalCount INT,
-    AvailableCount INT,
     RoomId VARCHAR(50)
 );
 
@@ -73,6 +72,7 @@ CREATE TABLE Room (
     Type VARCHAR(255),
     Description TEXT,
     Capacity INT,
+    AvilableCount INT,
     PricePerHour DOUBLE,
     RoomStatus VARCHAR(50),
     WorkspaceId VARCHAR(50)
@@ -114,7 +114,8 @@ CREATE TABLE Reservation (
     StartTime DATETIME,
     EndTime DATETIME,
     Status VARCHAR(50),
-    TotalCost DOUBLE
+    TotalCost DOUBLE,
+    AmenitiesCount INT
 );
 
 CREATE TABLE Payment (
@@ -193,7 +194,7 @@ CREATE TABLE ApplyedOffers (
 
 -- Add foreign key constraints using ALTER TABLE
 ALTER TABLE Workspace ADD CONSTRAINT fk_workspace_location FOREIGN KEY (LocationId) REFERENCES Location(Id) ON DELETE CASCADE;
-ALTER TABLE Amenities ADD CONSTRAINT fk_amenities_room FOREIGN KEY (RoomId) REFERENCES Room(Id) ON DELETE CASCADE;
+ALTER TABLE Amenity ADD CONSTRAINT fk_amenity_room FOREIGN KEY (RoomId) REFERENCES Room(Id) ON DELETE CASCADE;
 ALTER TABLE Room ADD CONSTRAINT fk_room_workspace FOREIGN KEY (WorkspaceId) REFERENCES Workspace(Id) ON DELETE CASCADE;
 ALTER TABLE WorkspaceAnalytics ADD CONSTRAINT fk_workspaceanalytics_workspace FOREIGN KEY (WorkspaceId) REFERENCES Workspace(Id) ON DELETE CASCADE;
 ALTER TABLE WorkspacePlan ADD CONSTRAINT fk_workspaceplan_workspace FOREIGN KEY (WorkspaceId) REFERENCES Workspace(Id) ON DELETE CASCADE;
@@ -220,7 +221,7 @@ ALTER TABLE WorkspaceSupervise ADD CONSTRAINT fk_workspacesupervise_workspace FO
 ALTER TABLE Images ADD CONSTRAINT fk_images_staff FOREIGN KEY (StaffId) REFERENCES WorkspaceStaff(Id) ON DELETE CASCADE;
 ALTER TABLE Images ADD CONSTRAINT fk_images_workspace FOREIGN KEY (WorkspaceId) REFERENCES Workspace(Id) ON DELETE CASCADE;
 ALTER TABLE Images ADD CONSTRAINT fk_images_room FOREIGN KEY (RoomId) REFERENCES Room(Id) ON DELETE CASCADE;
-ALTER TABLE Images ADD CONSTRAINT fk_images_amenity FOREIGN KEY (AmenityId) REFERENCES Amenities(Id) ON DELETE CASCADE;
+ALTER TABLE Images ADD CONSTRAINT fk_images_amenity FOREIGN KEY (AmenityId) REFERENCES Amenity(Id) ON DELETE CASCADE;
 ALTER TABLE ApplyedOffers ADD CONSTRAINT fk_applyedoffers_staff FOREIGN KEY (StaffId) REFERENCES WorkspaceStaff(Id) ON DELETE CASCADE;
 ALTER TABLE ApplyedOffers ADD CONSTRAINT fk_applyedoffers_room FOREIGN KEY (RoomId) REFERENCES Room(Id) ON DELETE CASCADE;
 ALTER TABLE ApplyedOffers ADD CONSTRAINT fk_applyedoffers_offer FOREIGN KEY (OfferId) REFERENCES Offers(Id) ON DELETE CASCADE;
