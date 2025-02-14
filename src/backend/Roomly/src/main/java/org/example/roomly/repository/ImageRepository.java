@@ -39,15 +39,15 @@ public class ImageRepository {
     }
 
     // Get room images
-    public List<Image> getRoomImages(String workspaceId, String roomId) {
-        String sql = "SELECT ImageUrl FROM Images WHERE WorkspaceId = ? AND RoomId = ? AND AmenityId IS NULL";
-        return jdbcTemplate.query(sql, new ImageRowMapper(), workspaceId, roomId);
+    public List<Image> getRoomImages(String roomId) {
+        String sql = "SELECT ImageUrl FROM Images WHERE RoomId = ? AND AmenityId IS NULL";
+        return jdbcTemplate.query(sql, new ImageRowMapper(), roomId);
     }
 
     // Get amenity images
-    public List<Image> getAmenityImages(String workspaceId, String roomId, String amenityId) {
-        String sql = "SELECT ImageUrl FROM Images WHERE WorkspaceId = ? AND RoomId = ? AND AmenityId = ?";
-        return jdbcTemplate.query(sql, new ImageRowMapper(), workspaceId, roomId, amenityId);
+    public List<Image> getAmenityImages(String amenityId) {
+        String sql = "SELECT ImageUrl FROM Images WHERE AmenityId = ?";
+        return jdbcTemplate.query(sql, new ImageRowMapper(), amenityId);
     }
 
     // RowMapper to map the result set to the Image object
