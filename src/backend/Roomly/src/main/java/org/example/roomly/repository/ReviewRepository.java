@@ -13,9 +13,9 @@ public class ReviewRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public int save(String id, double rating, String comment, Date reviewDate, String userId, String workspaceId) {
+    public int save(Review review) {
         String sql = "INSERT INTO review (Id, Rating, Comment, ReviewDate, UserId, WorkspaceId) VALUES (?, ?, ?, ?, ?, ?)";
-        return jdbcTemplate.update(sql, id, rating, comment, reviewDate, userId, workspaceId);
+        return jdbcTemplate.update(sql, review.getReviewId(), review.getRating(), review.getComments(), review.getReviewDate(), review.getUserId(), review.getWorkspaceId());
     }
 
     public Review find(String id) {
@@ -42,9 +42,9 @@ public class ReviewRepository {
         ));
     }
 
-    public int update(String id, double rating, String comment, Date reviewDate) {
+    public int update(Review review) {
         String sql = "UPDATE review SET Rating = ?, Comment = ?, ReviewDate = ? WHERE Id = ?";
-        return jdbcTemplate.update(sql, rating, comment, reviewDate, id);
+        return jdbcTemplate.update(sql, review.getRating(), review.getComments(), review.getReviewDate(), review.getReviewId());
     }
 
     public int delete(String id) {
