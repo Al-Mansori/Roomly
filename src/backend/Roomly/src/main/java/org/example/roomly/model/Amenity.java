@@ -8,19 +8,17 @@ public class Amenity {
     private String type;
     private String description;
     private int totalCount;
-    private int availableCount;
     private List<Image> amenityImages;
 
     // Constructors
     public Amenity() {}
 
-    public Amenity(String id, String name, String type, String description, int totalCount, int availableCount, List<Image> amenityImages) {
+    public Amenity(String id, String name, String type, String description, int totalCount, List<Image> amenityImages) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.description = description;
         this.totalCount = totalCount;
-        this.availableCount = availableCount;
         this.amenityImages = amenityImages;
     }
 
@@ -66,14 +64,6 @@ public class Amenity {
         this.totalCount = totalCount;
     }
 
-    public int getAvailableCount() {
-        return availableCount;
-    }
-
-    public void setAvailableCount(int availableCount) {
-        this.availableCount = availableCount;
-    }
-
     public List<Image> getAmenityImages() {
         return amenityImages;
     }
@@ -90,7 +80,6 @@ public class Amenity {
                 ", type='" + type + '\'' +
                 ", description='" + description + '\'' +
                 ", totalCount=" + totalCount +
-                ", availableCount=" + availableCount +
                 ", amenityImages=" + amenityImages +
                 '}';
     }

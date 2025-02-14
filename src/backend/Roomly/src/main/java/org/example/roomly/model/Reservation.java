@@ -7,17 +7,19 @@ public class Reservation {
     private Date startTime;
     private Date endTime;
     private ReservationStatus status;
+    private int amenitiesCount;
     private double totalCost;
     private Payment payment;
 
     public Reservation(){}
 
-    public Reservation(String id, Date reservationDate, Date startTime, Date endTime, ReservationStatus status, double totalCost, Payment payment) {
+    public Reservation(String id, Date reservationDate, Date startTime, Date endTime, ReservationStatus status, int amenitiesCount, double totalCost, Payment payment) {
         this.id = id;
         this.reservationDate = reservationDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.status = status;
+        this.amenitiesCount = amenitiesCount;
         this.totalCost = totalCost;
         this.payment = payment;
     }
@@ -62,6 +64,14 @@ public class Reservation {
         this.status = status;
     }
 
+    public int getAmenitiesCount() {
+        return amenitiesCount;
+    }
+
+    public void setAmenitiesCount(int amenitiesCount) {
+        this.amenitiesCount = amenitiesCount;
+    }
+
     public double getTotalCost() {
         return totalCost;
     }
@@ -86,6 +96,7 @@ public class Reservation {
                 ", startTime=" + startTime +
                 ", endTime=" + endTime +
                 ", status=" + status +
+                ", amenitiesCount=" + amenitiesCount +
                 ", totalCost=" + totalCost +
                 ", payment=" + payment +
                 '}';
