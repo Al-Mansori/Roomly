@@ -1,6 +1,7 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, unused_element, unused_import, camel_case_types
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -13,18 +14,11 @@ class HomeScreen extends StatelessWidget {
       bottomNavigationBar: _buildBottomNavBar(),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 0.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
-                height: 20,
-              ),
-              _buildAppBar(),
-              const SizedBox(height: 20),
-              _buildSlyotaionSection(),
-              const SizedBox(height: 20),
-              _buildSearchBar(),
+              _searchSection(),
               const SizedBox(height: 20),
               _buildSectionTitle('Recommended for you!'),
               _buildRecommendedWorkspaces(),
@@ -44,38 +38,80 @@ class HomeScreen extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Icon(LucideIcons.mapPin, color: Color.fromARGB(255, 0, 0, 0)),
+            Container(
+              decoration: BoxDecoration(
+                  color: const Color.fromARGB(127, 0, 0, 0),
+                  shape: BoxShape.circle),
+              width: 45,
+              height: 45,
+              child: IconButton(
+                onPressed: () {
+                  print("location got pressed");
+                },
+                icon: SvgPicture.asset(
+                  'assets/icons/location-arrow-solid.svg',
+                  width: 20, // Adjust size as needed
+                  height: 20,
+                  colorFilter: const ColorFilter.mode(
+                      Colors.white, BlendMode.srcIn), // Apply color if needed
+                ),
+              ),
+            ),
             const SizedBox(width: 8),
             const Text(
               'Dokki',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ],
         ),
-        const CircleAvatar(radius: 20, backgroundColor: Colors.grey),
+        Container(
+          decoration: BoxDecoration(
+              color: const Color.fromARGB(127, 0, 0, 0),
+              shape: BoxShape.circle),
+          width: 45,
+          height: 45,
+          child: IconButton(
+            onPressed: () {
+              print("Profile got pressed");
+            },
+            icon: SvgPicture.asset(
+              'assets/icons/user-regular (1).svg',
+              width: 20, // Adjust size as needed
+              height: 20,
+              colorFilter: const ColorFilter.mode(
+                  Colors.white, BlendMode.srcIn), // Apply color if needed
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildSlyotaionSection() {
+  Widget _buildSalutationSection() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      // mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Hello (Name)!\n",
+              "Hello (Name)!",
               style: TextStyle(
                 fontSize: 25,
+                color: Colors.white,
               ),
             ),
             Text(
               "Tell us where you want to go ",
               style: TextStyle(
                 fontSize: 20,
+                color: Colors.white,
               ),
             ),
           ],
@@ -84,19 +120,69 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  Widget _searchSection() {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(
+              'assets/images/360-workspace-kita-e2-open-office (1).jpg'),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(
+              const Color.fromARGB(127, 0, 0, 0), BlendMode.darken),
+        ),
+
+        // Ensures the image covers the entire container
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            _buildAppBar(),
+            const SizedBox(height: 20),
+            _buildSalutationSection(),
+            const SizedBox(height: 20),
+            _buildSearchBar(),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSearchBar() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: const Color.fromARGB(127, 0, 0, 0),
         borderRadius: BorderRadius.circular(25),
       ),
-      child: const Padding(
+      child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: TextField(
+          style: TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
           decoration: InputDecoration(
             hintText: 'Search Workspaces',
+            hintStyle: TextStyle(color: Color.fromARGB(127, 255, 255, 255)),
             border: InputBorder.none,
-            icon: Icon(Icons.search, color: Colors.grey),
+            icon: SvgPicture.asset(
+              'assets/icons/magnifying-glass-solid.svg',
+              width: 15,
+              height: 15,
+              colorFilter: const ColorFilter.mode(
+                  Color.fromARGB(127, 255, 255, 255),
+                  BlendMode.srcIn), // Apply color if needed
+            ),
+            // suffixIcon: Padding(
+            //   padding: EdgeInsets.all(15),
+            //   child: SvgPicture.asset(
+            //     'assets/icons/xmark-solid (1).svg',
+            //     width: 10,
+            //     height: 10,
+            //     colorFilter: const ColorFilter.mode(
+            //         Color.fromARGB(127, 255, 255, 255),
+            //         BlendMode.srcIn), // Apply color if needed
+            //   ),
+            // ),
           ),
         ),
       ),
@@ -214,3 +300,60 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
+// class SearchBar extends StatefulWidget {
+//   const SearchBar({super.key});
+
+//   @override
+//   _SearchBarState createState() => _SearchBarState();
+// }
+
+// class _SearchBarState extends State<SearchBar> {
+//   final TextEditingController _controller = TextEditingController();
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       decoration: BoxDecoration(
+//         color: Colors.black.withOpacity(0.3), // Semi-transparent background
+//         borderRadius: BorderRadius.circular(25),
+//       ),
+//       child: TextField(
+//         controller: _controller,
+//         style: const TextStyle(color: Colors.white), // Text color
+//         decoration: InputDecoration(
+//           hintText: 'Search Workspaces',
+//           hintStyle: const TextStyle(color: Colors.white70), // Hint text color
+
+//           // 🔍 Search icon (prefix)
+//           prefixIcon: Padding(
+//             padding: const EdgeInsets.all(12),
+//             child: SvgPicture.asset(
+//               'assets/icons/search.svg',
+//               width: 20,
+//               height: 20,
+//               colorFilter:
+//                   const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+//             ),
+//           ),
+
+//           // ❌ Clear icon (suffix)
+//           suffixIcon: _controller.text.isNotEmpty
+//               ? IconButton(
+//                   icon: const Icon(Icons.clear, color: Colors.white),
+//                   onPressed: () {
+//                     _controller.clear(); // Clear text when pressed
+//                     setState(() {}); // Refresh UI
+//                   },
+//                 )
+//               : null,
+
+//           border: InputBorder.none, // Remove default border
+//         ),
+//         onChanged: (text) {
+//           setState(() {}); // Update UI to show/hide the clear icon
+//         },
+//       ),
+//     );
+//   }
+// }
