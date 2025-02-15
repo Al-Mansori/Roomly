@@ -22,9 +22,6 @@ class RoomlyApp extends StatelessWidget {
       ),
       child: MaterialApp.router(
         title: 'Roomly',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
         debugShowCheckedModeBanner: false,
         routerConfig: appRouter,
       ),
