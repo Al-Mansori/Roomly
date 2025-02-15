@@ -30,6 +30,8 @@ public class UserService {
     private final Map<Integer, User> pendingUsers = new HashMap<Integer, User>(); // Temp storage for unverified users
     private final Random random = new Random();
 
+    private final Map<String, User> profileUsers = new HashMap<String, User>();
+
 
     public String registerUser(String firstName, String lastName, String email, String password, String confirmPassword, String phone, boolean isStaff) {
         System.out.println("Registering user from User Service ...");
@@ -52,12 +54,6 @@ public class UserService {
             return "Passwords do not match.";
         }
 
-        // Validate phone number
-        if (!authenticationService.validatePhoneNumber(phone)) {
-            System.out.println("Invalid Egyptian phone number.");
-            return "Invalid Egyptian phone number.";
-        }
-
         // Generate verification token
         String id = UUID.randomUUID().toString();
 
@@ -75,6 +71,12 @@ public class UserService {
             System.out.println("Customer user created.");
         }
 
+        // print user data
+        System.out.println("User Data: " + user.toString());
+
+        // Store user temporarily for complete profile data
+        profileUsers.put(id, user);
+
         // Store user temporarily
         pendingUsers.put(otp, user);
         System.out.println("User stored temporarily.");
@@ -84,7 +86,7 @@ public class UserService {
         authenticationService.sendVerificationEmail(email, otp);
 
         System.out.println("OTP sent to your email. Please verify to complete registration.");
-        return "OTP sent to your email. Please verify to complete registration.";
+        return user.getUserId();
     }
 
     public String verifyUser(int otp) {
@@ -106,6 +108,31 @@ public class UserService {
 
         System.out.println("Account verified successfully! You can now log in.");
         return "Account verified successfully! You can now log in.";
+    }
+
+    public String completeUserProfile(String id, String firstName, String lastName, String phone, String Address) {
+        if (!profileUsers.containsKey(id)) {
+            System.out.println("User not found.");
+            return "User not found.";
+        }
+
+        // Validate phone number
+        if (!authenticationService.validatePhoneNumber(phone)) {
+            System.out.println("Invalid Egyptian phone number.");
+            return "Invalid Egyptian phone number.";
+        }
+
+        Customer user = (Customer) profileUsers.get(id);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPhone(phone);
+        user.setAddress(Address);
+
+        // update user in the repository
+        customerRepository.update(user);
+
+        System.out.println("User profile completed successfully!");
+        return "User profile completed successfully!";
     }
 
     public User logIn(String email , String password, boolean isStaff){

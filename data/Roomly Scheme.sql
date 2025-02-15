@@ -7,9 +7,9 @@ USE Roomly;
 -- Create all tables without foreign keys
 CREATE TABLE User (
     Id VARCHAR(50) PRIMARY KEY,
-    FName VARCHAR(255) NOT NULL,
-    LName VARCHAR(255) NOT NULL,
-    Email VARCHAR(255) NOT NULL UNIQUE,
+    FName VARCHAR(255),
+    LName VARCHAR(255),
+    Email VARCHAR(255) UNIQUE,
     Password VARCHAR(255) NOT NULL,
     Phone VARCHAR(15),
     Address varchar(100)
