@@ -68,3 +68,21 @@ windows/build/
 firebase_app_id_file.json
 google-services.json
 ios/Runner/GoogleService-Info.plist
+
+
+# Ignore Gradle caches and build files
+android/.gradle/
+android/app/.cxx/
+android/app/build/
+
+# Ignore CMake and Ninja build files
+android/app/**/*.cmake
+android/app/**/*.ninja
+android/app/**/*.json
+android/app/**/*.bin
+android/app/**/*.txt
+android/app/**/*.o
+android/app/**/*.cache
+
+# Ignore hash key
+android/app/.cxx/Debug/**/hash_key.txt
