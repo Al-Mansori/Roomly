@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:roomly/core/router/app_router.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const RoomlyApp());
 }
 
@@ -10,13 +13,21 @@ class RoomlyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Roomly',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.black, // Change to any color you want
+        statusBarIconBrightness: Brightness.light, // White icons
+        systemNavigationBarColor: Colors.black, // Bottom bar color
+        systemNavigationBarIconBrightness: Brightness.light,
       ),
-      debugShowCheckedModeBanner: false,
-      routerConfig: appRouter, // Using GoRouter for navigation
+      child: MaterialApp.router(
+        title: 'Roomly',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        debugShowCheckedModeBanner: false,
+        routerConfig: appRouter,
+      ),
     );
   }
 }
