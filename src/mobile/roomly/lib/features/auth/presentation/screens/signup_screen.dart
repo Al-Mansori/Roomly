@@ -18,6 +18,7 @@ class SignupScreen extends StatelessWidget {
               onPressed: () => context.go('/'),
               child: const Text("Back to Home"),
             ),
+
           ],
         ),
       ),

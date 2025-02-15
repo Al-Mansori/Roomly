@@ -6,8 +6,10 @@ import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
 
 final GoRouter appRouter = GoRouter(
+  initialLocation: '/login',
+
   routes: [
-    GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+    //GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     GoRoute(path: '/signup', builder: (context, state) => const SignupScreen()),
     GoRoute(
