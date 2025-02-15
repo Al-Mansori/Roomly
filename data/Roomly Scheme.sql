@@ -72,7 +72,7 @@ CREATE TABLE Room (
     Type VARCHAR(255),
     Description TEXT,
     Capacity INT,
-    AvilableCount INT,
+    AvailableCount INT,
     PricePerHour DOUBLE,
     RoomStatus VARCHAR(50),
     WorkspaceId VARCHAR(50)
