@@ -15,12 +15,14 @@ class RoomlyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
+
         statusBarColor: Colors.black, // Change to any color you want
         statusBarIconBrightness: Brightness.light, // White icons
         systemNavigationBarColor: Colors.black, // Bottom bar color
         systemNavigationBarIconBrightness: Brightness.light,
       ),
       child: MaterialApp.router(
+
         title: 'Roomly',
         debugShowCheckedModeBanner: false,
         routerConfig: appRouter,

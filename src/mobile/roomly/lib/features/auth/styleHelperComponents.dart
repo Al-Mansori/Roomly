@@ -5,3 +5,4 @@ const BoxShadow kCustomShadow = BoxShadow(
   offset: Offset(2, 4),
   blurRadius: 4,
 );
+
