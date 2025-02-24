@@ -1,6 +1,8 @@
 package org.example.roomly.model;
 
+import org.springframework.stereotype.Component;
 
+@Component
 public class Preference {
     private String budgetPreference;
     private String workspaceTypePreference;

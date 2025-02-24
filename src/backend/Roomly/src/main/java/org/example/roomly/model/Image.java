@@ -1,7 +1,9 @@
 package org.example.roomly.model;
 
-import java.util.Date;
+import org.springframework.stereotype.Component;
 
+import java.util.Date;
+@Component
 public class Image {
     private String imageUrl; // Change type to String to match SQL schema
 

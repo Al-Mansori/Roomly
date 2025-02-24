@@ -1,8 +1,11 @@
 package org.example.roomly.model;
 
 
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 
+@Component
 public class SearchCriteria {
     private String location;
     private double minPrice;

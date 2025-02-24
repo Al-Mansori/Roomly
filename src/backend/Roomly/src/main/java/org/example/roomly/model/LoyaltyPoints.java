@@ -1,7 +1,10 @@
 package org.example.roomly.model;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Date;
 
+@Component
 public class LoyaltyPoints {
     private int totalPoints;
     private int lastAddedPoint;

@@ -1,6 +1,8 @@
 package org.example.roomly.model;
 
+import org.springframework.stereotype.Component;
 
+@Component
 public class Customer extends User {
     private String address;
 
