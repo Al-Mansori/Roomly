@@ -1,6 +1,5 @@
 package org.example.roomly.service;
 
-import org.example.roomly.model.User;
 import org.example.roomly.repository.CustomerRepository;
 import org.example.roomly.repository.WorkspaceStaffRepository;
 import org.springframework.beans.factory.annotation.Autowired;
