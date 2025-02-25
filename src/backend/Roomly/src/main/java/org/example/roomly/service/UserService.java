@@ -86,7 +86,7 @@ public class UserService {
         authenticationService.sendVerificationEmail(email, otp);
 
         System.out.println("OTP sent to your email. Please verify to complete registration.");
-        return user.getUserId();
+        return user.getId();
     }
 
     public String verifyUser(int otp) {
