@@ -1,7 +1,10 @@
 package org.example.roomly.model;
+import org.springframework.stereotype.Component;
+
 import java.util.Date;
 import java.util.List;
 
+@Component
 public class Workspace {
     private String id;
     private String name;

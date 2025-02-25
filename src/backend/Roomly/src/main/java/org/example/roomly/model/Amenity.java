@@ -1,7 +1,10 @@
 package org.example.roomly.model;
 
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 
+@Component
 public class Amenity {
     private String id;
     private String name;
@@ -11,6 +14,7 @@ public class Amenity {
     private List<Image> amenityImages;
 
     // Constructors
+
     public Amenity() {}
 
     public Amenity(String id, String name, String type, String description, int totalCount, List<Image> amenityImages) {

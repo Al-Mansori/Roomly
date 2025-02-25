@@ -2,7 +2,9 @@ package org.example.roomly.model;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RegistrationRequest {
     private String firstName;
     private String lastName;

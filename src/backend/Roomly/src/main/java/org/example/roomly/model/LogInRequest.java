@@ -1,7 +1,9 @@
 package org.example.roomly.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.stereotype.Component;
 
+@Component
 public class LogInRequest {
     private String email;
     private String password;
