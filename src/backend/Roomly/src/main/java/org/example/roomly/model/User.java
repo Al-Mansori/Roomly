@@ -1,9 +1,12 @@
 package org.example.roomly.model;
 
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 
+@Component
 public abstract class User {
-    private String userId;
+    private String Id;
     private String firstName;
     private String lastName;
     private String email;
@@ -13,8 +16,8 @@ public abstract class User {
 
     public User() {}
 
-    public User(String userId, String firstName, String lastName, String email, String password, String phone) {
-        this.userId = userId;
+    public User(String Id, String firstName, String lastName, String email, String password, String phone) {
+        this.Id = Id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -22,12 +25,12 @@ public abstract class User {
         this.phone = phone;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getId() {
+        return Id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setId(String Id) {
+        this.Id = Id;
     }
 
     public String getFirstName() {
@@ -73,7 +76,7 @@ public abstract class User {
     @Override
     public String toString() {
         return "User{" +
-                "userId='" + userId + '\'' +
+                "id='" + Id + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +

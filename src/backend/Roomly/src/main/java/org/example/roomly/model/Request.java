@@ -1,7 +1,10 @@
 package org.example.roomly.model;
 
+import org.springframework.stereotype.Component;
+
 import java.util.Date;
 
+@Component
 public class Request {
     private String requestId;
     private String requestType;

@@ -1,7 +1,10 @@
 package org.example.roomly.model;
 
+import org.springframework.stereotype.Component;
+
 import java.sql.Date;
 
+@Component
 public class Review {
     private String id;
 

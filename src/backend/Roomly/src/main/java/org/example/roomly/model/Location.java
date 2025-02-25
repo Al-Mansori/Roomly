@@ -1,5 +1,8 @@
 package org.example.roomly.model;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class Location {
     private Long id;
     private String city;
