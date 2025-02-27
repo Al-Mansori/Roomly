@@ -6,8 +6,8 @@ import java.util.Date;
 
 @Component
 public class Request {
-    private String requestId;
-    private String requestType;
+    private String id;
+    private String type;
     private Date requestDate;
     private Date responseDate;
     private String details;
@@ -17,9 +17,9 @@ public class Request {
     public Request() {
     }
 
-    public Request(String requestId, String requestType, Date requestDate, Date responseDate, String details, RequestStatus status, String requestResponse) {
-        this.requestId = requestId;
-        this.requestType = requestType;
+    public Request(String id, String type, Date requestDate, Date responseDate, String details, RequestStatus status, String requestResponse) {
+        this.id = id;
+        this.type = type;
         this.requestDate = requestDate;
         this.responseDate = responseDate;
         this.details = details;
@@ -27,20 +27,20 @@ public class Request {
         this.requestResponse = requestResponse;
     }
 
-    public String getRequestId() {
-        return requestId;
+    public String getId() {
+        return id;
     }
 
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public String getRequestType() {
-        return requestType;
+    public String getType() {
+        return type;
     }
 
-    public void setRequestType(String requestType) {
-        this.requestType = requestType;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public Date getRequestDate() {
@@ -87,8 +87,8 @@ public class Request {
     @Override
     public String toString() {
         return "Request{" +
-                "requestId='" + requestId + '\'' +
-                ", requestType='" + requestType + '\'' +
+                "requestId='" + id + '\'' +
+                ", requestType='" + type + '\'' +
                 ", requestDate=" + requestDate +
                 ", responseDate=" + responseDate +
                 ", details='" + details + '\'' +

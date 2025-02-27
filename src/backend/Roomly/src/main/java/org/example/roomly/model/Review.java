@@ -14,16 +14,10 @@ public class Review {
 
     private Date reviewDate;
 
-    private String userId;
-
-    private String workspaceId;
-
     // constructors
     public Review(){}
-    public Review(String reviewId, String userId, String workspaceId, double rating, String comment, Date reviewDate) {
-        this.id = reviewId;
-        this.userId = userId;
-        this.workspaceId = workspaceId;
+    public Review(String id, double rating, String comment, Date reviewDate) {
+        this.id = id;
         this.rating = rating;
         this.comment = comment;
         this.reviewDate = reviewDate;
@@ -32,16 +26,8 @@ public class Review {
     //setters
 
 
-    public void setReviewId(String reviewId) {
-        this.id = reviewId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setWorkspaceId(String workspaceId) {
-        this.workspaceId = workspaceId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setRating(double rating) {
@@ -59,16 +45,8 @@ public class Review {
     //getters
 
 
-    public String getReviewId() {
+    public String getId() {
         return id;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public String getWorkspaceId() {
-        return workspaceId;
     }
 
     public double getRating() {
@@ -91,8 +69,6 @@ public class Review {
                 ", rating=" + rating +
                 ", comment='" + comment + '\'' +
                 ", reviewDate=" + reviewDate +
-                ", userId='" + userId + '\'' +
-                ", workspaceId='" + workspaceId + '\'' +
                 '}';
     }
 }
