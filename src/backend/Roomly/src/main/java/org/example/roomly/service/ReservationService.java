@@ -57,8 +57,8 @@ public class ReservationService {
         return reservationRepository.findAll();
     }
 
-    public void addBooking(String userId, String reservationId, String workspaceId, String roomId){
-        reservationRepository.addBooking(userId, reservationId, workspaceId, roomId);
+    public void saveBooking(String userId, String reservationId, String workspaceId, String roomId){
+        reservationRepository.saveBooking(userId, reservationId, workspaceId, roomId);
     }
     public void deleteBooking(String userId, String reservationId){
         reservationRepository.deleteBooking(userId, reservationId);
