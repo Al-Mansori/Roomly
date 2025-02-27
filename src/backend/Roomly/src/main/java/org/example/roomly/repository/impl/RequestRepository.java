@@ -26,7 +26,7 @@ public class RequestRepository implements org.example.roomly.repository.RequestR
     @Override
     public void save(Request request) {
         String sql = "INSERT INTO Request (Id, RequestType, RequestDate, ResponseDate, Details, Status, RequestResponse) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, request.getRequestId(), request.getRequestType(),
+        jdbcTemplate.update(sql, request.getId(), request.getType(),
                 new Timestamp(request.getRequestDate().getTime()),
                 request.getResponseDate() != null ? new Timestamp(request.getResponseDate().getTime()) : null,
                 request.getDetails(), request.getStatus().toString(), request.getRequestResponse());
@@ -44,10 +44,10 @@ public class RequestRepository implements org.example.roomly.repository.RequestR
     @Override
     public void update(Request request) {
         String sql = "UPDATE Request SET RequestType = ?, RequestDate = ?, ResponseDate = ?, Details = ?, Status = ?, RequestResponse = ? WHERE Id = ?";
-        jdbcTemplate.update(sql, request.getRequestType(),
+        jdbcTemplate.update(sql, request.getType(),
                 new Timestamp(request.getRequestDate().getTime()),
                 request.getResponseDate() != null ? new Timestamp(request.getResponseDate().getTime()) : null,
-                request.getDetails(), request.getStatus().toString(), request.getRequestResponse(), request.getRequestId());
+                request.getDetails(), request.getStatus().toString(), request.getRequestResponse(), request.getId());
     }
 
     // 4. Delete a request
@@ -64,12 +64,24 @@ public class RequestRepository implements org.example.roomly.repository.RequestR
         return jdbcTemplate.query(sql, new RequestRowMapper());
     }
 
+    @Override
+    public void saveUserRequesting(String userId, String requestId, String staffId) {
+        String sql = "INSERT INTO UserRequesting (UserId, RequestId, StaffId) VALUES (?, ?, ?)";
+        jdbcTemplate.update(sql, userId, requestId, staffId);
+    }
+
+    @Override
+    public void deleteUserRequesting(String requestId) {
+        String sql = "DELETE FROM UserRequesting WHERE RequestId = ?";
+        jdbcTemplate.update(sql, requestId);
+    }
+
     private static class RequestRowMapper implements RowMapper<Request> {
         @Override
         public Request mapRow(ResultSet rs, int rowNum) throws SQLException {
             Request request = new Request();
-            request.setRequestId(rs.getString("RequestId"));
-            request.setRequestType(rs.getString("RequestType"));
+            request.setId(rs.getString("RequestId"));
+            request.setType(rs.getString("RequestType"));
             request.setRequestDate(rs.getDate("RequestDate"));
             request.setResponseDate(rs.getDate("ResponseDate"));
             request.setDetails(rs.getString("Details"));

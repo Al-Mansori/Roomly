@@ -52,7 +52,7 @@ public class ReservationRepository implements org.example.roomly.repository.Rese
     }
 
     @Override
-    public void addBooking(String userId, String reservationId, String workspaceId, String roomId) {
+    public void saveBooking(String userId, String reservationId, String workspaceId, String roomId) {
         String sql = "INSERT INTO Booking (UserId, ReservationId, WorkspaceId, RoomId) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, userId, reservationId, workspaceId, roomId);
     }
