@@ -28,10 +28,16 @@ public class CustomerController {
     private AmenityService amenityService;
 
     @Autowired
-    ReservationService reservationService;
+    private ReservationService reservationService;
 
     @Autowired
-    PaymentService paymentService;
+    private PaymentService paymentService;
+
+    @Autowired
+    private ReviewService reviewService;
+
+    @Autowired
+    private RequestService requestService;
 
     @GetMapping("/images/workspace")
     public List<Image> getWorkspaceImages(@RequestParam String workspaceId) {
@@ -122,7 +128,7 @@ public class CustomerController {
             // Save payment and reservation
             reservationService.saveReservation(reservation);
             paymentService.savePayment(payment, reservation.getId());
-            reservationService.addBooking(userId, reservation.getId(), workspaceId, roomId);
+            reservationService.saveBooking(userId, reservation.getId(), workspaceId, roomId);
 
             return "Successful reservation";
 
@@ -130,5 +136,61 @@ public class CustomerController {
             e.printStackTrace();
             throw new RuntimeException("Failed to process reservation: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/review")
+    public String addReview(@RequestBody double rating, @RequestParam String comment, @RequestParam String userId, @RequestParam String workspaceId) {
+        Review review = reviewService.createReview(rating, comment);
+        reviewService.saveReview(review, userId, workspaceId);
+        return ("Review added successfully");
+    }
+
+    @GetMapping("/review")
+    public Review getReview(@RequestParam String id) {
+        return reviewService.getReviewById(id);
+    }
+
+    @GetMapping("/review")
+    public List<Review> getAllReviews() {
+        return reviewService.getAllReviews();
+    }
+
+    @PutMapping("/review")
+    public String updateReview(@RequestBody Review review) {
+        reviewService.updateReview(review);
+        return "Review updated successfully";
+    }
+
+    @DeleteMapping("/review")
+    public String deleteReview(@RequestParam String id) {
+        reviewService.deleteReview(id);
+        return "Review deleted successfully";
+    }
+
+    @GetMapping("/request")
+    public Request updateRequest(@RequestParam String requestId) {
+        return requestService.findRequestById(requestId);
+    }
+
+    @PostMapping("/request")
+    public String sendRequest(@RequestParam String type, @RequestParam String details, @RequestParam String userId, @RequestParam String staffId) {
+        Request request = requestService.createRequest(type, details);
+        requestService.saveRequest(request);
+        requestService.saveUserRequesting(userId,request.getId(),staffId);
+        return "Send Successfully";
+    }
+
+    @PutMapping("/request")
+    public String updateRequest(@RequestBody Request updatedRequest) {
+        requestService.updateRequest(updatedRequest);
+        return "Updated Successfully";
+    }
+
+    @DeleteMapping("/request")
+    public String cancelRequest(@RequestParam String requestId) {
+        Request request = requestService.findRequestById(requestId);
+        request.setStatus(RequestStatus.CANCELLED);
+        requestService.updateRequest(request);
+        return "Canceled Successfully";
     }
 }
