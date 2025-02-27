@@ -3,12 +3,14 @@ package org.example.roomly.repository.impl;
 import org.example.roomly.model.Review;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+@Repository
 public class ReviewRepository implements org.example.roomly.repository.ReviewRepository {
     private final JdbcTemplate jdbcTemplate;
 
@@ -17,9 +19,9 @@ public class ReviewRepository implements org.example.roomly.repository.ReviewRep
     }
 
     @Override
-    public int save(Review review) {
+    public int save(Review review, String userId, String workspaceId) {
         String sql = "INSERT INTO review (Id, Rating, Comment, ReviewDate, UserId, WorkspaceId) VALUES (?, ?, ?, ?, ?, ?)";
-        return jdbcTemplate.update(sql, review.getReviewId(), review.getRating(), review.getComments(), review.getReviewDate(), review.getUserId(), review.getWorkspaceId());
+        return jdbcTemplate.update(sql, review.getId(), review.getRating(), review.getComments(), review.getReviewDate(), userId, workspaceId);
     }
 
     @Override
@@ -37,7 +39,7 @@ public class ReviewRepository implements org.example.roomly.repository.ReviewRep
     @Override
     public int update(Review review) {
         String sql = "UPDATE review SET Rating = ?, Comment = ?, ReviewDate = ? WHERE Id = ?";
-        return jdbcTemplate.update(sql, review.getRating(), review.getComments(), review.getReviewDate(), review.getReviewId());
+        return jdbcTemplate.update(sql, review.getRating(), review.getComments(), review.getReviewDate(), review.getId());
     }
 
     @Override
@@ -50,9 +52,7 @@ public class ReviewRepository implements org.example.roomly.repository.ReviewRep
         @Override
         public Review mapRow(ResultSet rs, int rowNum) throws SQLException {
             Review review = new Review();
-            review.setReviewId(rs.getString("Id"));
-            review.setUserId(rs.getString("UserId"));
-            review.setWorkspaceId(rs.getString("WorkspaceId"));
+            review.setId(rs.getString("Id"));
             review.setRating(rs.getDouble("Rating"));
             review.setComments(rs.getString("Comment"));
             review.setReviewDate(rs.getDate("ReviewDate"));
