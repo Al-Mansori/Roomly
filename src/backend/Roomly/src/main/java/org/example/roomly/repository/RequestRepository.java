@@ -9,4 +9,6 @@ public interface RequestRepository {
     List<Request> findAll();
     void update(Request request);
     void deleteById(String id);
+    void saveUserRequesting(String userId, String requestId, String staffId);
+    void deleteUserRequesting(String requestId);
 }

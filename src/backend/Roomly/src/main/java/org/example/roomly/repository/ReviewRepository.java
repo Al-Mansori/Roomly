@@ -4,7 +4,7 @@ import org.example.roomly.model.Review;
 import java.util.List;
 
 public interface ReviewRepository {
-    int save(Review review);
+    int save(Review review, String userId, String workspaceId);
     Review find(String id);
     List<Review> findAll();
     int update(Review review);
