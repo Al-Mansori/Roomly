@@ -9,6 +9,6 @@ public interface ReservationRepository {
     List<Reservation> findAll();
     int update(Reservation reservation);
     int delete(String id);
-    void addBooking(String userId, String reservationId, String workspaceId, String roomId);
+    void saveBooking(String userId, String reservationId, String workspaceId, String roomId);
     void deleteBooking(String userId, String reservationId);
 }
