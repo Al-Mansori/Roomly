@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
@@ -62,6 +62,18 @@ public class ReservationRepository implements org.example.roomly.repository.Rese
     public void deleteBooking(String userId, String reservationId) {
         String sql = "DELETE FROM Booking WHERE UserId = ? AND ReservationId = ?";
         jdbcTemplate.update(sql, userId, reservationId);
+    }
+
+    @Override
+    public int CancelReservation(double fees, Timestamp cancellationDate, String userId, String reservationId) {
+        String sql = "INSERT INTO Cancellation (Fees, CancellationDate, UserId, ReservationId) VALUES (?, ?, ?, ?)";
+        return jdbcTemplate.update(sql, fees, cancellationDate, userId, reservationId);
+    }
+
+    @Override
+    public int deleteCancellation(String reservationId) {
+        String sql = "DELETE FROM Cancellation WHERE ReservationId = ?";
+        return jdbcTemplate.update(sql, reservationId);
     }
 
     private static class ReservationRowMapper implements RowMapper<Reservation> {
