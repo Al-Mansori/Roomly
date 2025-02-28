@@ -5,7 +5,9 @@ import org.example.roomly.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -88,24 +90,18 @@ public class CustomerController {
     }
 
     @PostMapping("/reserve")
-    public String createReservation(@RequestBody Map<String, Object> reservationData) {
-        System.out.println("Received reservation: " + reservationData);
+    public String createReservation(@RequestParam String paymentMethod, @RequestParam int amenitiesCount, @RequestParam String startTime, @RequestParam String endTime,
+    @RequestParam String userId, @RequestParam String workspaceId, @RequestParam String roomId) {
 
         try {
-            // Extract data
-            String userId = (String) reservationData.get("userId");
-            String workspaceId = (String) reservationData.get("workspaceId");
-            String roomId = (String) reservationData.get("roomId");
-            String paymentMethod = (String) reservationData.get("paymentMethod");
-            int amenitiesCount = (Integer) reservationData.get("amenitiesCount");
 
             // Parse dates
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            Date startTime = dateFormat.parse((String) reservationData.get("startTime"));
-            Date endTime = dateFormat.parse((String) reservationData.get("endTime"));
+            Date start = dateFormat.parse(startTime);
+            Date end = dateFormat.parse(endTime);
 
             // Calculate the difference in milliseconds
-            long diffInMillis = endTime.getTime() - startTime.getTime();
+            long diffInMillis = end.getTime() - start.getTime();
 
             // Convert milliseconds to hours
             long reservedHours = TimeUnit.MILLISECONDS.toHours(diffInMillis);
@@ -121,7 +117,7 @@ public class CustomerController {
 
             // Create payment and reservation
             Payment payment = paymentService.createPayment(paymentMethod, totalCost, PaymentStatus.CONFIRMED);
-            Reservation reservation = reservationService.createReservation(startTime, endTime, totalCost, ReservationStatus.CONFIRMED, amenitiesCount, payment);
+            Reservation reservation = reservationService.createReservation(start, end, totalCost, ReservationStatus.CONFIRMED, amenitiesCount, payment);
 
             roomService.updateRoom(room);
 
@@ -136,6 +132,17 @@ public class CustomerController {
             e.printStackTrace();
             throw new RuntimeException("Failed to process reservation: " + e.getMessage());
         }
+    }
+
+    @PutMapping("/CancelReservation")
+    public String cancelReservation(String reservationId, String userId){
+        Reservation reservation = reservationService.getReservation(reservationId);
+        reservation.setStatus(ReservationStatus.CANCELLED);
+        reservationService.updateReservation(reservation);
+        Timestamp cancellationDate = Timestamp.valueOf(LocalDateTime.now());
+        double fees = 999.999 ;
+        reservationService.CancelReservation(fees, cancellationDate, userId, reservationId);
+        return "Canceled Successfully";
     }
 
     @PostMapping("/review")
