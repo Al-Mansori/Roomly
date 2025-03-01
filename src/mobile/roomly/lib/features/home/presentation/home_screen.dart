@@ -2,9 +2,12 @@
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../GlobalWidgets/navBar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,6 +17,33 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final ScrollController _scrollController = ScrollController();
+  bool _isNavVisible = true;
+  bool _isScrollingDown = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+      if (!_isScrollingDown) {
+        setState(() {
+          _isScrollingDown = true;
+          _isNavVisible = false;
+        });
+      }
+    } else if (_scrollController.position.userScrollDirection == ScrollDirection.forward ||
+        _scrollController.position.atEdge) {
+      setState(() {
+        _isScrollingDown = false;
+        _isNavVisible = true;
+      });
+    }
+  }
+
   int _selectedIndex = 0;
 
   final List<String> _routes = ['/', '/rooms', '/room/1', '/signup', '/login'];
@@ -45,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // Main content with scrolling
             SafeArea(
               child: SingleChildScrollView(
+                controller: _scrollController,
                 padding: const EdgeInsets.symmetric(horizontal: 0.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,11 +94,17 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             // Custom Bottom Navigation Bar
-            Positioned(
-              bottom: 20,
+            AnimatedPositioned(
+              duration: Duration(milliseconds: 300),
+              curve: Curves.easeOut,
+              bottom: MediaQuery.of(context).viewInsets.bottom > 0 ? -100 : (_isNavVisible ? 20 : -80),
               left: 20,
               right: 20,
-              child: _buildBottomNavBar(),
+              child: AnimatedOpacity(
+                duration: Duration(milliseconds: 300),
+                opacity: _isNavVisible && MediaQuery.of(context).viewInsets.bottom == 0 ? 1.0 : 0.0,
+                child: BottomNavBar(),
+              ),
             ),
           ],
         ),

@@ -1,24 +1,38 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-Widget _buildBottomNavBar() {
-  return Container(
-    padding: const EdgeInsets.symmetric(vertical: 10),
-    decoration: const BoxDecoration(
-      color: Colors.black,
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
-    child: BottomNavigationBar(
-      backgroundColor: Colors.black,
-      selectedItemColor: Colors.white,
-      unselectedItemColor: Colors.grey,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-        BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
-        BottomNavigationBarItem(icon: Icon(Icons.book), label: "Booking"),
-        BottomNavigationBarItem(icon: Icon(Icons.favorite), label: "Favorit"),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: "Account"),
-      ],
-    ),
-  );
+class BottomNavBar extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 68,
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.75),
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [BoxShadow(color: Colors.black38, blurRadius: 4, offset: Offset(2, 4))],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _navItem("Home", true),
+          _navItem("Search", false),
+          _navItem("Booking", false),
+          _navItem("Favorit", false),
+          _navItem("Account", false),
+        ],
+      ),
+    );
+  }
+
+  Widget _navItem(String title, bool isActive) {
+    return Text(
+      title,
+      style: TextStyle(
+        color: isActive ? Colors.white : Colors.white.withOpacity(0.5),
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        shadows: [Shadow(offset: Offset(2, 4), blurRadius: 4, color: Colors.black.withOpacity(0.25))],
+      ),
+    );
+  }
 }
