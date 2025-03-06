@@ -10,7 +10,7 @@ import '../../features/room_management/presentation/Booking_2nd_Screen.dart';
 import '../../features/room_management/presentation/Booking_Screen.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/date',
+  initialLocation: '/home',
 
   routes: [
     GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
