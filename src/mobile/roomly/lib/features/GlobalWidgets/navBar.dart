@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart'; // Import GoRouter
+import 'package:go_router/go_router.dart';
+
+import '../Search/CustomSearchBottom.dart';
 
 class BottomNavBar extends StatelessWidget {
   @override
@@ -32,10 +34,12 @@ class BottomNavBar extends StatelessWidget {
       bool isActive, String route) {
     return InkWell(
       onTap: () {
-        // Use GoRouter to navigate to the route
-        context.go(route);
-      },
-      child: Padding(
+        if (route == "/search") {
+          _showCustomBottomSheet(context);
+        } else {
+          context.go(route);
+        }
+      },      child: Padding(
         padding: const EdgeInsets.only(top: 15.0),
         child: Column(
           children: [
@@ -64,3 +68,15 @@ class BottomNavBar extends StatelessWidget {
     );
   }
 }
+
+void _showCustomBottomSheet(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return CustomSearchBottomSheet();
+    },
+  );
+}
+
