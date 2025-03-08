@@ -14,7 +14,7 @@ class RoomlyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
+      value: const SystemUiOverlaySt
 
         statusBarColor: Colors.black, // Change to any color you want
         statusBarIconBrightness: Brightness.light, // White icons
