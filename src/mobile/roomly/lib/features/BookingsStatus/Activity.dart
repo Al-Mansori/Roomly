@@ -1,10 +1,12 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:roomly/features/BookingsStatus/RoomsForHistory.dart';
+import 'package:roomly/features/BookingsStatus/RoomsForUpcomming.dart';
 
-import '../GlobalWidgets/navBar.dart';
-import 'RoomsForOngoing.dart';
+import '../GlobalWidgets/TabBar.dart'; // Ensure this import points to your ReusableTabBar
+import '../GlobalWidgets/navBar.dart'; // Ensure this import points to your BottomNavBar
+import 'RoomsForOngoing.dart'; // Ensure this import points to your MeetingRoomCard and rooms data
 
 class ActivityScreen extends StatefulWidget {
   const ActivityScreen({super.key});
@@ -25,16 +27,14 @@ class _ActivityScreenState extends State<ActivityScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.userScrollDirection ==
-        ScrollDirection.reverse) {
+    if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
       if (!_isScrollingDown) {
         setState(() {
           _isScrollingDown = true;
           _isNavVisible = false;
         });
       }
-    } else if (_scrollController.position.userScrollDirection ==
-        ScrollDirection.forward ||
+    } else if (_scrollController.position.userScrollDirection == ScrollDirection.forward ||
         _scrollController.position.atEdge) {
       setState(() {
         _isScrollingDown = false;
@@ -45,10 +45,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
   final List<String> tabs = ["Upcoming", "On-going", "Pending", "History"];
   int selectedTab = 1; // "On-going" selected by default
+
   Widget _getContent() {
     switch (selectedTab) {
       case 0:
-        return const Center(child: Text("Upcoming Content"));
+        return BookingList(); // Replace with your Upcoming bookings widget
       case 1:
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -58,9 +59,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
               child: Text(
                 "Now",
                 style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
                 ),
-
               ),
             ),
             const SizedBox(height: 10),
@@ -76,8 +77,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                       title: room['title'] ?? 'No Title',
                       description: room['description'] ?? 'No Description',
                       distance: room['distance'] ?? 'Unknown Distance',
-                      imageUrl: room['imageUrl'] ??
-                          'https://placehold.co/108x90',
+                      imageUrl: room['imageUrl'] ?? 'https://placehold.co/108x90',
                     ),
                   );
                 },
@@ -86,9 +86,9 @@ class _ActivityScreenState extends State<ActivityScreen> {
           ],
         );
       case 2:
-        return const Center(child: Text("Pending Content"));
+        return BookingList(); // Replace with your Pending bookings widget
       case 3:
-        return const Center(child: Text("History Content"));
+        return HistoryRoomList(); // Replace with your History bookings widget
       default:
         return const Center(child: Text("No Content"));
     }
@@ -97,58 +97,59 @@ class _ActivityScreenState extends State<ActivityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Activity", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Tabs
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: List.generate(
-                        tabs.length,
-                            (index) => GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedTab = index;
-                            });
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: selectedTab == index ? Colors.white : Colors.grey[300],
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              tabs[index],
-                              style: TextStyle(
-                                color: selectedTab == index ? Colors.black : Colors.black54,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+      appBar:  AppBar(
+    title: const Text("Activity", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+    backgroundColor: Colors.white,
+    elevation: 0,
+    ),
+    body: Stack(
+    children: [
+    Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+    // Tabs
+    Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    child: Container(
+    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+    decoration: BoxDecoration(
+    color: Colors.grey[300],
+    borderRadius: BorderRadius.circular(20),
+    ),
+    child: SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: List.generate(
+    tabs.length,
+    (index) => GestureDetector(
+    onTap: () {
+    setState(() {
+    selectedTab = index;
+    });
+    },
+    child: Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    decoration: BoxDecoration(
+    color: selectedTab == index ? Colors.white : Colors.grey[300],
+    borderRadius: BorderRadius.circular(20),
+    ),
+    child: Text(
+    tabs[index],
+    style: TextStyle(
+    color: selectedTab == index ? Colors.black : Colors.black54,
+    fontWeight: FontWeight.bold,
+    ),
+    ),
+    ),
+    ),
+    ),
+    ),
+    ),
+    ),
+    ),
               const SizedBox(height: 16),
+              // Content
               Expanded(
                 child: NotificationListener<ScrollNotification>(
                   onNotification: (ScrollNotification scrollInfo) {
@@ -166,8 +167,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
               ),
             ],
           ),
-
-          // Bottom Navigation Bar - Ensuring it is fixed to the bottom
+          // Bottom Navigation Bar
           Positioned(
             left: 0,
             right: 0,
@@ -186,6 +186,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
 }
 final List<Map<String, String>> rooms = [
   {
