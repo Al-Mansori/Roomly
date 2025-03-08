@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:roomly/features/BookingsStatus/Activity.dart';
 import 'package:roomly/features/auth/presentation/screens/OTP_Screen.dart';
 import 'package:roomly/features/home/presentation/home_screen.dart';
 import 'package:roomly/features/profile/presentation/profile_screen.dart';
@@ -19,7 +20,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(path: '/signup', builder: (context, state) => const SignupScreen()),
     GoRoute(path: '/verify', builder: (context, state) => const OtpVerifyScreen()),
     GoRoute(path: '/profile', builder: (context, state) => const ProfileScreen()),
-    GoRoute(path: '/booking', builder: (context, state) => const BookingScreen()),
+    GoRoute(path: '/booking', builder: (context, state) => ActivityScreen()),
     GoRoute(path: '/date', builder: (context, state) => SelectDataScreen()),
 
     GoRoute(
