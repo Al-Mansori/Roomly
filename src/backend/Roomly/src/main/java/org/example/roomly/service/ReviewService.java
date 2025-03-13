@@ -37,6 +37,10 @@ public class ReviewService {
         return reviewRepository.findAll();
     }
 
+    public List<Review> getWorkspaceReviews(String workspaceId){
+        return reviewRepository.findWorkspaceReviews(workspaceId);
+    }
+
     public int updateReview(Review review) {
         return reviewRepository.update(review);
     }
