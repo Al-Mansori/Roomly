@@ -157,9 +157,10 @@ public class CustomerController {
         return reviewService.getReviewById(id);
     }
 
-    @GetMapping("/review")
-    public List<Review> getAllReviews() {
-        return reviewService.getAllReviews();
+
+    @GetMapping("/WorkspaceReviews")
+    public List<Review> getWorkspaceReviews(@RequestParam String workspaceId){
+        return reviewService.getWorkspaceReviews(workspaceId);
     }
 
     @PutMapping("/review")
