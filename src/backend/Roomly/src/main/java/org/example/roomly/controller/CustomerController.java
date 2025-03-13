@@ -162,6 +162,11 @@ public class CustomerController {
         return reviewService.getAllReviews();
     }
 
+    @GetMapping("/WorkspaceReviews")
+    public List<Review> getWorkspaceReviews(@RequestParam String workspaceId){
+        return reviewService.getWorkspaceReviews(workspaceId);
+    }
+
     @PutMapping("/review")
     public String updateReview(@RequestBody Review review) {
         reviewService.updateReview(review);
