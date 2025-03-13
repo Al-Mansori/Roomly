@@ -37,6 +37,12 @@ public class ReviewRepository implements org.example.roomly.repository.ReviewRep
     }
 
     @Override
+    public List<Review> findWorkspaceReviews(String workspaceId) {
+        String sql = "SELECT * FROM review WHERE WorkspaceId = ?";
+        return jdbcTemplate.query(sql, new ReviewRowMapper(), workspaceId);
+    }
+
+    @Override
     public int update(Review review) {
         String sql = "UPDATE review SET Rating = ?, Comment = ?, ReviewDate = ? WHERE Id = ?";
         return jdbcTemplate.update(sql, review.getRating(), review.getComments(), review.getReviewDate(), review.getId());
