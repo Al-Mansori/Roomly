@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Location {
-    private Long id;
+    private String id;
     private String city;
     private String town;
     private String country;
@@ -14,7 +14,7 @@ public class Location {
     // Constructors
     public Location() {}
 
-    public Location(Long id, String city, String town, String country, double longitude, double latitude) {
+    public Location(String id, String city, String town, String country, double longitude, double latitude) {
         this.id = id;
         this.city = city;
         this.town = town;
@@ -25,11 +25,11 @@ public class Location {
 
     // Getters and Setters
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
