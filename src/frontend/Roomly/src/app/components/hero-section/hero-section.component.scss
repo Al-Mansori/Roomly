@@ -1,0 +1,17 @@
+#heroSection {
+    background: url('./../../../assets/Images/welcom section background image.jpg') no-repeat center center;
+    background-size: cover;
+    width: 100%;
+    margin-top: 62px;
+}
+
+:host {
+    display: block;
+    padding-top: var(--navbar-height, 3.5rem); /* Fallback value */
+  }
+  
+  .hero-container {
+    /* Your existing styles */
+    height: 100vh; /* Consider using min-height instead if content might overflow */
+    margin-top: 0 !important; /* Remove any existing margin */
+  }
