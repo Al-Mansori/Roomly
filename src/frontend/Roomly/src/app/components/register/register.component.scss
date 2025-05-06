@@ -1,0 +1,85 @@
+.registration-container {
+    z-index: 1060;
+
+    .registration-form {
+      backdrop-filter: blur(10px);
+      background-color: rgb(137, 137, 137, 0.3);
+      
+    }
+    
+    
+    .form-control {
+      transition: all 0.3s ease;
+      &:focus {
+        background-color: rgba(255, 255, 255, 1) !important;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        i{
+          color: #000 !important;
+        }
+      }
+    }
+  
+    .form-check {
+      display: flex;
+      align-items: center;
+      .form-check-input {
+        margin-top: 0;
+      }
+    }
+  
+
+  }
+  .form-floating {
+    position: relative;
+
+    &:focus-within {
+      label {
+        color: #000 !important;
+
+        i {
+          color: #000 !important;
+        }
+      }
+    }
+  }
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(2px);
+    z-index: 1050; /* Higher than the navbar */
+  }
+
+  
+  .or-divider {
+    position: relative;
+    text-align: center;
+    margin: 1.5rem 0;
+    height: 1rem; // Needed for absolute positioning
+    
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background-color: #dee2e6;
+      transform: translateY(-50%);
+    }
+    
+    &::after {
+      content: "OR";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 0 1rem;
+      color: #6c757d;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+  }

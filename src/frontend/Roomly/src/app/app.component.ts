@@ -7,11 +7,15 @@ import {ContactUsComponent } from "./components/contact-us/contact-us.component"
 import {AboutUsComponent } from "./components/about-us/about-us.component";
 import { FooterComponent } from "./components/footer/footer.component";
 import { SideNavbarComponent } from "./components/side-navbar/side-navbar.component";
+import { RegisterComponent } from "./components/register/register.component";
+import { LoginComponent } from "./components/login/login.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavAuthComponent, HomeComponent, HeroSectionComponent, ContactUsComponent, AboutUsComponent, FooterComponent, SideNavbarComponent],
+  imports: [RouterOutlet, NavAuthComponent, HomeComponent,
+    HeroSectionComponent, ContactUsComponent, AboutUsComponent,
+    FooterComponent, SideNavbarComponent, RegisterComponent, LoginComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
