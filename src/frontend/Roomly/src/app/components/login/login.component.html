@@ -17,50 +17,57 @@
                     <p class="text-center px-3 mt-3 mb-4">
                         Log in now to explore all the features and benefits of our platform and see what’s new.
                     </p>
-
-                    <!-- Email -->
-                    <div class="form-floating mb-3 position-relative">
-                        <input type="email"
-                            class="form-control bg-black opacity-25 border-0 rounded-4 ps-5 pe-3 text-white" id="email"
-                            placeholder="Email">
-                        <label for="email" class="position-absolute start-0 top-50 translate-middle-y ps-3 text-white">
-                            <i class="fa-solid fa-envelope me-1"></i> Email
-                        </label>
-                    </div>
-
-                    <!-- Password -->
-                    <div class="form-floating mb-3 position-relative">
-                        <input type="password"
-                            class="form-control bg-black opacity-25 border-0 rounded-4 ps-5 pe-5 text-white"
-                            id="password" placeholder="Password">
-                        <label for="password"
-                            class="position-absolute start-0 top-50 translate-middle-y ps-3 text-white">
-                            <i class="fa-solid fa-lock me-1"></i> Password
-                        </label>
-                        <i class="fa-solid fa-eye-slash position-absolute end-0 top-50 translate-middle-y pe-3 text-white"
-                            style="cursor: pointer;"></i>
-                    </div>
-
-                    <!-- Terms Checkbox -->
-                    <div class="form-check mb-4 d-flex justify-content-between">
-                        <div class="d-flex align-content-center justify-content-center">
-                            <input class="form-check-input shadow-sm me-2 d-block" type="checkbox" id="terms">
-                            <label class="form-check-label text-white small d-block" for="terms">
-                                Remember Me
-                            </label>
+                    <form class="text-white">
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control bg-black opacity-25 border-0 rounded-4  " id="email"
+                                placeholder="Email">
+                            <label for="email" class="">
+                                <i class="fa-solid fa-envelope me-1" style="color: #ffffff;"></i>
+                                Email</label>
                         </div>
 
-                        <a href="#" class=" text-white text-decoration-underline d-block"> Forget Your Password?</a>
-                    </div>
+                        <!-- Password input -->
+                        <div class="form-floating mb-3 position-relative">
+                            <input
+                              type="password"
+                              class="form-control bg-black opacity-25 border-0 rounded-4 ps-5 pe-5 text-white"
+                              id="password"
+                              placeholder="Password"
+                            />
+                          
+                            <!-- Eye icon on the right (still positioned absolutely) -->
+                            <i class="fa-solid fa-eye-slash position-absolute end-0 top-50 translate-middle-y pe-3 text-white"
+                               style="cursor: pointer;"></i>
+                          
+                            <!-- Label with icon inside (no absolute positioning) -->
+                            <label for="password" class="d-flex align-items-center gap-1 ps-3">
+                              <i class="fa-solid fa-lock"></i> Password
+                            </label>
+                          </div>
+                          
 
-                    <!-- Submit Button -->
-                    <button class="btn btn-primary w-100 my-3 rounded-4">Login</button>
+                        <!-- CHECK BOX -->
+                        <div class="form-check mb-4 d-flex justify-content-between">
+                            <div class="d-flex align-content-center justify-content-center">
+                                <input class="form-check-input shadow-sm me-2 d-block" type="checkbox" id="terms">
+                                <label class="form-check-label text-white small d-block" for="terms">
+                                    Remember Me
+                                </label>
+                            </div>
+    
+                            <a href="#" class=" text-white text-decoration-underline d-block"> Forget Your Password?</a>
+                        </div>
+    
+                        <!-- Submit Button -->
+                        <button class="btn btn-primary w-100 my-3 rounded-4">Login</button>
+    
+                        <!-- Google Sign-in -->
+                        <button type="button" class="btn btn-outline-secondary w-100 py-2 mt-0 rounded-4">
+                            <img src="./../../../assets/Images/google logo.svg" alt="Google" width="20" class="me-2">
+                            Continue with Google
+                        </button>
+                    </form>
 
-                    <!-- Google Sign-in -->
-                    <button type="button" class="btn btn-outline-secondary w-100 py-2 mt-0 rounded-4">
-                        <img src="./../../../assets/Images/google logo.svg" alt="Google" width="20" class="me-2">
-                        Continue with Google
-                    </button>
                 </div>
             </div>
 

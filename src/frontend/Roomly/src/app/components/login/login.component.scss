@@ -1,44 +1,64 @@
 .registration-container {
     z-index: 1060;
-  
+
     .registration-form {
-      backdrop-filter: blur(10px);
-      background-color: rgba(137, 137, 137, 0.3);
+        backdrop-filter: blur(10px);
+        background-color: rgba(137, 137, 137, 0.3);
     }
-  
+
     .form-control {
-      transition: all 0.3s ease;
-  
-      &:focus {
-        background-color: rgba(255, 255, 255, 1) !important;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-  
-        + label,
-        ~ i {
+        transition: all 0.3s ease;
+
+        &:focus {
+            background-color: rgba(255, 255, 255, 1) !important;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+
+            +label,
+            ~i {
+                color: #000 !important;
+            }
+        }
+    }
+}
+
+.form-floating {
+    // position: relative;
+
+    // &:focus-within {
+    //     label {
+    //         color: #000 !important;
+
+    //         i {
+    //             color: #000 !important;
+    //         }
+    //     }
+    // }
+    &:focus-within label {
+        color: #000 !important;
+    
+        i {
           color: #000 !important;
         }
       }
-    }
-  }
+}
 
-  .form-check {
+.form-check {
     display: flex;
     align-items: center;
-    .form-check-input {
-      margin-top: 0;
-    }
-  }
 
-  .modal {
+    .form-check-input {
+        margin-top: 0;
+    }
+}
+
+.modal {
     z-index: 1060; // Higher than the overlay
-  }
-  
-  .registration-container {
+}
+
+.registration-container {
     z-index: 1065;
-  }
-  
-  .bg-dark.bg-opacity-75 {
+}
+
+.bg-dark.bg-opacity-75 {
     backdrop-filter: blur(4px); // Optional blur effect for extra polish
-  }
-  
-  
+}
