@@ -6,11 +6,12 @@ import { HeroSectionComponent } from "./components/hero-section/hero-section.com
 import {ContactUsComponent } from "./components/contact-us/contact-us.component";
 import {AboutUsComponent } from "./components/about-us/about-us.component";
 import { FooterComponent } from "./components/footer/footer.component";
+import { SideNavbarComponent } from "./components/side-navbar/side-navbar.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavAuthComponent, HomeComponent, HeroSectionComponent, ContactUsComponent, AboutUsComponent, FooterComponent],
+  imports: [RouterOutlet, NavAuthComponent, HomeComponent, HeroSectionComponent, ContactUsComponent, AboutUsComponent, FooterComponent, SideNavbarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

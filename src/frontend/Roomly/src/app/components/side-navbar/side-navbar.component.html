@@ -1,0 +1,110 @@
+<div class="sidebar-container position-fixed start-0 top-0 h-100">
+    <!-- Sidebar -->
+    <div class="sidebar bg-white rounded-end-3 shadow-sm p-3 d-flex flex-column h-100" [class.sidebar-open]="isOpen"
+        [class.sidebar-closed]="!isOpen">
+
+        <!-- Close Button -->
+        <button class="btn-close align-self-end mb-2" (click)="toggleSidebar()"></button>
+
+        <!-- Title -->
+        <h3 class="text-dark fw-bold mb-4 px-2">ROOMLY</h3>
+
+        <!-- Menu Items -->
+        <!-- <ul class="nav flex-column mb-auto gap-2">
+        @for (item of menuItems; track item.id) {
+          <li class="nav-item" [class.bg-dark]="item.active" [class.rounded]="item.active">
+            <a class="d-flex align-items-center ps-2 py-2 text-decoration-none" 
+               [class.text-white]="item.active" 
+               [class.text-dark]="!item.active"
+               [routerLink]="item.link">
+              <input class="form-check-input me-2" type="checkbox" [id]="item.id" [checked]="item.active" disabled>
+              <label class="mb-0" [for]="item.id">{{item.label}}</label>
+            </a>
+          </li>
+        }
+      </ul> -->
+
+        <!-- Menu Items -->
+        <ul class="nav flex-column mb-auto gap-2">
+            <!-- Dashboard -->
+            <li class="nav-item">
+                <a class="d-flex align-items-center ps-2 py-2 text-decoration-none text-dark">
+                    <input class="form-check-input me-2" type="checkbox" id="dashboard" disabled>
+                    <i class="fas fa-tachometer-alt me-2" style="color: #0a3fb3;"></i> <!-- FA Icon -->
+                    <label class="mb-0" for="dashboard">Dashboard</label>
+                </a>
+            </li>
+
+            <!-- Workspaces -->
+            <li class="nav-item">
+                <a class="d-flex align-items-center ps-2 py-2 text-decoration-none text-dark">
+                    <input class="form-check-input me-2" type="checkbox" id="workspaces" disabled>
+                    <i class="fas fa-folder me-2" style="color: #0a3fb3;"></i> <!-- FA Icon -->
+                    <label class="mb-0" for="workspaces">My Workspaces</label>
+                </a>
+            </li>
+
+            <!-- Booking (Active) -->
+            <li class="nav-item bg-dark rounded">
+                <a class="d-flex align-items-center ps-2 py-2 text-decoration-none text-white">
+                    <input class="form-check-input me-2" type="checkbox" id="booking" checked disabled>
+                    <i class="fas fa-calendar-check me-2"style="color: #0a3fb3;" ></i> <!-- FA Icon -->
+                    <label class="mb-0" for="booking">Booking</label>
+                </a>
+            </li>
+
+            <!-- User List -->
+            <li class="nav-item">
+                <a class="d-flex align-items-center ps-2 py-2 text-decoration-none text-dark">
+                    <input class="form-check-input me-2" type="checkbox" id="userlist" disabled>
+                    <i class="fas fa-users me-2" style="color: #0a3fb3;"></i> <!-- Your blue users icon -->
+                    <label class="mb-0" for="userlist">User list</label>
+                </a>
+            </li>
+        </ul>
+        <hr class="my-3">
+
+        <!-- Bottom Items -->
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a
+                    class="d-flex align-items-center ps-2 py-2 text-decoration-none text-dark border border-light rounded">
+                    <i class="fas fa-user me-2" style="color: #0a3fb3;"></i> <!-- FA Icon -->
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li class="nav-item mt-2">
+                <a class="d-flex align-items-center ps-2 py-2 text-decoration-none text-dark">
+                    <i class="fas fa-sign-out-alt me-2" style="color: #0a3fb3;"></i> <!-- FA Icon -->
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+        <!-- Divider -->
+
+        <!-- Bottom Items -->
+        <!-- <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="d-flex align-items-center ps-2 py-2 text-decoration-none text-dark border border-light rounded"
+                    routerLink="/profile">
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li class="nav-item mt-2">
+                <a class="d-flex align-items-center ps-2 py-2 text-decoration-none text-dark" (click)="logout()">
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul> -->
+    </div>
+
+    <!-- Toggle Button - Always visible but positioned differently based on state -->
+    <button class="sidebar-toggle btn btn-primary shadow-sm rounded-end-circle" (click)="toggleSidebar()"
+        [class.toggle-open]="isOpen" [class.toggle-closed]="!isOpen">
+        @if (isOpen) {
+        <i class="bi bi-chevron-left"></i>
+        } @else {
+        <i class="bi bi-list"></i>
+        }
+    </button>
+</div>
