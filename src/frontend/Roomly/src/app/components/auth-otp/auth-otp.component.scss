@@ -1,0 +1,25 @@
+.otp-box {
+    width: 48px;
+    height: 58px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.5rem;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s ease;
+  }
+  
+  .otp-box:focus {
+    outline: none;
+    border-color: #0d6efd;
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.4);
+  }
+
+  .registration-form 
+  {
+    backdrop-filter: blur(10px);
+    background-color: rgb(137, 137, 137, 0.3);
+  }

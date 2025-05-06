@@ -1,1 +1,39 @@
-<p>auth-otp works!</p>
+<!-- Background Components -->
+<app-nav-auth></app-nav-auth>
+<app-hero-section></app-hero-section>
+
+<!-- Overlay Background -->
+<div class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75" style="z-index: 1055;"></div>
+
+<!-- Modal -->
+<div class="modal d-block" tabindex="-1" style="z-index: 1060;">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-transparent border-0">
+      <div class="registration-container w-100">
+        <div class="registration-form p-4 rounded-4 text-white text-center">
+          <h2 class="mb-3">Enter OTP</h2>
+          <p class="mb-4">We've sent a 6-digit verification code to your email.</p>
+
+          <!-- OTP Boxes -->
+          <div class="d-flex justify-content-center gap-2 mb-4">
+            <input type="text" maxlength="1" class="otp-box" />
+            <input type="text" maxlength="1" class="otp-box" />
+            <input type="text" maxlength="1" class="otp-box" />
+            <input type="text" maxlength="1" class="otp-box" />
+            <input type="text" maxlength="1" class="otp-box" />
+            <input type="text" maxlength="1" class="otp-box" />
+          </div>
+
+          <!-- Submit -->
+          <button class="btn btn-primary w-100 rounded-4">Verify</button>
+
+          <!-- Resend -->
+          <p class="mt-3 small">
+            Didn't receive the code?
+            <a href="#" class="text-white text-decoration-underline">Resend</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
