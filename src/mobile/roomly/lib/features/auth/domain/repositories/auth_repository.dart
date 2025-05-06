@@ -1,6 +1,5 @@
 import '../entities/login_request_entity.dart';
 import '../entities/registration_request_entity.dart';
-import '../entities/user_entity.dart';
 
 abstract class AuthRepository {
   Future<Map<String, dynamic>> login(LoginRequestEntity loginRequest);
