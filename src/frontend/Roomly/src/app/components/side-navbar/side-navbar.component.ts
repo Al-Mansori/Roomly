@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 interface MenuItem {
   id: string;
@@ -11,7 +11,7 @@ interface MenuItem {
 @Component({
   selector: 'app-side-navbar',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './side-navbar.component.html',
   styleUrl: './side-navbar.component.scss'
 })
