@@ -1,0 +1,95 @@
+<div class="booking bg-light">
+    <div class="container ">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-12 col-md-2 mb-3 mb-md-0">
+                <app-side-navbar></app-side-navbar>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-12 col-md-10">
+                <div class="p-3">
+                    <!-- Header -->
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+                        <div>
+                            <span class="text-secondary">Pages / </span>
+                            <span class="text-dark fw-bold">Booking</span>
+                        </div>
+                    </div>
+
+                    <!-- Filter Section -->
+                    <div class="row g-2 mb-4">
+                        <div class="col-12 col-md-4">
+                            <div class="input-group shadow-sm rounded-3">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <i class="fas fa-search text-secondary"></i>
+                                </span>
+                                <input type="text" class="form-control border-start-0"
+                                    placeholder="Search by ID, listing name">
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-2">
+                            <input type="date" class="form-control shadow-sm rounded-3">
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <button class="btn btn-white shadow-sm w-100 border">
+                                <i class="fas fa-filter me-2 text-secondary"></i>Filter
+                            </button>
+                        </div>
+                        <div class="col-6 col-md-2">
+                            <button class="btn btn-primary shadow-sm w-100">
+                                <i class="fas fa-plus me-2"></i>New Request
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Booking Tabs -->
+                    <!-- <ul class="nav nav-tabs border-0 mb-4 flex-wrap">
+                        <li class="nav-item me-3">
+                            <a class="nav-link p-0 pb-2 border-0 active text-primary">All</a>
+                        </li>
+                        <li class="nav-item me-3">
+                            <a class="nav-link p-0 pb-2 border-0">Requests</a>
+                        </li>
+                        <li class="nav-item me-3">
+                            <a class="nav-link p-0 pb-2 border-0">Upcoming</a>
+                        </li>
+                        <li class="nav-item me-3">
+                            <a class="nav-link p-0 pb-2 border-0">Ongoing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link p-0 pb-2 border-0">History</a>
+                        </li>
+                    </ul> -->
+
+                    <!-- Booking Tabs -->
+                    <ul class="nav nav-tabs border-0 mb-4 flex-wrap bg-white p-3 rounded-3">
+                        <li class="nav-item me-3">
+                            <a routerLink="all" routerLinkActive="text-primary active"
+                                class="nav-link p-0 pb-2 border-0">All</a>
+                        </li>
+                        <li class="nav-item me-3">
+                            <a routerLink="requests" routerLinkActive="text-primary active"
+                                class="nav-link p-0 pb-2 border-0">Requests</a>
+                        </li>
+                        <li class="nav-item me-3">
+                            <a routerLink="upcoming" routerLinkActive="text-primary active"
+                                class="nav-link p-0 pb-2 border-0">Upcoming</a>
+                        </li>
+                        <li class="nav-item me-3">
+                            <a routerLink="ongoing" routerLinkActive="text-primary active"
+                                class="nav-link p-0 pb-2 border-0">Ongoing</a>
+                        </li>
+                        <li class="nav-item">
+                            <a routerLink="history" routerLinkActive="text-primary active"
+                                class="nav-link p-0 pb-2 border-0">History</a>
+                        </li>
+                    </ul>
+                    <!-- Booking Cards -->
+                     <app-all-bookings></app-all-bookings> <!--will be replaced with router-outlet -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

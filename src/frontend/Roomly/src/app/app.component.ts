@@ -10,14 +10,14 @@ import { SideNavbarComponent } from "./components/side-navbar/side-navbar.compon
 import { RegisterComponent } from "./components/register/register.component";
 import { LoginComponent } from "./components/login/login.component";
 import { AuthOtpComponent } from "./components/auth-otp/auth-otp.component";
-import { BookingAllComponent } from "./components/booking-all/booking-all.component";
+import { BookingComponent } from "./components/booking/booking.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, NavAuthComponent, HomeComponent,
     HeroSectionComponent, ContactUsComponent, AboutUsComponent,
-    FooterComponent, SideNavbarComponent, RegisterComponent, LoginComponent, AuthOtpComponent, BookingAllComponent],
+    FooterComponent, SideNavbarComponent, RegisterComponent, LoginComponent, AuthOtpComponent, BookingComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
