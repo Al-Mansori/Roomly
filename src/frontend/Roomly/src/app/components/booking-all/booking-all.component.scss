@@ -1,0 +1,52 @@
+.tab-indicator {
+    position: absolute;
+    bottom: 0;
+    height: 3px;
+    width: 50px;
+    background-color: #0d6efd;
+    transition: left 0.3s ease;
+  }
+  
+  .nav-tabs {
+    .nav-link {
+      color: #6c757d;
+      border: none;
+      padding: 0.5rem 0;
+      margin-right: 1.5rem;
+      position: relative;
+      
+      &.active {
+        color: #0d6efd;
+        font-weight: 500;
+      }
+      
+      &:hover {
+        color: #0d6efd;
+      }
+    }
+  }
+  
+  .card {
+    border: none;
+    transition: transform 0.2s;
+    
+    &:hover {
+      transform: translateY(-5px);
+    }
+    
+    .card-title {
+      small {
+        font-size: 0.8rem;
+      }
+    }
+  }
+  
+  .btn {
+    &-primary {
+      box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+    }
+    
+    &-danger {
+      box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+    }
+  }
