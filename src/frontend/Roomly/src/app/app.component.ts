@@ -13,13 +13,14 @@ import { AuthOtpComponent } from "./components/auth-otp/auth-otp.component";
 import { BookingComponent } from "./components/booking/booking.component";
 import { ProfileComponent } from "./components/profile/profile.component";
 import { ChangePasswordComponent } from "./components/change-password/change-password.component";
+import { UsersListComponent } from "./components/users-list/users-list.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, NavAuthComponent, HomeComponent,
     HeroSectionComponent, ContactUsComponent, AboutUsComponent,
-    FooterComponent, SideNavbarComponent, RegisterComponent, LoginComponent, AuthOtpComponent, BookingComponent, ProfileComponent, ChangePasswordComponent],
+    FooterComponent, SideNavbarComponent, RegisterComponent, LoginComponent, AuthOtpComponent, BookingComponent, ProfileComponent, ChangePasswordComponent, UsersListComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
