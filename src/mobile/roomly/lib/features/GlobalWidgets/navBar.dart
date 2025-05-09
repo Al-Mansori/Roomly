@@ -24,7 +24,7 @@ class BottomNavBar extends StatelessWidget {
           _navItem(context, "Search", FontAwesomeIcons.search, false, "/search"),
           _navItem(context, "Booking", FontAwesomeIcons.calendar, false, "/booking"),
           _navItem(context, "Favorit", FontAwesomeIcons.heart, false, "/favorite"),
-          _navItem(context, "Account", FontAwesomeIcons.user, false, "/profile"),
+          _navItem(context, "Account", FontAwesomeIcons.user, false, "/account"),
         ],
       ),
     );
@@ -37,7 +37,7 @@ class BottomNavBar extends StatelessWidget {
         if (route == "/search") {
           _showCustomBottomSheet(context);
         } else {
-          context.go(route);
+          context.push(route);
         }
       },      child: Padding(
         padding: const EdgeInsets.only(top: 15.0),
