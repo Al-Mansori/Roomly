@@ -28,14 +28,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+    if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.reverse) {
       if (!_isScrollingDown) {
         setState(() {
           _isScrollingDown = true;
           _isNavVisible = false;
         });
       }
-    } else if (_scrollController.position.userScrollDirection == ScrollDirection.forward ||
+    } else if (_scrollController.position.userScrollDirection ==
+            ScrollDirection.forward ||
         _scrollController.position.atEdge) {
       setState(() {
         _isScrollingDown = false;
@@ -46,13 +48,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int _selectedIndex = 0;
 
-  final List<String> _routes = ['/', '/rooms', '/room/1', '/signup', '/login'];
+  final List<String> _routes = [
+    '/',
+    '/',
+    '/',
+    '/',
+    '/',
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
-    context.go(_routes[index]); // Navigate to the selected route
+    context.push(_routes[index]); // Navigate to the selected route
   }
 
   @override
@@ -97,12 +105,17 @@ class _HomeScreenState extends State<HomeScreen> {
             AnimatedPositioned(
               duration: Duration(milliseconds: 300),
               curve: Curves.easeOut,
-              bottom: MediaQuery.of(context).viewInsets.bottom > 0 ? -100 : (_isNavVisible ? 20 : -80),
+              bottom: MediaQuery.of(context).viewInsets.bottom > 0
+                  ? -100
+                  : (_isNavVisible ? 20 : -80),
               left: 20,
               right: 20,
               child: AnimatedOpacity(
                 duration: Duration(milliseconds: 300),
-                opacity: _isNavVisible && MediaQuery.of(context).viewInsets.bottom == 0 ? 1.0 : 0.0,
+                opacity: _isNavVisible &&
+                        MediaQuery.of(context).viewInsets.bottom == 0
+                    ? 1.0
+                    : 0.0,
                 child: BottomNavBar(),
               ),
             ),

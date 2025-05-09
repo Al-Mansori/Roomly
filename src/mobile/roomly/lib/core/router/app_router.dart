@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:roomly/features/BookingsStatus/Activity.dart';
+import 'package:roomly/features/account/presentation/account_screen.dart';
 import 'package:roomly/features/auth/presentation/screens/OTP_Screen.dart';
 import 'package:roomly/features/auth/presentation/screens/complete_profile_screen.dart';
 import 'package:roomly/features/home/presentation/home_screen.dart';
@@ -35,6 +36,8 @@ final GoRouter appRouter = GoRouter(
     GoRoute(path: '/profile', builder: (context, state) => const ProfileScreen()),
     GoRoute(path: '/booking', builder: (context, state) => ActivityScreen()),
     GoRoute(path: '/date', builder: (context, state) => SelectDataScreen()),
+    GoRoute(path: '/account', builder: (context, state) => AccountPage()),
+
 
     GoRoute(
         path: '/rooms', builder: (context, state) => const RoomListScreen()),
