@@ -14,13 +14,15 @@ import { BookingComponent } from "./components/booking/booking.component";
 import { ProfileComponent } from "./components/profile/profile.component";
 import { ChangePasswordComponent } from "./components/change-password/change-password.component";
 import { UsersListComponent } from "./components/users-list/users-list.component";
+import { MyWorkspacesComponent } from "./components/my-workspaces/my-workspaces.component";
+import { AddOfferComponent } from "./components/add-offer/add-offer.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, NavAuthComponent, HomeComponent,
     HeroSectionComponent, ContactUsComponent, AboutUsComponent,
-    FooterComponent, SideNavbarComponent, RegisterComponent, LoginComponent, AuthOtpComponent, BookingComponent, ProfileComponent, ChangePasswordComponent, UsersListComponent],
+    FooterComponent, SideNavbarComponent, RegisterComponent, LoginComponent, AuthOtpComponent, BookingComponent, ProfileComponent, ChangePasswordComponent, UsersListComponent, MyWorkspacesComponent, AddOfferComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
