@@ -12,6 +12,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^17.3.0",
+    "@angular/cdk": "^17.3.0",
     "@angular/common": "^17.3.0",
     "@angular/compiler": "^17.3.0",
     "@angular/core": "^17.3.0",
@@ -27,6 +28,7 @@
     "express": "^4.18.2",
     "roomly": "file:",
     "rxjs": "~7.8.0",
+    "swiper": "^8.4.7",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
   },
