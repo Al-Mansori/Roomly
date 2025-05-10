@@ -1,6 +1,8 @@
-import { SwiperOptions } from 'swiper/types';
 import { Component, signal } from '@angular/core';
 import { SideNavbarComponent } from "../side-navbar/side-navbar.component";
+import { SwiperOptions } from 'swiper';
+
+
 
 interface Room {
   id: number;
@@ -39,7 +41,7 @@ export class MyWorkspacesComponent {
       992: { slidesPerView: 2 }
     }
   };
-  
+
   workspaces = signal<Workspace[]>([
     {
       id: 1,
