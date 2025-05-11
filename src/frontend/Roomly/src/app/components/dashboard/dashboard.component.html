@@ -1,0 +1,143 @@
+<div class="dashboard bg-light">
+    <div class="container ">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-12 col-md-2 mb-3 mb-md-0">
+                <app-side-navbar></app-side-navbar>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-12 col-md-10">
+                <div class="p-3">
+                    <!-- Header -->
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+                        <div>
+                            <span class="text-secondary">Pages / </span>
+                            <span class="text-dark fw-bold">Dashboard</span>
+                        </div>
+                    </div>
+
+                    <!-- Booking Status & Workspace Peak Time -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="card shadow-sm p-3">
+                                <h6 class="text-center fw-bold">Booking Status</h6>
+                                <!-- Placeholder for pie chart -->
+                                <!-- Pie Chart -->
+                                <!-- <canvas baseChart [data]="pieChartData" [type]="pieChartType"
+                                    [options]="pieChartOptions" class="w-100"></canvas> -->
+                                <!-- Booking Status Chart -->
+                                @if (isBrowser) {
+                                <canvas baseChart [type]="pieChartType" [data]="pieChartData"
+                                    [options]="pieChartOptions" class="w-100"></canvas>
+                                }
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card shadow-sm p-3">
+                                <h6 class="text-center fw-bold">Workspace Peak Time</h6>
+                                <!-- Placeholder for bar chart -->
+                                <!-- <img src="assets/Images/peak-time-chart.png" class="img-fluid" alt="Peak Time Chart" /> -->
+                                @if (isBrowser) {
+                                <canvas baseChart [type]="barChartType" [data]="barChartData"
+                                    [options]="barChartOptions" class="w-100"></canvas>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Today's Profit & New Clients -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card shadow-sm p-3 text-center">
+                                <p class="text-muted small">Today’s Profit</p>
+                                <h5 class="fw-bold">$9K</h5>
+                                <p class="text-primary small">+55% than last week</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
+                            <div class="card shadow-sm p-3 text-center">
+                                <p class="text-muted small">Today’s New Clients</p>
+                                <h5 class="fw-bold">33</h5>
+                                <p class="text-danger small">-2% than last week</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Reserved Rooms & Reservation Over Time -->
+                    <div class="row g-3">
+                        <div class="col-lg-6">
+                            <div class="card shadow-sm p-3">
+                                <h6 class="fw-bold mb-3">Top Reserved Rooms</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-sm align-middle text-center">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Workspace</th>
+                                                <th>Room Name</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>1</td>
+                                                <td>SpaceX</td>
+                                                <td>Kellie Koss</td>
+                                                <td><span class="badge bg-info text-dark">Processing</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>2</td>
+                                                <td>SpaceX</td>
+                                                <td>Pete Borer</td>
+                                                <td><span class="badge bg-info text-dark">Processing</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>3</td>
+                                                <td>SpaceX</td>
+                                                <td>Monica Hoeger</td>
+                                                <td><span class="badge bg-danger">InActive</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>4</td>
+                                                <td>SpaceX</td>
+                                                <td>Rosie Pollich</td>
+                                                <td><span class="badge bg-success">Booked</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>5</td>
+                                                <td>SpaceY</td>
+                                                <td>Carl Bergstrom</td>
+                                                <td><span class="badge bg-success">Booked</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="card shadow-sm p-3">
+                                <h6 class="fw-bold text-center">Reservation Over Time</h6>
+                                <!-- Placeholder for line chart -->
+                                <!-- <img src="assets/Images/reservation-line-chart.png" class="img-fluid"
+                                    alt="Line Chart" /> -->
+                                @if(isBrowser){
+                                <canvas baseChart [type]="lineChartType" [data]="lineChartData"
+                                    [options]="lineChartOptions"></canvas>
+
+                                }
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
