@@ -44,6 +44,8 @@ dependencies:
   flutter_bloc: ^9.1.1
   flutter_popup: ^3.3.4
   flutter_secure_storage: ^9.2.4
+  qr_flutter_new: ^1.0.2
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:
