@@ -1,8 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/storage/secure_storage.dart';
+import '../../data/data_sources/secure_storage.dart';
 import '../../domain/entities/login_request_entity.dart';
 import '../../domain/entities/registration_request_entity.dart';
 import '../../domain/entities/user_entity.dart';
+import '../../domain/usecases/ResetPasswordUseCase.dart';
 import '../../domain/usecases/complete_profile_case.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/register_staff_usecase.dart';
@@ -17,6 +18,9 @@ class AuthCubit extends Cubit<AuthState> {
   final RegisterStaffUseCase registerStaffUseCase;
   final VerifyUserUseCase verifyUserUseCase;
   final CompleteProfileUseCase completeProfileUseCase;
+  final SendForgotPasswordOtpUseCase sendForgotPasswordOtpUseCase;
+  final VerifyResetOtpUseCase verifyResetOtpUseCase;
+  final ResetPasswordUseCase resetPasswordUseCase;
 
   AuthCubit({
     required this.loginUseCase,
@@ -24,30 +28,49 @@ class AuthCubit extends Cubit<AuthState> {
     required this.registerStaffUseCase,
     required this.verifyUserUseCase,
     required this.completeProfileUseCase,
+    required this.resetPasswordUseCase,
+    required this.sendForgotPasswordOtpUseCase,
+    required this.verifyResetOtpUseCase,
+
+
   }) : super(AuthInitial());
+
+
+  Future<void> logout() async {
+    await SecureStorage.clearAll();
+    emit(AuthInitial());
+  }
 
 
   Future<void> login(String email, String password, bool isStaff) async {
     emit(AuthLoading());
     try {
       final response = await loginUseCase(LoginRequestEntity(
-        email: email,
+        email: email.trim(),
         password: password,
         isStaff: isStaff,
       ));
 
-      if (response['user'] == null || response['token'] == null) {
-        emit(AuthError(response['error'] ?? 'Wrong credentials'));
-        return;
+      if (response['user'] != null && response['token'] != null) {
+        // Convert the user map to UserEntity
+        final userMap = response['user'] as Map<String, dynamic>;
+        final userEntity = UserEntity(
+          id: userMap['id'],
+          email: userMap['email'],
+          firstName: userMap['firstName'],
+          lastName: userMap['lastName'],
+          phone: userMap['phone'],
+          address: userMap['address'],
+          // Add other fields as needed
+        );
+
+        await SecureStorage.saveToken(response['token']);
+        emit(AuthLoggedIn(userEntity, response['token']));
+      } else {
+        emit(AuthError('Login failed - invalid response'));
       }
-
-      await SecureStorage.saveToken(response['token']);
-
-      emit(AuthLoggedIn(response['user'], response['token']));
     } on Exception catch (e) {
-      emit(AuthError(e.toString()));
-    } catch (e) {
-      emit(AuthError('An unexpected error occurred'));
+      emit(AuthError(e.toString().replaceFirst('Exception: ', '')));
     }
   }
 
@@ -115,4 +138,47 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthError(e.toString()));
     }
   }
+
+  Future<void> sendForgotPasswordOtp(String email) async {
+    emit(AuthLoading());
+    try {
+      final response = await sendForgotPasswordOtpUseCase(email);
+      if (response['status'] == true) {
+        emit(ForgotPasswordOtpSent(email: email));
+      } else {
+        emit(AuthError(response['message'] ?? 'Failed to send OTP'));
+      }
+    } on Exception catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+  Future<void> verifyResetOtp(String email, int otp) async {
+    emit(AuthLoading());
+    try {
+      final response = await verifyResetOtpUseCase(email, otp);
+      if (response['status'] == true) {
+        emit(ResetOtpVerified(email: email));
+      } else {
+        emit(AuthError(response['message'] ?? 'OTP verification failed'));
+      }
+    } on Exception catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+  Future<void> resetPassword(String email, String newPassword) async {
+    emit(AuthLoading());
+    try {
+      final response = await resetPasswordUseCase(email, newPassword);
+      if (response['status'] == true) {
+        emit(PasswordResetSuccess(response['message']));
+      } else {
+        emit(AuthError(response['error'] ?? 'Password reset failed'));
+      }
+    } on Exception catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
 }

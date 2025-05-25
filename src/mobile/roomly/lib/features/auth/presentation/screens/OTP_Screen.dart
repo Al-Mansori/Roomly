@@ -8,23 +8,26 @@ import 'package:pinput/pinput.dart';
 
 import '../../../GlobalWidgets/pop_p.dart';
 import '../../../GlobalWidgets/show_custom_pop_up.dart';
+import '../../data/models/otp_enum.dart';
 import '../../styleHelperComponents.dart';
 import '../Widgets/CustomAppBar.dart';
 import '../blocs/auth_cubit.dart';
 
 class OtpVerifyScreen extends StatelessWidget {
   final _otpController = TextEditingController();
-  final String email;
-  final String userId;
-  final bool isStaff;
-  final String password;
+  final String? email;
+  final String? userId;
+  final bool? isStaff;
+  final String? password;
+  final OtpVerifyType type;
 
   OtpVerifyScreen({
     super.key,
-    required this.email,
-    required this.userId,
-    required this.isStaff,
-    required this.password,
+    this.email,
+    this.userId,
+    this.isStaff,
+    this.password,
+    required this.type,
   });
 
   @override
@@ -42,7 +45,7 @@ class OtpVerifyScreen extends StatelessWidget {
             alertType: AlertType.error,
           );
 
-        } else if (state is AuthVerificationSuccess) {
+        } else if (state is AuthVerificationSuccess ) {
           showCustomDialog(
             context: context,
             title: 'Success',
@@ -50,11 +53,15 @@ class OtpVerifyScreen extends StatelessWidget {
             alertType: AlertType.success,
             onPressed: () {
               Navigator.of(context).pop();
-              context.go('/Complete-profile');
+              context.go('/login');
             },
           );
+        }
+        else if (state is ResetOtpVerified) {
+          context.go('/reset-password', extra: {
+            'email': state.email,
 
-
+          });
         }
       },
       builder: (context, state) {
@@ -134,12 +141,17 @@ class OtpVerifyScreen extends StatelessWidget {
                     const Text("Didn't receive the OTP?"),
                     TextButton(
                       onPressed: () {
-                        context.read<AuthCubit>().register(
-                          email: email,
-                          password: password,
-                          confirmPassword: password,
-                          isStaff: isStaff,
-                        );
+                        if (type == OtpVerifyType.register) {
+                          context.read<AuthCubit>().register(
+                            email: email!,
+                            password: password!,
+                            confirmPassword: password!,
+                            isStaff: isStaff!,
+                          );
+                        } else if (type == OtpVerifyType.forgetPassword) {
+                          context.read<AuthCubit>().sendForgotPasswordOtp(email!);
+                        }
+
                       },
                       child: const Text(
                           "Resend OTP",
@@ -162,8 +174,14 @@ class OtpVerifyScreen extends StatelessWidget {
                         ),
                         onPressed: () {
                           if (_otpController.text.length == 6) {
-                            context.read<AuthCubit>().verifyOtp(int.parse(_otpController.text));
-                          } else {
+                              if (type == OtpVerifyType.register) {
+                                context.read<AuthCubit>().verifyOtp(int.parse(_otpController.text));
+                              }
+                              else if (type == OtpVerifyType.forgetPassword) {
+                                context.read<AuthCubit>().verifyResetOtp( email!,int.parse(_otpController.text));
+                              }
+                          }
+                          else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Please enter a valid OTP')),
                             );

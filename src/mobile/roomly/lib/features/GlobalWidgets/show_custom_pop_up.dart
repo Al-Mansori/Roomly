@@ -9,15 +9,17 @@ void showCustomDialog({
   required AlertType alertType,
   String buttonText = 'OK',
   VoidCallback? onPressed,
+  bool barrierDismissible = true,
 }) {
   showDialog(
     context: context,
+    barrierDismissible: barrierDismissible,
     builder: (context) => CustomAlertDialog(
       title: title,
       message: message,
       alertType: alertType,
       buttonText: buttonText,
-      onPressed: onPressed,
+      onPressed: onPressed ?? () => Navigator.of(context).pop(),
     ),
   );
 }

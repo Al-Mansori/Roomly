@@ -50,48 +50,48 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         appBar: const CustomAppBar(icon: FontAwesomeIcons.xmark),
         body: BlocConsumer<AuthCubit, AuthState>(
-          listener: (context, state) {
-            if (state is AuthError) {
-              showCustomDialog(
+      listener: (context, state) {
+        if (state is AuthError) {
+          showCustomDialog(
+            context: context,
+            title: 'Error',
+            message: state.message,
+            alertType: AlertType.error,
+          );
+        }
+        else if (state is AuthLoggedIn) {
+          // Navigate to home first
+          context.go('/home');
+          bool requireCompletion = state.user.firstName == null ||
+              state.user.lastName == null ||
+              state.user.phone == null ||
+              state.user.address == null ;
+          // Check if profile needs completion
+          if (requireCompletion) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              showDialog(
                 context: context,
-                title: 'Error',
-                message: state.message,
-                alertType: AlertType.error,
-              );
-            } else if (state is AuthLoggedIn) {
-              final user = state.user;
-              if (user.firstName == null ||
-                  user.lastName == null ||
-                  user.phone == null ||
-                  user.address == null) {
-                showDialog(
-                  context: context,
-                  barrierColor: Colors.black.withValues(alpha: 0.7),
-                  builder: (context) => ProfileForm(
-                    email: state.user.email,
-                    onSavePressed: (profileData) {
-                      context.read<AuthCubit>().completeProfile(profileData).then((_) {
-                        Navigator.of(context).pop(); // Close the dialog
-                        context.go('/home'); // Navigate to home
-                      });
-                    },
-                  ),
-                );
-              } else {
-                // Profile is complete, navigate to home
-                showCustomDialog(
-                  context: context,
-                  title: 'Success',
-                  message: 'Logged in Successfully!',
-                  alertType: AlertType.success,
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    context.go('/home');
+                barrierDismissible: true,
+                barrierColor: Colors.black.withOpacity(0.7),
+                builder: (context) => ProfileForm(
+                  email: state.user.email,
+                  onSavePressed: (profileData) async {
+                    await context.read<AuthCubit>().completeProfile({
+                      'id': state.user.id,
+                      ...profileData,
+                    });
                   },
-                );
-              }
-            }
-          },
+                  onClose: () {
+                    Navigator.of(context).pop();
+
+                  },
+                  requireCompletion: requireCompletion,
+                ),
+              );
+
+            });
+          }
+        }      },
           builder: (context, state) {
             return SingleChildScrollView(
               child: Center(
@@ -174,6 +174,18 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 15),
+                      TextButton(
+                        onPressed: () {
+                          context.push('/forgot-password');
+                        },
+                        child: const Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                       ReusableButton(
                         isGradiant: true,
                         textColor: Colors.black,

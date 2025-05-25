@@ -11,11 +11,25 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Map<String, dynamic>> login(LoginRequestEntity loginRequest) async {
-    final result = await remoteDataSource.login(loginRequest);
-    return {
-      'user': UserModel.fromJson(result['user']).toEntity(),
-      'token': result['token'],
-    };
+    try {
+      final response = await remoteDataSource.login(loginRequest);
+
+      // Ensure the user field is properly converted to Map if needed
+      final user = response['user'] is UserModel
+          ? (response['user'] as UserModel).toJson()
+          : response['user'];
+
+      return {
+        'user': user,
+        'token': response['token'],
+      };
+    } catch (e) {
+      rethrow;
+    }
+  }
+  @override
+  Future<Map<String, dynamic>> resetPassword(String email, String newPassword) async {
+    return await remoteDataSource.resetPassword(email, newPassword);
   }
 
 
@@ -37,5 +51,14 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Map<String, dynamic>> completeProfile(Map<String, dynamic> profileData) async {
     return await remoteDataSource.completeProfile(profileData);
+  }
+  @override
+  Future<Map<String, dynamic>> sendForgotPasswordOtp(String email) async {
+    return await remoteDataSource.sendForgotPasswordOtp(email);
+  }
+
+  @override
+  Future<Map<String, dynamic>> verifyResetOtp(String email, int otp) async {
+    return await remoteDataSource.verifyResetOtp(email, otp);
   }
 }

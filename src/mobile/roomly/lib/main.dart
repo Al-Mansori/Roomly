@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:roomly/core/router/app_router.dart';
+import 'package:roomly/features/auth/domain/usecases/ResetPasswordUseCase.dart';
 import 'package:roomly/features/auth/domain/usecases/login_usecase.dart';
 import 'package:http/http.dart' as http;
 import 'features/auth/data/data_sources/auth_remote_data_source.dart';
@@ -43,7 +44,11 @@ class RoomlyApp extends StatelessWidget {
                 registerCustomerUseCase: RegisterCustomerUseCase(repository: repository),
                 registerStaffUseCase: RegisterStaffUseCase(repository: repository),
                 verifyUserUseCase: VerifyUserUseCase(repository: repository),
-                completeProfileUseCase: CompleteProfileUseCase(repository: repository),
+                completeProfileUseCase: CompleteProfileUseCase(repository: repository), 
+                resetPasswordUseCase: ResetPasswordUseCase(repository: repository),
+                sendForgotPasswordOtpUseCase: SendForgotPasswordOtpUseCase(repository),
+                verifyResetOtpUseCase: VerifyResetOtpUseCase(repository),
+
               );
             },
           )

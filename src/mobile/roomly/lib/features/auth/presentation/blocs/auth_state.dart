@@ -39,5 +39,21 @@ class AuthRegistrationSuccess extends AuthState {
     required this.isStaff,
   });
 }
+class ForgotPasswordOtpSent extends AuthState {
+  final String email;
+  const ForgotPasswordOtpSent({required this.email});
+}
 
+class PasswordResetLoading extends AuthState {}
+class PasswordForgetLoading extends AuthState {}
+
+class ResetOtpVerified extends AuthState {
+  final String email;
+  const ResetOtpVerified({required this.email});
+}
+
+class PasswordResetSuccess extends AuthState {
+  final String message;
+  const PasswordResetSuccess(this.message);
+}
 class AuthVerificationSuccess extends AuthState {}
