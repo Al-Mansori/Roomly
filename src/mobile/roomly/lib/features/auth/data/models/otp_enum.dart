@@ -1,0 +1,4 @@
+enum OtpVerifyType {
+  register,
+  forgetPassword,
+}

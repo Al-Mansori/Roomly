@@ -33,6 +33,7 @@ final GoRouter appRouter = GoRouter(
           userId: data['userId'],
           isStaff: data['isStaff'],
           password: data['password'],
+          type: data['type'],
         );
       },
     ),
