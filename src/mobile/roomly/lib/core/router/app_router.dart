@@ -10,7 +10,9 @@ import 'package:roomly/features/profile/presentation/profile_screen.dart';
 import 'package:roomly/features/room_management/presentation/room_details_screen.dart';
 import 'package:roomly/features/room_management/presentation/room_list_screen.dart';
 import 'package:roomly/features/workspace/presentation/workspace_page.dart';
+import '../../features/auth/presentation/screens/forget_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/reset_password_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/room_management/presentation/Booking_2nd_Screen.dart';
 import '../../features/room_management/presentation/reservation_qrcode_screen.dart';
@@ -37,6 +39,17 @@ final GoRouter appRouter = GoRouter(
         );
       },
     ),
+    GoRoute(
+      path: '/reset-password',
+      builder: (context, state) {
+        final data = state.extra as Map<String, dynamic>;
+        final email = data['email'] as String;
+
+        return ResetPasswordScreen(email: email);
+      },
+    ),
+    GoRoute(path: '/forgot-password' , builder:  (context, state)=> const ForgetPasswordScreen()),
+
     GoRoute(path: '/signup', builder: (context, state) => const SignupScreen()),
     GoRoute(
       path: '/profile',
