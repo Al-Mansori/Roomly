@@ -1,9 +1,6 @@
-
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../GlobalWidgets/ReusableCarrasoul.dart';
+import '../../../GlobalWidgets/ReusableCarrasoul.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key});

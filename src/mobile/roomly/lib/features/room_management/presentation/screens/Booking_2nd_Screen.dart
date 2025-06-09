@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import '../../GlobalWidgets/DateBox.dart';
-import '../../GlobalWidgets/Datebutton.dart';
-import '../../GlobalWidgets/TimeSelector.dart';
-import '../../GlobalWidgets/style.dart';
+import '../../../GlobalWidgets/DateBox.dart';
+import '../../../GlobalWidgets/Datebutton.dart';
+import '../../../GlobalWidgets/TimeSelector.dart';
+import '../../../GlobalWidgets/style.dart';
 
 class SelectDataScreen extends StatefulWidget {
   @override
