@@ -1,3 +1,4 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:roomly/features/BookingsStatus/Activity.dart';
 import 'package:roomly/features/account/presentation/account_screen.dart';
@@ -7,16 +8,18 @@ import 'package:roomly/features/loyalty/presentation/loyalty_page.dart';
 import 'package:roomly/features/payment/presentation/add_card_screen.dart';
 import 'package:roomly/features/payment/presentation/cards_screen.dart';
 import 'package:roomly/features/profile/presentation/profile_screen.dart';
-import 'package:roomly/features/room_management/presentation/room_details_screen.dart';
-import 'package:roomly/features/room_management/presentation/room_list_screen.dart';
-import 'package:roomly/features/workspace/presentation/workspace_page.dart';
+import 'package:roomly/features/room_management/presentation/cubits/room_details_cubit.dart';
+import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart' as di;
+import 'package:roomly/features/room_management/presentation/screens/room_details_screen.dart';
+import 'package:roomly/features/room_management/presentation/screens/room_list_screen.dart';
+import 'package:roomly/features/room_management/presentation/screens/Booking_2nd_Screen.dart';
+import 'package:roomly/features/room_management/presentation/screens/reservation_qrcode_screen.dart';
+import 'package:roomly/features/room_management/presentation/screens/reviews_screen.dart';
+import 'package:roomly/features/workspace/presentation/screens/workspace_details_screen.dart';
 import '../../features/auth/presentation/screens/forget_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/reset_password_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
-import '../../features/room_management/presentation/Booking_2nd_Screen.dart';
-import '../../features/room_management/presentation/reservation_qrcode_screen.dart';
-import '../../features/room_management/presentation/reviews_screen.dart';
 import '../../features/Search/filter_screen.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -72,10 +75,19 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const LoyaltyPage(),
     ),
 
+    // GoRoute(
+    //   path: '/workspace',
+    //   builder: (context, state) => const WorkspaceListingsScreen(),
+    // ),
+
     GoRoute(
-      path: '/workspace',
-      builder: (context, state) => const WorkspaceListingsScreen(),
+      path: '/workspace/:id',
+      builder: (context, state) {
+        final String id = state.pathParameters['id']!;
+        return WorkspaceDetailsScreen(workspaceId: id);
+      },
     ),
+
     GoRoute(
       path: '/reservation-qrcode',
       builder: (context, state) => const ReservationQRCodeScreen(),
@@ -99,11 +111,21 @@ final GoRouter appRouter = GoRouter(
 
     GoRoute(
         path: '/rooms', builder: (context, state) => const RoomListScreen()),
+    // GoRoute(
+    //   path: '/room/:id',
+    //   builder: (context, state) {
+    //     final String id = state.pathParameters['id']!;
+    //     return RoomDetailsScreen(roomId: id);
+    //   },
+    // ),
     GoRoute(
       path: '/room/:id',
       builder: (context, state) {
-        final String id = state.pathParameters['id']!;
-        return RoomDetailsScreen(roomId: id);
+        final String id = state.pathParameters['id'] ?? '';
+        return BlocProvider<RoomDetailsCubit>(
+          create: (context) => di.sl<RoomDetailsCubit>(),
+          child: RoomDetailsScreen(roomId: id),
+        );
       },
     ),
   ],
