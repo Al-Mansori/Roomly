@@ -1,4 +1,4 @@
-CREATE DATABASE Roomly;
+ CREATE DATABASE Roomly;
 
 -- DROP DATABASE Roomly;
 
@@ -23,6 +23,7 @@ CREATE TABLE Workspace (
     CreatedDate DATE,
     AvgRating DOUBLE,
     Type VARCHAR(100),
+    PaymentType varchar(100),
     LocationId VARCHAR(100)
 );
 
@@ -89,6 +90,7 @@ CREATE TABLE WorkspaceAnalytics (
 
 CREATE TABLE WorkspacePlan (
     WorkspaceId VARCHAR(100),
+    DailyPrice Double,
     YearPrice DOUBLE,
     MonthPrice DOUBLE
 );
@@ -193,6 +195,13 @@ CREATE TABLE ApplyedOffers (
     OfferId VARCHAR(50)
 );
 
+CREATE TABLE WorkspaceSchedule (
+	Day varchar(100),
+    StartTime time,
+    EndTime time,
+    WorkspaceId VARCHAR(100)
+);
+
 -- Add foreign key constraints using ALTER TABLE
 ALTER TABLE Workspace ADD CONSTRAINT fk_workspace_location FOREIGN KEY (LocationId) REFERENCES Location(Id);
 ALTER TABLE Amenity ADD CONSTRAINT fk_amenity_room FOREIGN KEY (RoomId) REFERENCES Room(Id);
@@ -227,3 +236,4 @@ ALTER TABLE Images ADD CONSTRAINT fk_images_amenity FOREIGN KEY (AmenityId) REFE
 ALTER TABLE ApplyedOffers ADD CONSTRAINT fk_applyedoffers_staff FOREIGN KEY (StaffId) REFERENCES WorkspaceStaff(Id);
 ALTER TABLE ApplyedOffers ADD CONSTRAINT fk_applyedoffers_room FOREIGN KEY (RoomId) REFERENCES Room(Id);
 ALTER TABLE ApplyedOffers ADD CONSTRAINT fk_applyedoffers_offer FOREIGN KEY (OfferId) REFERENCES Offers(Id);
+ALTER TABLE WorkspaceSchedule ADD CONSTRAINT fk_workspaceschedule_workspace FOREIGN KEY (WorkspaceId) REFERENCES Workspace(Id);
