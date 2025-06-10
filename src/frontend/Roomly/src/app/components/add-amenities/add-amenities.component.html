@@ -1,0 +1,93 @@
+<div class="add-amenities bg-light min-vh-100">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-12 col-md-1">
+        <app-side-steps-indicator [steps]="steps"></app-side-steps-indicator>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-12 col-md-11 px-4 py-3">
+        <div class="row g-4">
+          <!-- Left Column -->
+          <div class="col-lg-8">
+              <!-- Left: Add Amenities -->
+            <div class="card p-3">
+              <h5 class="fw-semibold mb-4">Add Amenities</h5>
+              <div class="row g-3">
+                <!-- Image -->
+                <div class="col-md-5">
+                  <label class="form-label">Amenity cover image</label>
+                  <div class="position-relative">
+                    <img src="./../assets/Images/seats amenity.png" class="img-fluid rounded shadow w-100 mb-3" />
+                    <div class="position-absolute top-0 end-0 m-2 d-flex gap-2">
+                      <button class="btn btn-light btn-sm border">Edit</button>
+                      <button class="btn btn-light btn-sm border">Remove</button>
+                    </div>
+                  </div>
+                  <button class="btn btn-outline-primary rounded-circle" style="width: 50px; height: 50px;">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+
+                <!-- Inputs -->
+                <div class="col-md-7">
+                  <div class="mb-3">
+                    <label class="form-label">Description <span class="float-end">110/110</span></label>
+                    <textarea class="form-control" rows="3"></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Total Count:</label>
+                    <input type="number" class="form-control" />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Available Count:</label>
+                    <input type="number" class="form-control" />
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-end mt-3">
+                <button class="btn btn-primary">Done</button>
+              </div>
+            </div>
+
+            <!--Left: Defined Amenities Dropdown -->
+            <div class="card p-3 mt-4">
+              <label class="mb-2 fw-semibold">Defined Amenities</label>
+              <select class="form-select w-25">
+                <option>WiFi</option>
+                <option>Air Conditioning</option>
+                <option>Projector</option>
+                <option>Whiteboard</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="col-lg-4">
+            <div class="card p-3">
+              <h6 class="fw-semibold mb-3">Click in room to add its amenities</h6>
+              <div class="d-flex flex-column gap-3">
+                @for (room of rooms(); track room.id) {
+                <div class="card p-2">
+                  <img [src]="room.image" class="img-fluid rounded mb-2" style="height: 160px; object-fit: cover;" />
+                  <p class="small">{{ room.description }}</p>
+                  <p class="fw-bold">${{ room.price }} per hour</p>
+                </div>
+                }
+              </div>
+              <div class="d-flex justify-content-end mt-3">
+                <button class="btn btn-primary">Done</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+<div class="bg-light border-end h-100 py-4 px-2">
+  <ul class="list-unstyled d-flex flex-column align-items-center gap-4">
+    @for (step of steps; track step.label) {
+      <li class="text-center">
+        <div class="d-flex flex-column align-items-center">
+          <!-- Step Circle -->
+          <div
+            class="rounded-circle d-flex justify-content-center align-items-center border"
+            [ngClass]="{
+              'bg-primary text-white': step.active,
+              'bg-white': !step.active
+            }"
+            style="width: 48px; height: 48px"
+          >
+            <img
+              [src]="'./../assets/Images/' + step.icon"
+              [alt]="step.label"
+              width="24"
+              height="24"
+            />
+          </div>
+
+          <!-- Line after each step except the last -->
+          @if (step !== steps[steps.length - 1]) {
+            <div
+              class="bg-secondary mt-2"
+              style="width: 3px; height: 40px; opacity: 0.4"
+            ></div>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+</div>
