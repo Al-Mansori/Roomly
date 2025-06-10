@@ -21,21 +21,21 @@ INSERT INTO Location VALUES
 
 -- Insert data for Workspace table
 INSERT INTO Workspace VALUES
-('ws001', 'The Greek Campus', 'Tech innovation hub located in the heart of Downtown Cairo', '28 Falaki St, Cairo', '2020-01-15', 4.6, 'Tech Hub', 'loc001'),
-('ws002', 'AlMaqarr Coworking Space - Garden City', 'Elegant coworking space in Garden City', '17 Mahmoud Bassiouny St, Garden City', '2018-05-20', 4.5, 'Coworking', 'loc002'),
-('ws003', 'The District Spaces', 'Modern workspace with premium amenities', '21 Road 13, Maadi', '2019-08-10', 4.7, 'Premium', 'loc003'),
-('ws004', 'Cairo Hackerspace', 'Community-driven workspace for tech enthusiasts', '12 Street 272, New Cairo', '2017-03-25', 4.3, 'Tech Community', 'loc004'),
-('ws005', 'Urban Station Egypt', 'Comfortable workspaces with an urban vibe', '7 Dokki St, Dokki', '2019-11-05', 4.4, 'Urban Style', 'loc005'),
-('ws006', 'Seedspace Cairo', 'Global community for entrepreneurs', '8 El-Salam St, Heliopolis', '2020-02-28', 4.5, 'Entrepreneurial', 'loc006'),
-('ws007', 'IceAlex', 'Innovation hub in Alexandria focusing on community projects', '52 El Horeya Road, Smouha', '2018-06-10', 4.2, 'Innovation Hub', 'loc007'),
-('ws008', 'Indoors Alexandria', 'Creative workspace for digital nomads', '12 Victor Emanuel St, Downtown Alexandria', '2019-07-15', 4.3, 'Creative', 'loc008'),
-('ws009', 'Red Sea Coworking', 'Beachside workspace for digital nomads', '23 Village Rd, Hurghada', '2021-01-05', 4.8, 'Tourist-Friendly', 'loc009'),
-('ws010', 'Sharm Workspace', 'Resort-style workspace with sea views', '19 Peace Rd, Naama Bay', '2021-03-12', 4.9, 'Private Office', 'loc010'),
-('ws011', 'Luxor Innovation Hub', 'Cultural and historical workspace', '14 Karnak Temple St, Luxor', '2020-10-22', 4.1, 'Cultural', 'loc011'),
-('ws012', 'A4 Spaces - October', 'Modern workspace in 6th of October City', 'Mall of Egypt, 6th of October', '2019-12-10', 4.3, 'Mall-based', 'loc012'),
-('ws013', 'The Workstation', 'Professional environment for startups and SMEs', '12 Makram Ebeid St, Nasr City', '2020-04-15', 4.5, 'Professional', 'loc013'),
-('ws014', 'Nile Workspace Aswan', 'Riverside coworking space with Nile views', '9 Corniche El Nile, Aswan', '2021-02-20', 4.6, 'Scenic', 'loc014'),
-('ws015', 'ZSpace', 'Boutique workspace in upscale Zamalek', '15 Taha Hussein St, Zamalek', '2019-09-18', 4.7, 'Boutique', 'loc015');
+('ws001', 'The Greek Campus', 'Tech innovation hub located in the heart of Downtown Cairo', '28 Falaki St, Cairo', '2020-01-15', 4.6, 'Tech Hub', 'CARD', 'loc001'),
+('ws002', 'AlMaqarr Coworking Space - Garden City', 'Elegant coworking space in Garden City', '17 Mahmoud Bassiouny St, Garden City', '2018-05-20', 4.5, 'Coworking', 'CARD', 'loc002'),
+('ws003', 'The District Spaces', 'Modern workspace with premium amenities', '21 Road 13, Maadi', '2019-08-10', 4.7, 'Premium', 'CARD', 'loc003'),
+('ws004', 'Cairo Hackerspace', 'Community-driven workspace for tech enthusiasts', '12 Street 272, New Cairo', '2017-03-25', 4.3, 'Tech Community', 'CARD', 'loc004'),
+('ws005', 'Urban Station Egypt', 'Comfortable workspaces with an urban vibe', '7 Dokki St, Dokki', '2019-11-05', 4.4, 'Urban Style', 'CARD', 'loc005'),
+('ws006', 'Seedspace Cairo', 'Global community for entrepreneurs', '8 El-Salam St, Heliopolis', '2020-02-28', 4.5, 'Entrepreneurial', 'CARD', 'loc006'),
+('ws007', 'IceAlex', 'Innovation hub in Alexandria focusing on community projects', '52 El Horeya Road, Smouha', '2018-06-10', 4.2, 'Innovation Hub', 'CARD', 'loc007'),
+('ws008', 'Indoors Alexandria', 'Creative workspace for digital nomads', '12 Victor Emanuel St, Downtown Alexandria', '2019-07-15', 4.3, 'Creative', 'CARD', 'loc008'),
+('ws009', 'Red Sea Coworking', 'Beachside workspace for digital nomads', '23 Village Rd, Hurghada', '2021-01-05', 4.8, 'Tourist-Friendly', 'CARD', 'loc009'),
+('ws010', 'Sharm Workspace', 'Resort-style workspace with sea views', '19 Peace Rd, Naama Bay', '2021-03-12', 4.9, 'Private Office', 'CARD', 'loc010'),
+('ws011', 'Luxor Innovation Hub', 'Cultural and historical workspace', '14 Karnak Temple St, Luxor', '2020-10-22', 4.1, 'Cultural', 'CARD', 'loc011'),
+('ws012', 'A4 Spaces - October', 'Modern workspace in 6th of October City', 'Mall of Egypt, 6th of October', '2019-12-10', 4.3, 'Mall-based', 'CARD', 'loc012'),
+('ws013', 'The Workstation', 'Professional environment for startups and SMEs', '12 Makram Ebeid St, Nasr City', '2020-04-15', 4.5, 'Professional', 'CARD', 'loc013'),
+('ws014', 'Nile Workspace Aswan', 'Riverside coworking space with Nile views', '9 Corniche El Nile, Aswan', '2021-02-20', 4.6, 'Scenic', 'CARD', 'loc014'),
+('ws015', 'ZSpace', 'Boutique workspace in upscale Zamalek', '15 Taha Hussein St, Zamalek', '2019-09-18', 4.7, 'Boutique', 'CARD', 'loc015');
 
 -- Insert data for WorkspaceStaff table
 INSERT INTO WorkspaceStaff VALUES
@@ -428,21 +428,21 @@ INSERT INTO WorkspaceAnalytics VALUES
 
 -- Insert data for WorkspacePlan table
 INSERT INTO WorkspacePlan VALUES
-('ws001', 36000.00, 3500.00),
-('ws002', 38000.00, 3700.00),
-('ws003', 45000.00, 4200.00),
-('ws004', 32000.00, 3000.00),
-('ws005', 34000.00, 3200.00),
-('ws006', 35000.00, 3300.00),
-('ws007', 30000.00, 2800.00),
-('ws008', 31000.00, 2900.00),
-('ws009', 48000.00, 4500.00),
-('ws010', 50000.00, 4700.00),
-('ws011', 33000.00, 3100.00),
-('ws012', 35000.00, 3300.00),
-('ws013', 36000.00, 3400.00),
-('ws014', 40000.00, 3800.00),
-('ws015', 46000.00, 4300.00);
+('ws001', 200.00, 36000.00, 3500.00),
+('ws002', 200.00, 38000.00, 3700.00),
+('ws003', 200.00, 45000.00, 4200.00),
+('ws004', 200.00, 32000.00, 3000.00),
+('ws005', 200.00, 34000.00, 3200.00),
+('ws006', 200.00, 35000.00, 3300.00),
+('ws007', 200.00, 30000.00, 2800.00),
+('ws008', 200.00, 31000.00, 2900.00),
+('ws009', 200.00, 48000.00, 4500.00),
+('ws010', 200.00, 50000.00, 4700.00),
+('ws011', 200.00, 33000.00, 3100.00),
+('ws012', 200.00, 35000.00, 3300.00),
+('ws013', 200.00, 36000.00, 3400.00),
+('ws014', 200.00, 40000.00, 3800.00),
+('ws015', 200.00, 46000.00, 4300.00);
 
 -- Insert data for Preference table
 INSERT INTO Preference VALUES
@@ -461,3 +461,12 @@ INSERT INTO Preference VALUES
 ('200-500', 'Meeting Room', 'usr013'),
 ('50-200', 'Open Space', 'usr014'),
 ('500-1000', 'Conference Room', 'usr015');
+
+INSERT INTO WorkspaceSchedule (Day, StartTime, EndTime, WorkspaceId) VALUES
+('Monday',    '08:00:00', '12:00:00', 'ws001'),
+('Tuesday',   '08:00:00', '12:00:00', 'ws001'),
+('Wednesday', '08:00:00', '12:00:00', 'ws001'),
+('Thursday',  '08:00:00', '12:00:00', 'ws001'),
+('Friday',    '08:00:00', '12:00:00', 'ws001'),
+('Saturday',  '08:00:00', '12:00:00', 'ws001'),
+('Sunday',    '08:00:00', '12:00:00', 'ws001');
