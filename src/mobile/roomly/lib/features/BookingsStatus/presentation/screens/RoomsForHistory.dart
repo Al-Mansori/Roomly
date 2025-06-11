@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:dio/dio.dart';
 
 class HistoryRoomCard extends StatelessWidget {
   final String imageUrl;
@@ -24,14 +26,16 @@ class HistoryRoomCard extends StatelessWidget {
     return Container(
       width: double.infinity, // Make the card take the full width
       padding: EdgeInsets.all(screenWidth * 0.04), // Responsive padding
-      margin: EdgeInsets.symmetric(vertical: screenHeight * 0.01), // Add some vertical margin
+      margin: EdgeInsets.symmetric(
+          vertical: screenHeight * 0.01), // Add some vertical margin
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(
           color: Colors.black.withOpacity(0.36),
           width: 1,
         ),
-        borderRadius: BorderRadius.circular(screenWidth * 0.075), // Responsive border radius
+        borderRadius: BorderRadius.circular(
+            screenWidth * 0.075), // Responsive border radius
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +44,8 @@ class HistoryRoomCard extends StatelessWidget {
             width: screenWidth * 0.2, // Responsive width
             height: screenHeight * 0.1, // Responsive height
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(screenWidth * 0.025), // Responsive border radius
+              borderRadius: BorderRadius.circular(
+                  screenWidth * 0.025), // Responsive border radius
               image: DecorationImage(
                 image: NetworkImage(imageUrl),
                 fit: BoxFit.fill,
@@ -130,7 +135,8 @@ class HistoryRoomCard extends StatelessWidget {
                     color: const Color(0xFF0A3FB3).withOpacity(0.5),
                     width: 1,
                   ),
-                  borderRadius: BorderRadius.circular(screenWidth * 0.02), // Responsive border radius
+                  borderRadius: BorderRadius.circular(
+                      screenWidth * 0.02), // Responsive border radius
                 ),
               ),
             ),
@@ -149,7 +155,8 @@ class HistoryRoomList extends StatelessWidget {
 
     return Scaffold(
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(screenWidth * 0.04), // Add some padding to the list
+        padding:
+            EdgeInsets.all(screenWidth * 0.04), // Add some padding to the list
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -164,7 +171,8 @@ class HistoryRoomList extends StatelessWidget {
             ),
             SizedBox(height: screenHeight * 0.02), // Responsive spacing
             HistoryRoomCard(
-              imageUrl: "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
+              imageUrl:
+                  "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
               title: 'Meeting Room (2 people)',
               dateRange: 'Oct. 5 - 8, 2024',
               price: '\$700',
@@ -172,7 +180,8 @@ class HistoryRoomList extends StatelessWidget {
             ),
             SizedBox(height: screenHeight * 0.02), // Responsive spacing
             HistoryRoomCard(
-              imageUrl: "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
+              imageUrl:
+                  "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
               title: 'Meeting Room (2 people)',
               dateRange: 'Oct. 5 - 8, 2024',
               price: '\$700',
@@ -180,7 +189,8 @@ class HistoryRoomList extends StatelessWidget {
             ),
             SizedBox(height: screenHeight * 0.02), // Responsive spacing
             HistoryRoomCard(
-              imageUrl: "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
+              imageUrl:
+                  "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
               title: 'Meeting Room (2 people)',
               dateRange: 'Oct. 5 - 8, 2024',
               price: '\$700',
@@ -199,7 +209,8 @@ class HistoryRoomList extends StatelessWidget {
             ),
             SizedBox(height: screenHeight * 0.02), // Responsive spacing
             HistoryRoomCard(
-              imageUrl: "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
+              imageUrl:
+                  "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
               title: 'Meeting Room (2 people)',
               dateRange: 'Nov. 5 - 8, 2024',
               price: '\$700',
@@ -207,7 +218,8 @@ class HistoryRoomList extends StatelessWidget {
             ),
             SizedBox(height: screenHeight * 0.02), // Responsive spacing
             HistoryRoomCard(
-              imageUrl: "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
+              imageUrl:
+                  "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
               title: 'Meeting Room (2 people)',
               dateRange: 'Nov. 5 - 8, 2024',
               price: '\$700',
