@@ -1,4 +1,4 @@
- CREATE DATABASE Roomly;
+CREATE DATABASE Roomly;
 
 -- DROP DATABASE Roomly;
 
@@ -208,23 +208,23 @@ ALTER TABLE Amenity ADD CONSTRAINT fk_amenity_room FOREIGN KEY (RoomId) REFERENC
 ALTER TABLE Room ADD CONSTRAINT fk_room_workspace FOREIGN KEY (WorkspaceId) REFERENCES Workspace(Id);
 ALTER TABLE WorkspaceAnalytics ADD CONSTRAINT fk_workspaceanalytics_workspace FOREIGN KEY (WorkspaceId) REFERENCES Workspace(Id);
 ALTER TABLE WorkspacePlan ADD CONSTRAINT fk_workspaceplan_workspace FOREIGN KEY (WorkspaceId) REFERENCES Workspace(Id);
-ALTER TABLE Preference ADD CONSTRAINT fk_preference_user FOREIGN KEY (UserId) REFERENCES User(Id);
+ALTER TABLE Preference ADD CONSTRAINT fk_preference_user FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE;
 ALTER TABLE Payment ADD CONSTRAINT fk_payment_reservation FOREIGN KEY (ReservationId) REFERENCES Reservation(Id);
-ALTER TABLE LoyaltyPoints ADD CONSTRAINT fk_loyaltypoints_user FOREIGN KEY (UserId) REFERENCES User(Id);
-ALTER TABLE Cancellation ADD CONSTRAINT fk_cancellation_user FOREIGN KEY (UserId) REFERENCES User(Id);
+ALTER TABLE LoyaltyPoints ADD CONSTRAINT fk_loyaltypoints_user FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE;
+ALTER TABLE Cancellation ADD CONSTRAINT fk_cancellation_user FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE;
 ALTER TABLE Cancellation ADD CONSTRAINT fk_cancellation_reservation FOREIGN KEY (ReservationId) REFERENCES Reservation(Id);
-ALTER TABLE Booking ADD CONSTRAINT fk_booking_user FOREIGN KEY (UserId) REFERENCES User(Id);
+ALTER TABLE Booking ADD CONSTRAINT fk_booking_user FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE;
 ALTER TABLE Booking ADD CONSTRAINT fk_booking_reservation FOREIGN KEY (ReservationId) REFERENCES Reservation(Id);
 ALTER TABLE Booking ADD CONSTRAINT fk_booking_workspace FOREIGN KEY (WorkspaceId) REFERENCES Workspace(Id);
 ALTER TABLE Booking ADD CONSTRAINT fk_booking_room FOREIGN KEY (RoomId) REFERENCES Room(Id);
-ALTER TABLE UserRequesting ADD CONSTRAINT fk_userrequesting_user FOREIGN KEY (UserId) REFERENCES User(Id);
+ALTER TABLE UserRequesting ADD CONSTRAINT fk_userrequesting_user FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE;
 ALTER TABLE UserRequesting ADD CONSTRAINT fk_userrequesting_request FOREIGN KEY (RequestId) REFERENCES Request(Id);
 ALTER TABLE UserRequesting ADD CONSTRAINT fk_userrequesting_staff FOREIGN KEY (StaffId) REFERENCES WorkspaceStaff(Id);
-ALTER TABLE SuspendedUsers ADD CONSTRAINT fk_suspendedusers_user FOREIGN KEY (UserId) REFERENCES User(Id);
+ALTER TABLE SuspendedUsers ADD CONSTRAINT fk_suspendedusers_user FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE;
 ALTER TABLE SuspendedUsers ADD CONSTRAINT fk_suspendedusers_staff FOREIGN KEY (StaffId) REFERENCES WorkspaceStaff(Id);
-ALTER TABLE Review ADD CONSTRAINT fk_review_user FOREIGN KEY (UserId) REFERENCES User(Id);
+ALTER TABLE Review ADD CONSTRAINT fk_review_user FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE;
 ALTER TABLE Review ADD CONSTRAINT fk_review_workspace FOREIGN KEY (WorkspaceId) REFERENCES Workspace(Id);
-ALTER TABLE FavouriteWorkspaceRooms ADD CONSTRAINT fk_favouriteworkspacesrooms_user FOREIGN KEY (UserId) REFERENCES User(Id);
+ALTER TABLE FavouriteWorkspaceRooms ADD CONSTRAINT fk_favouriteworkspacesrooms_user FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE;
 ALTER TABLE FavouriteWorkspaceRooms ADD CONSTRAINT fk_favouriteworkspacesrooms_workspace FOREIGN KEY (WorkspaceId) REFERENCES Workspace(Id);
 ALTER TABLE FavouriteWorkspaceRooms ADD CONSTRAINT fk_favouriteworkspacesrooms_room FOREIGN KEY (RoomId) REFERENCES Room(Id);
 ALTER TABLE WorkspaceSupervise ADD CONSTRAINT fk_workspacesupervise_staff FOREIGN KEY (StaffId) REFERENCES WorkspaceStaff(Id);
