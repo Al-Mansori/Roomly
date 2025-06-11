@@ -47,15 +47,16 @@
                                     <textarea class="form-control" rows="3"></textarea>
                                 </div>
                                 <!-- Map Preview -->
-                                <div class="mb-3">
+                                <!-- <div class="mb-3">
                                     <label class="form-label">Selected Location on Map</label>
-                                    <div class="rounded border border-secondary-subtle"
-                                        style="height: 150px; background-color: #f0f0f0;">
-                                        <!-- Placeholder map -->
-                                        <img src="./../assets/Images/map-placeholder.png" class="w-100 h-100 rounded"
-                                            style="object-fit: cover;" />
+                                    <div class="rounded border border-secondary-subtle" style="height: 300px;">
+                                        <div leaflet [leafletOptions]="mapOptions" [leafletCenter]="mapCenter"
+                                            [leafletZoom]="mapZoom" (leafletClick)="onMapClick($event)"
+                                            style="height: 100%; width: 100%; border-radius: 0.5rem;"></div>
                                     </div>
-                                </div>
+                                </div> -->
+
+
 
                                 <!-- <div class="mb-3">
                                     <input type="text" class="form-control" placeholder="Search address, Zip, City" />
