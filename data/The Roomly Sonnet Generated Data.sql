@@ -463,13 +463,13 @@ INSERT INTO Preference VALUES
 ('500-1000', 'Conference Room', 'usr015');
 
 INSERT INTO WorkspaceSchedule (Day, StartTime, EndTime, WorkspaceId) VALUES
-('Monday',    '08:00:00', '12:00:00', 'ws001'),
-('Tuesday',   '08:00:00', '12:00:00', 'ws001'),
-('Wednesday', '08:00:00', '12:00:00', 'ws001'),
-('Thursday',  '08:00:00', '12:00:00', 'ws001'),
-('Friday',    '08:00:00', '12:00:00', 'ws001'),
-('Saturday',  '08:00:00', '12:00:00', 'ws001'),
-('Sunday',    '08:00:00', '12:00:00', 'ws001');
+('Monday',    '08:00', '12:00', 'ws001'),
+('Tuesday',   '08:00', '12:00', 'ws001'),
+('Wednesday', '08:00', '12:00', 'ws001'),
+('Thursday',  '08:00', '12:00', 'ws001'),
+('Friday',    '08:00', '12:00', 'ws001'),
+('Saturday',  '08:00', '12:00', 'ws001'),
+('Sunday',    '08:00', '12:00', 'ws001');
 
 INSERT INTO CreditCard(CardNumber, CVV, EndDate, Balance) VALUES
 ('1234567812345678', '123', '12/2025', 1500.50),
