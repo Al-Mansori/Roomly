@@ -197,8 +197,8 @@ CREATE TABLE ApplyedOffers (
 
 CREATE TABLE WorkspaceSchedule (
 	Day varchar(100),
-    StartTime time,
-    EndTime time,
+    StartTime varchar(5),
+    EndTime varchar(5),
     WorkspaceId VARCHAR(100)
 );
 
