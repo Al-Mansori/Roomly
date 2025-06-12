@@ -17,7 +17,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
       final remoteWorkspace = await remoteDataSource.getWorkspaceDetails(workspaceId);
       return Right(remoteWorkspace);
     } on ServerException {
-      return Left(ServerFailure());
+      return Left(ServerFailure(message: 'Failed to fetch workspace details'));
     }
   }
 
@@ -27,7 +27,7 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
       final remoteRoom = await remoteDataSource.getRoomDetails(roomId);
       return Right(remoteRoom as RoomEntity);
     } on ServerException {
-      return Left(ServerFailure());
+      return Left(ServerFailure(message: 'Failed to fetch room details'));
     }
   }
 }

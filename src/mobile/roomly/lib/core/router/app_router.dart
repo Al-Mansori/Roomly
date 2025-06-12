@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:http/http.dart' as http;
+import 'package:roomly/core/network/network_info.dart';
 import 'package:roomly/features/BookingsStatus/data/data_sources/bookings_remote_data_source.dart';
 import 'package:roomly/features/BookingsStatus/data/data_sources/room_remote_data_source.dart';
 import 'package:roomly/features/BookingsStatus/data/repositories/bookings_repository_impl.dart';
@@ -13,11 +16,23 @@ import 'package:roomly/features/favorite/data/data_sources/favorite_remote_data_
 import 'package:roomly/features/favorite/data/repositories/favorite_repository_impl.dart';
 import 'package:roomly/features/favorite/domain/usecases/get_favorite_rooms.dart';
 import 'package:roomly/features/favorite/presentation/cubit/favorite_cubit.dart';
+import 'package:roomly/features/help/presentation/screens/about_app_screen.dart';
+import 'package:roomly/features/help/presentation/screens/help_center_screen.dart';
+import 'package:roomly/features/help/presentation/screens/report_problem_screen.dart';
+import 'package:roomly/features/help/presentation/screens/settings_screen.dart';
+import 'package:roomly/features/help/presentation/screens/terms_and_policies_screen.dart';
 import 'package:roomly/features/home/presentation/home_screen.dart';
-import 'package:roomly/features/loyalty/presentation/loyalty_page.dart';
+import 'package:roomly/features/loyalty/presentation/screens/loyalty_page.dart';
 import 'package:roomly/features/payment/presentation/add_card_screen.dart';
 import 'package:roomly/features/payment/presentation/cards_screen.dart';
-import 'package:roomly/features/profile/presentation/profile_screen.dart';
+import 'package:roomly/features/profile/data/data_source/user_local_data_source.dart';
+import 'package:roomly/features/profile/data/data_source/user_remote_data_source.dart';
+import 'package:roomly/features/profile/data/repository/user_repository_impl.dart';
+import 'package:roomly/features/profile/domain/usecases/delete_user.dart';
+import 'package:roomly/features/profile/domain/usecases/get_cached_user.dart';
+import 'package:roomly/features/profile/domain/usecases/update_user.dart';
+import 'package:roomly/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:roomly/features/profile/presentation/screens/profile_screen.dart';
 import 'package:roomly/features/room_management/presentation/cubits/room_details_cubit.dart';
 import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart'
     as di;
@@ -68,27 +83,51 @@ final GoRouter appRouter = GoRouter(
         builder: (context, state) => const ForgetPasswordScreen()),
 
     GoRoute(path: '/signup', builder: (context, state) => const SignupScreen()),
+
     GoRoute(
       path: '/profile',
-      builder: (context, state) => const ProfileScreen(),
+      builder: (context, state) => BlocProvider(
+        create: (context) => ProfileCubit(
+          getCachedUser: GetCachedUser(
+            UserRepositoryImpl(
+              remoteDataSource: UserRemoteDataSourceImpl(client: http.Client()),
+              localDataSource: UserLocalDataSourceImpl(),
+              networkInfo: NetworkInfoImpl(InternetConnectionChecker.createInstance()),
+            ),
+          ),
+          updateUser: UpdateUser(
+            UserRepositoryImpl(
+              remoteDataSource: UserRemoteDataSourceImpl(client: http.Client()),
+              localDataSource: UserLocalDataSourceImpl(),
+              networkInfo: NetworkInfoImpl(InternetConnectionChecker.createInstance()),
+            ),
+          ),
+          deleteUser: DeleteUser(
+            UserRepositoryImpl(
+              remoteDataSource: UserRemoteDataSourceImpl(client: http.Client()),
+              localDataSource: UserLocalDataSourceImpl(),
+              networkInfo: NetworkInfoImpl(InternetConnectionChecker.createInstance()),
+            ),
+          ),
+        ),
+        child: const ProfileScreen(),
+      ),
     ),
+
     GoRoute(
       path: '/date',
       builder: (context, state) => SelectDataScreen(),
     ),
+
     GoRoute(
       path: '/account',
       builder: (context, state) => AccountPage(),
     ),
+
     GoRoute(
       path: '/loyalty',
       builder: (context, state) => const LoyaltyPage(),
     ),
-
-    // GoRoute(
-    //   path: '/workspace',
-    //   builder: (context, state) => const WorkspaceListingsScreen(),
-    // ),
 
     GoRoute(
       path: '/workspace/:id',
@@ -121,13 +160,7 @@ final GoRouter appRouter = GoRouter(
 
     GoRoute(
         path: '/rooms', builder: (context, state) => const RoomListScreen()),
-    // GoRoute(
-    //   path: '/room/:id',
-    //   builder: (context, state) {
-    //     final String id = state.pathParameters['id']!;
-    //     return RoomDetailsScreen(roomId: id);
-    //   },
-    // ),
+
     GoRoute(
       path: '/room/:id',
       builder: (context, state) {
@@ -177,6 +210,27 @@ final GoRouter appRouter = GoRouter(
           child: const FavoriteScreen(userId: 'usr001'),
         );
       },
+    ),
+
+    GoRoute(
+      path: '/terms-policies',
+      builder: (context, state) => const TermsAndPoliciesScreen(),
+    ),
+    GoRoute(
+      path: '/report-problem',
+      builder: (context, state) => const ReportProblemScreen(),
+    ),
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => const AppSettingsScreen(),
+    ),
+    GoRoute(
+      path: '/help-center',
+      builder: (context, state) => const HelpCenterScreen(),
+    ),
+    GoRoute(
+      path: '/about-app',
+      builder: (context, state) => const AboutAppScreen(),
     ),
   ],
 );

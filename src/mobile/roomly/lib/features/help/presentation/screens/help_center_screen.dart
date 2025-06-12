@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class HelpCenterScreen extends StatelessWidget {
   const HelpCenterScreen({super.key});
@@ -6,7 +7,7 @@ class HelpCenterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Define colors based on the image analysis
-    const Color appBarColor = Color(0xFFE0E0E0); // Light grey
+    const Color appBarColor =  Color(0xFF1976D2); // Light grey
     const Color primaryBlue = Color(0xFF0D47A1); // Deep blue for indicators/logo
     const Color textGrey = Colors.grey;
     const Color textBlack = Colors.black87;
@@ -19,9 +20,10 @@ class HelpCenterScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: appBarColor,
+        foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: textBlack),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () {
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
@@ -30,7 +32,7 @@ class HelpCenterScreen extends StatelessWidget {
         ),
         title: const Text(
           'Help Center',
-          style: TextStyle(color: textBlack, fontSize: 18, fontWeight: FontWeight.w500),
+          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
         ),
         centerTitle: true,
       ),
@@ -107,13 +109,14 @@ class HelpCenterScreen extends StatelessWidget {
               // Roomly Logo Placeholder
               Center(
                 child: Container(
-                  height: 30,
-                  width: 100,
-                  color: Colors.grey[200], // Placeholder color
-                  child: const Center(
-                    child: Text(
-                      'ROOMLY Logo',
-                      style: TextStyle(color: Colors.grey, fontSize: 10),
+                  height: 70,
+                  width: 250,
+                  color: const Color.fromARGB(255, 255, 255, 255), // Placeholder color
+                  child: Center(
+                    child: SvgPicture.asset(
+                      'assets/images/roomly_small.svg',
+                      width: 200,
+                      height: 200,
                     ),
                   ),
                 ),
