@@ -117,7 +117,8 @@ CREATE TABLE Reservation (
     EndTime DATETIME,
     Status VARCHAR(50),
     TotalCost DOUBLE,
-    AmenitiesCount INT
+    AmenitiesCount INT,
+    AccessCode varchar(6)
 );
 
 CREATE TABLE Payment (
