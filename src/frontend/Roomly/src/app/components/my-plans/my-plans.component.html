@@ -1,0 +1,76 @@
+<div class="my-plans bg-light min-vh-100">
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-12 col-md-2">
+                <app-side-navbar></app-side-navbar>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-12 col-md-9 px-4 py-4">
+                <!-- Title Section -->
+                <div class="text-center mb-4">
+                    <p class="text-primary fs-5 fw-semibold">Pricing</p>
+                    <h2 class="text-black fw-bold">Create and manage subscription plans for<br />your workspace
+                        customers.</h2>
+                </div>
+
+                <!-- Toggle Section -->
+                <div class="d-flex justify-content-center mb-4">
+                    <button class="btn btn-primary btn-sm rounded-end-0 py-2 px-3">Monthly</button>
+                    <button class="btn btn-outline-primary btn-sm rounded-start-0 py-2 px-3">Yearly</button>
+                </div>
+
+                <!-- Plans Grid -->
+                <div class="row g-4">
+                    @for (plan of plans; track plan.id) {
+                    <div class="col-lg-4">
+                        <div class="bg-white rounded-3 shadow-sm p-4 h-100">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <img src="./../../../assets/Images/circle.svg" alt=""
+                                    style="width: 30px; height: 30px;">
+                                <h6 class="m-0 fw-semibold">{{ plan.title }}</h6>
+                            </div>
+                            <p class="text-secondary small mb-3">{{ plan.description }}</p>
+
+                            <div class="price mb-3">
+                                <h3 class="fw-bold ">{{ plan.price }}$</h3>
+                                <span class="fw-semibold">/Per Month</span>
+                            </div>
+
+                            <!-- Features -->
+                            <ul class="list-unstyled">
+                                @for (feature of plan.allowedFeatures; track feature) {
+                                <li class="d-flex align-items-start gap-2 mb-2">
+                                    <img src="./../../../assets/Images/allowed feature.svg" class="indicator-icon"
+                                        alt="allowed" />
+                                    <span>{{ feature }}</span>
+                                </li>
+                                }
+                                @for (feature of plan.deniedFeatures; track feature) {
+                                <li class="d-flex align-items-center gap-2 mb-2">
+                                    <img src="./../../../assets/Images/denied feature.svg" class="indicator-icon"
+                                        alt="denied" />
+                                    <span>{{ feature }}</span>
+                                </li>
+                                }
+                            </ul>
+
+                            <!-- Buttons -->
+                            <div class="d-flex flex-column justify-content-center align-items-center gap-2">
+                                <button class="btn btn-outline-primary p-2 btn-sm w-50">Edit</button>
+                                <button class="btn btn-danger btn-sm p-2 w-50">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+
+                <!-- Add Plan Button -->
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary rounded-pill px-4">+ New Plan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

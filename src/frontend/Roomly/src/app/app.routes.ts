@@ -33,7 +33,7 @@ export const routes: Routes = [
     component: BlankLayoutComponent,
     // canActivate: [authGuard], // ⛔ optional: disable during development
     children: [
-      { path: '', redirectTo: 'support', pathMatch: 'full' },
+      { path: '', redirectTo: 'my-plans', pathMatch: 'full' },
 
       {
         path: 'offers',
@@ -77,6 +77,10 @@ export const routes: Routes = [
       },
       {
         path: 'support', loadComponent: () => import('./components/support/support.component').then((m) => m.SupportComponent)
+          
+      },
+            {
+        path: 'my-plans', loadComponent: () => import('./components/my-plans/my-plans.component').then((m) => m.MyPlansComponent)
           
       },
     ]
