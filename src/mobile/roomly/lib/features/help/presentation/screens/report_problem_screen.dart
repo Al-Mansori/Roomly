@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 class ReportProblemScreen extends StatelessWidget {
   const ReportProblemScreen({super.key});
@@ -14,10 +15,10 @@ class ReportProblemScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: appBarColor,
+        backgroundColor: const Color(0xFF1976D2),
         elevation: 0, // Minimal elevation
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: textBlack),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white), // Back icon
           onPressed: () {
             // Handle back navigation
             if (Navigator.canPop(context)) {
@@ -27,7 +28,7 @@ class ReportProblemScreen extends StatelessWidget {
         ),
         title: const Text(
           'Report a Problem',
-          style: TextStyle(color: textBlack, fontSize: 18, fontWeight: FontWeight.w500),
+          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
         ),
         centerTitle: true,
       ),
@@ -40,14 +41,16 @@ class ReportProblemScreen extends StatelessWidget {
               const SizedBox(height: 20),
               // Placeholder for the illustration image
               Container(
-                height: 180,
+                height: 200,
                 width: double.infinity,
-                color: Colors.grey[200], // Placeholder color
-                child: const Center(
-                  child: Text(
-                    'Illustration Placeholder',
-                    style: TextStyle(color: Colors.grey),
-                  ),
+                color: const Color.fromARGB(255, 255, 255, 255), // Placeholder color
+                child: Center(
+                  // Add image from assets
+                  child: Image.asset(
+                    'assets/images/report-problem.jpg',
+                    width: 400,
+                    height: 400,
+                  ), 
                 ),
               ),
               const SizedBox(height: 30),
@@ -130,15 +133,16 @@ class ReportProblemScreen extends StatelessWidget {
               const SizedBox(height: 50),
               // Placeholder for the Roomly logo
               Container(
-                 height: 30,
-                 width: 100,
-                 color: Colors.grey[200], // Placeholder color
-                 child: const Center(
-                   child: Text(
-                     'ROOMLY Logo',
-                     style: TextStyle(color: Colors.grey, fontSize: 10),
-                   ),
-                 ),
+                 height: 50,
+                 width: 200,
+                 color: const Color.fromARGB(255, 255, 255, 255), // Placeholder color
+                 child: Center(
+                  child: SvgPicture.asset(
+                    'assets/images/roomly_small.svg',
+                    width: 300,
+                    height: 300,
+                  ),
+                ),
               ),
                const SizedBox(height: 20), // Bottom padding
             ],
@@ -148,31 +152,3 @@ class ReportProblemScreen extends StatelessWidget {
     );
   }
 }
-
-// To run this screen, you would typically have a main.dart file like this:
-/*
-import 'package:flutter/material.dart';
-import 'report_problem_screen.dart'; // Assuming your file is named report_problem_screen.dart
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: const ReportProblemScreen(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
-*/
-
