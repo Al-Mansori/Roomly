@@ -202,6 +202,20 @@ CREATE TABLE WorkspaceSchedule (
     WorkspaceId VARCHAR(100)
 );
 
+CREATE TABLE CreditCard (
+    CardNumber CHAR(16) primary key,
+    CVV CHAR(3) NOT NULL, 
+    EndDate varchar(7) NOT NULL,
+    Balance DOUBLE
+);
+
+CREATE TABLE UserCards (
+    CardNumber CHAR(16),
+    UserId varchar(100),
+    FOREIGN KEY (CardNumber) REFERENCES CreditCard(CardNumber),
+    FOREIGN KEY (UserId) REFERENCES user(Id) on delete cascade
+);
+
 -- Add foreign key constraints using ALTER TABLE
 ALTER TABLE Workspace ADD CONSTRAINT fk_workspace_location FOREIGN KEY (LocationId) REFERENCES Location(Id);
 ALTER TABLE Amenity ADD CONSTRAINT fk_amenity_room FOREIGN KEY (RoomId) REFERENCES Room(Id);
@@ -237,3 +251,6 @@ ALTER TABLE ApplyedOffers ADD CONSTRAINT fk_applyedoffers_staff FOREIGN KEY (Sta
 ALTER TABLE ApplyedOffers ADD CONSTRAINT fk_applyedoffers_room FOREIGN KEY (RoomId) REFERENCES Room(Id);
 ALTER TABLE ApplyedOffers ADD CONSTRAINT fk_applyedoffers_offer FOREIGN KEY (OfferId) REFERENCES Offers(Id);
 ALTER TABLE WorkspaceSchedule ADD CONSTRAINT fk_workspaceschedule_workspace FOREIGN KEY (WorkspaceId) REFERENCES Workspace(Id);
+
+ALTER TABLE UserCards ADD CONSTRAINT fk_usercards_cardnumber FOREIGN KEY (CardNumber) REFERENCES CreditCard(CardNumber);
+ALTER TABLE UserCards ADD CONSTRAINT fk_usercards_user FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE;
