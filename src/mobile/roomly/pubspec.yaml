@@ -51,6 +51,10 @@ dependencies:
   dio: ^5.8.0+1
   get_it: ^8.0.3
   internet_connection_checker: ^3.0.1
+  geolocator: ^14.0.1
+  latlong2: ^0.9.1
+  flutter_map: ^8.1.1
+  geocoding: ^4.0.0
 
 dev_dependencies:
   flutter_test:
