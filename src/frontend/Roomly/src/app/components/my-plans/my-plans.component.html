@@ -67,8 +67,134 @@
                 </div>
 
                 <!-- Add Plan Button -->
-                <div class="text-center mt-4">
+                <!-- <div class="text-center mt-4">
                     <button class="btn btn-primary rounded-pill px-4">+ New Plan</button>
+                </div> -->
+                <!-- Add Plan Button -->
+                <!-- New Plan Button -->
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal"
+                        data-bs-target="#addPlanModal">
+                        + New Plan
+                    </button>
+                </div>
+
+                <!-- Bootstrap Modal -->
+                <div class="modal fade" id="addPlanModal" tabindex="-1" aria-labelledby="addPlanModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content p-4 rounded-4">
+                            <h5 class="fw-semibold text-center mb-3">Add New Plan</h5>
+
+                            <!-- Title  -->
+                            <div class="mb-3 d-flex">
+                                <label class="form-label w-50">Title</label>
+                                <input type="text" class="form-control" [(ngModel)]="newPlan.title">
+                            </div>
+                            <!-- description -->
+                            <div class="mb-3 d-flex">
+                                <label class="form-label w-50">Description</label>
+                                <textarea class="form-control" rows="3" [(ngModel)]="newPlan.description"></textarea>
+                            </div>
+                            <!-- price -->
+                            <div class="mb-3 d-flex">
+                                <label class="form-label w-50">Plan Price</label>
+                                <input type="text" class="form-control" [(ngModel)]="newPlan.price">
+                            </div>
+
+                            <!-- Billing -->
+                            <div class="d-flex">
+                                <label class="form-label w-50 ">Billing Cycle</label>
+                                <div class="mb-3 d-flex gap-3">
+                                    <div class="form-check">
+                                        <input type="radio" id="monthly" name="billing" [(ngModel)]="newPlan.billing"
+                                            value="monthly" class="form-check-input" />
+                                        <label for="monthly" class="form-check-label">Monthly</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="radio" id="yearly" name="billing" [(ngModel)]="newPlan.billing"
+                                            value="yearly" class="form-check-input" />
+                                        <label for="yearly" class="form-check-label">Yearly</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Allowed Features -->
+                            <div class="mb-4">
+                                <div class="d-flex">
+                                    <div class="w-50">
+                                        <img src="./../../../assets/Images/allowed feature label.png"
+                                            alt="allowed feature label" style="width: 20px; height: 20px;">
+                                        <label class="form-label text-success ms-1">Allowed Features</label>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control me-2" [(ngModel)]="allowedInput"
+                                            placeholder="Add allowed feature" />
+                                        <button class="add-feature btn p-0 border-0 bg-transparent" (click)="addAllowedFeature()"
+                                            type="button">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle circle"
+                                                style="width: 30px; height: 30px;">
+                                                <span class="text-white fw-semibold fs-4 m-0">+</span>
+                                            </div>
+                                        </button>
+
+                                    </div>
+                                </div>
+                                <ul class="list-group">
+                                    @for (feature of allowedFeatures; track feature) {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ feature }}
+                                        <button class="btn btn-sm btn-outline-danger"
+                                            (click)="removeAllowed(allowedFeatures.indexOf(feature))">
+                                            Delete
+                                        </button>
+                                    </li>
+                                    }
+                                </ul>
+                            </div>
+
+                            <!-- Denied Features -->
+                            <div class="mb-4">
+                                <div class="d-flex">
+                                    <div class="w-50">
+                                        <img src="./../../../assets/Images/denied feature label.png"
+                                            alt="denied feature label" style="width: 20px; height: 20px;">
+                                        <label class="form-label text-danger ms-1">Denied Features</label>
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <input type="text" class="form-control me-2" [(ngModel)]="deniedInput"
+                                            placeholder="Add denied feature" />
+                                        <button class="add-feature btn p-0 border-0 bg-transparent" (click)="addDeniedFeature()"
+                                            type="button">
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle circle"
+                                                style="width: 30px; height: 30px;">
+                                                <span class="text-white fw-semibold fs-4 m-0">+</span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <ul class="list-group">
+                                    @for (feature of deniedFeatures; track feature) {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ feature }}
+                                        <button class="btn btn-sm btn-outline-danger"
+                                            (click)="removeDenied(deniedFeatures.indexOf(feature))">
+                                            Delete
+                                        </button>
+                                    </li>
+                                    }
+                                </ul>
+                            </div>
+
+                            <!-- You can then add Allowed/Denied features and actions like Save/Cancel -->
+                            <div class="d-flex gap-4 justify-content-center mt-4">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                                <button class="btn btn-primary" (click)="savePlan()">Save Plan</button>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

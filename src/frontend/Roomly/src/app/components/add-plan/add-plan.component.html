@@ -1,0 +1,80 @@
+<div class="add-plan modal-content p-4 rounded-4 shadow">
+    <h5 class="fw-semibold text-center mb-4">Add New Plan</h5>
+
+    <!-- Title -->
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input type="text" class="form-control" [(ngModel)]="title" />
+    </div>
+
+    <!-- Price -->
+    <div class="mb-3">
+        <label class="form-label">Plan Price</label>
+        <input type="number" class="form-control" [(ngModel)]="price" />
+    </div>
+
+    <!-- Billing Cycle -->
+    <label class="form-label">Billing Cycle</label>
+    <div class="mb-3 d-flex gap-3">
+        <div class="form-check">
+            <input type="radio" id="monthly" name="billing" [(ngModel)]="cycle" value="Monthly"
+                class="form-check-input" />
+            <label for="monthly" class="form-check-label">Monthly</label>
+        </div>
+        <div class="form-check">
+            <input type="radio" id="yearly" name="billing" [(ngModel)]="cycle" value="Yearly"
+                class="form-check-input" />
+            <label for="yearly" class="form-check-label">Yearly</label>
+        </div>
+    </div>
+
+    <!-- Allowed Features -->
+    <div class="mb-4">
+        <label class="form-label text-success">Allowed Features</label>
+        <div class="input-group mb-2">
+            <input type="text" class="form-control" [(ngModel)]="allowedInput" placeholder="Add allowed feature" />
+            <button class="btn btn-outline-primary" (click)="addAllowedFeature()">
+                <img src="./../../../assets/Images/plus image.svg" width="24" height="24" />
+            </button>
+        </div>
+        <!-- Allowed Features -->
+        <ul class="list-group">
+            @for (feature of allowedFeatures; track feature) {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ feature }}
+                <button class="btn btn-sm btn-outline-danger" (click)="removeAllowed(allowedFeatures.indexOf(feature))">
+                    Delete
+                </button>
+            </li>
+            }
+        </ul>
+    </div>
+
+    <!-- Denied Features -->
+    <div class="mb-4">
+        <label class="form-label text-danger">Denied Features</label>
+        <div class="input-group mb-2">
+            <input type="text" class="form-control" [(ngModel)]="deniedInput" placeholder="Add denied feature" />
+            <button class="btn btn-outline-primary" (click)="addDeniedFeature()">
+                <img src="./../../../assets/Images/plus image.svg" width="24" height="24" />
+            </button>
+        </div>
+        <!-- Denied Features -->
+        <ul class="list-group">
+            @for (feature of deniedFeatures; track feature) {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ feature }}
+                <button class="btn btn-sm btn-outline-danger" (click)="removeDenied(deniedFeatures.indexOf(feature))">
+                    Delete
+                </button>
+            </li>
+            }
+        </ul>
+    </div>
+
+    <!-- Actions -->
+    <div class="d-flex gap-2">
+        <button class="btn btn-danger" (click)="cancel()">Cancel</button>
+        <button class="btn btn-primary" (click)="savePlan()">Save Plan</button>
+    </div>
+</div>

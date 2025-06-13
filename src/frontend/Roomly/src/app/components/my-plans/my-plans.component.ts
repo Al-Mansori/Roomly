@@ -1,10 +1,12 @@
 import { Component } from '@angular/core';
 import { SideNavbarComponent } from "../side-navbar/side-navbar.component";
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-my-plans',
   standalone: true,
-  imports: [SideNavbarComponent],
+  imports: [SideNavbarComponent, FormsModule, CommonModule],
   templateUrl: './my-plans.component.html',
   styleUrl: './my-plans.component.scss'
 })
@@ -56,5 +58,77 @@ export class MyPlansComponent {
     }
   ];
 
+  // Modal Form Inputs
+  newPlan = {
+    id: 0,
+    title: '',
+    description: '',
+    price: 0,
+    billing: 'monthly',
+    allowedFeatures: [] as string[],
+    deniedFeatures: [] as string[]
+  };
 
+  // Input fields for features
+  allowedInput: string = '';
+  deniedInput: string = '';
+  allowedFeatures: string[] = [];
+  deniedFeatures: string[] = [];
+
+  // Add Allowed Feature
+  addAllowedFeature() {
+    const feature = this.allowedInput.trim();
+    if (feature) {
+      this.allowedFeatures.push(feature);
+      this.allowedInput = '';
+    }
+  }
+
+  // Remove Allowed Feature
+  removeAllowed(index: number) {
+    this.allowedFeatures.splice(index, 1);
+  }
+
+  // Add Denied Feature
+  addDeniedFeature() {
+    const feature = this.deniedInput.trim();
+    if (feature) {
+      this.deniedFeatures.push(feature);
+      this.deniedInput = '';
+    }
+  }
+
+  // Remove Denied Feature
+  removeDenied(index: number) {
+    this.deniedFeatures.splice(index, 1);
+  }
+
+  // Save Plan
+  savePlan() {
+    if (!this.newPlan.title || !this.newPlan.price || !this.newPlan.description) return;
+
+    const newId = Date.now();
+    this.plans.push({
+      ...this.newPlan,
+      id: newId,
+      price: Number(this.newPlan.price),
+      allowedFeatures: [...this.allowedFeatures],
+      deniedFeatures: [...this.deniedFeatures]
+    });
+
+    // Reset all fields
+    this.newPlan = {
+      id: 0,
+      title: '',
+      description: '',
+      price: 0,
+      billing: 'monthly',
+      allowedFeatures: [],
+      deniedFeatures: []
+    };
+    this.allowedInput = '';
+    this.deniedInput = '';
+    this.allowedFeatures = [];
+    this.deniedFeatures = [];
+  }
 }
