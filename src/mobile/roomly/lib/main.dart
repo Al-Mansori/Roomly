@@ -12,11 +12,25 @@ import 'features/auth/domain/usecases/register_staff_usecase.dart';
 import 'features/auth/domain/usecases/register_usecase.dart';
 import 'features/auth/domain/usecases/verify_usecase.dart';
 import 'features/auth/presentation/blocs/auth_cubit.dart';
+import 'package:dio/dio.dart';
+import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart';
 
-void main() {
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize GetIt dependencies -- Mostafa
+  await initDependencies();
+
   runApp(const RoomlyApp());
+}
+
+Future<void> initDependencies() async {
+  // Register Dio first as it's needed by other dependencies
+  sl.registerLazySingleton<Dio>(() => Dio());
+  
+  // Initialize room management dependencies
+  await initRoomManagementDependencies();
 }
 
 class RoomlyApp extends StatelessWidget {
