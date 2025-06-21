@@ -58,11 +58,27 @@ import 'package:roomly/features/workspace/domain/usecases/get_room_details_useca
 import 'package:roomly/features/workspace/domain/usecases/get_workspace_details_usecase.dart';
 import 'package:roomly/features/workspace/presentation/cubits/workspace_details_cubit.dart';
 
+import '../../features/map/presentaion/map_screen.dart';
+import '../../features/map/presentaion/services/cubic/location_bloc.dart';
+import '../../features/map/presentaion/services/geocoding_service.dart';
+import '../../features/map/presentaion/services/location_manager.dart';
+import '../../features/map/presentaion/services/location_service.dart';
+import '../../features/map/presentaion/services/secure_storage_service.dart';
+import '../../features/map/presentaion/services/state/location_event.dart';
+
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/login',
+  initialLocation: '/',
   routes: [
-    GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+    GoRoute(
+      path: '/',
+      builder: (context, state) {
+        return BlocProvider(
+          create: (_) => LocationBloc(locationManager: LocationManager())..add(LoadInitialLocation()),
+          child: const HomeScreen(),
+        );
+      },
+    ),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     // GoRoute(path: '/complete-profile', builder: (context, state) =>  CompleteProfileScreen(userId: )),
     GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
@@ -93,6 +109,19 @@ final GoRouter appRouter = GoRouter(
         builder: (context, state) => const ForgetPasswordScreen()),
 
     GoRoute(path: '/signup', builder: (context, state) => const SignupScreen()),
+    GoRoute(
+      path: '/map',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+
+        return BlocProvider(
+          create: (context) => LocationBloc(locationManager: LocationManager())
+            ..add(const LoadInitialLocation()),
+          child: const MapScreen(), // أو اللي عندك
+        );
+
+      },
+    ),
 
     GoRoute(
       path: '/profile',
