@@ -14,6 +14,8 @@ import 'features/auth/domain/usecases/verify_usecase.dart';
 import 'features/auth/presentation/blocs/auth_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart';
+import 'package:roomly/features/payment/presentation/di/payment_injection.dart' as payment_di;
+
 
 
 Future<void> main() async {
@@ -21,6 +23,9 @@ Future<void> main() async {
 
   // Initialize GetIt dependencies -- Mostafa
   await initDependencies();
+
+  // Initialize room management dependencies
+  await payment_di.initPaymentDependencies();
 
   runApp(const RoomlyApp());
 }
