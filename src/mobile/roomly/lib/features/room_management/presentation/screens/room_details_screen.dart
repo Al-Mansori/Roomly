@@ -1,3 +1,4 @@
+
 // import 'package:flutter/material.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import '../../../GlobalWidgets/ReusableCarrasoul.dart';
@@ -106,28 +107,21 @@
 //                         Row(
 //                           children: [
 //                             Text(
-//                               'Name of workspace',
+//                               'Room Name',
 //                               style: TextStyle(
 //                                 fontSize: 12,
 //                                 color: Colors.grey[600],
 //                               ),
 //                             ),
 //                             const Spacer(),
-//                             const Icon(Icons.star, color: Colors.amber, size: 16),
-//                             const SizedBox(width: 4),
-//                             const Text(
-//                               '4.92',
-//                               style: TextStyle(
-//                                 fontWeight: FontWeight.bold,
-//                                 fontSize: 14,
-//                               ),
-//                             ),
+//                             const Icon(Icons.event_seat, color: Colors.green, size: 16),
 //                             const SizedBox(width: 4),
 //                             Text(
-//                               '(116 reviews)',
-//                               style: TextStyle(
-//                                 fontSize: 12,
-//                                 color: Colors.grey[600],
+//                               '${room.availableCount ?? 0} Seats Available',
+//                               style: const TextStyle(
+//                                 fontWeight: FontWeight.bold,
+//                                 fontSize: 14,
+//                                 color: Colors.green,
 //                               ),
 //                             ),
 //                           ],
@@ -520,12 +514,15 @@
 // }
 
 
-// v2 ---------------------------------------------------------------------------------------------
+
+// v2 ------------------------------------------------------------------------------------
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../GlobalWidgets/ReusableCarrasoul.dart';
 import 'package:roomly/features/room_management/domain/entities/amenity_entity.dart';
+import 'package:roomly/features/room_management/domain/entities/offer_entity.dart';
 import 'package:roomly/features/room_management/presentation/cubits/room_details_cubit.dart';
 import 'package:roomly/features/room_management/presentation/cubits/room_details_state.dart';
 import 'package:go_router/go_router.dart';
@@ -556,6 +553,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
           } else if (state is RoomDetailsLoaded) {
             final room = state.room;
             final images = state.images;
+            final offers = state.offers;
 
             print("This is the room from cubit ==> ${room.toString()}");
             
@@ -725,6 +723,41 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                     ),
                   ),
                   
+                  // Offers section - only show if there are offers
+                  if (offers.isNotEmpty)
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.green.withOpacity(0.3)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.local_offer, color: Colors.green, size: 20),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Special Offers Available',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          ...offers.map((offer) => _buildOfferCard(offer, room.pricePerHour ?? 0.0)).toList(),
+                        ],
+                      ),
+                    ),
+                  
+                  const SizedBox(height: 16),
+                  
                   // Open hours
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -879,6 +912,13 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
         builder: (context, state) {
           if (state is RoomDetailsLoaded) {
             final room = state.room;
+            final offers = state.offers;
+            final originalPrice = room.pricePerHour ?? 57.0;
+            final hasActiveOffer = offers.any((offer) => offer.status.toLowerCase() == 'active');
+            final activeOffer = hasActiveOffer ? offers.firstWhere((offer) => offer.status.toLowerCase() == 'active') : null;
+            final discountedPrice = activeOffer != null 
+                ? originalPrice * (1 - activeOffer.discountPercentage / 100)
+                : originalPrice;
             return Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -899,13 +939,36 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          '${room.pricePerHour?.toStringAsFixed(2) ?? '57.0'} EGP/Hour',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        if (hasActiveOffer) ...[
+                          // Original price with strikethrough
+                          Text(
+                            '${originalPrice.toStringAsFixed(2)} EGP/Hour',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor: Colors.red,
+                              decorationThickness: 2,
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 2),
+                          // Discounted price in green
+                          Text(
+                            '${discountedPrice.toStringAsFixed(2)} EGP/Hour',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ] else
+                          Text(
+                            '${originalPrice.toStringAsFixed(2)} EGP/Hour',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         const SizedBox(height: 4),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -925,20 +988,26 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                     ),
                     const Spacer(),
                     ElevatedButton(
-                      onPressed: () {
-                        // Navigate to booking screen
-                        context.push('/booking/${room.id}');
-                      },
+                      onPressed: (room.availableCount ?? 0) > 0 
+                        ? () {
+                            // Navigate to booking screen
+                            context.push('/booking/${room.id}');
+                          }
+                        : null, // Disable button when no seats available
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: (room.availableCount ?? 0) > 0 
+                          ? Colors.blue 
+                          : Colors.grey, // Grey when disabled
                         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Text(
-                        'Select Date',
-                        style: TextStyle(
+                      child: Text(
+                        (room.availableCount ?? 0) > 0 
+                          ? 'Select Date' 
+                          : 'No Seats Available',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
@@ -1034,5 +1103,99 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
       );
     }).toList();
   }
-}
 
+  Widget _buildOfferCard(OfferEntity offer, double originalPrice) {
+    final discountedPrice = originalPrice * (1 - offer.discountPercentage / 100);
+    final isActive = offer.status.toLowerCase() == 'active';
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isActive ? Colors.green : Colors.grey.shade300,
+          width: isActive ? 2 : 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  offer.offerTitle,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: isActive ? Colors.green : Colors.grey,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  offer.status,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '${offer.discountPercentage.toStringAsFixed(0)}% OFF',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.green.shade700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Text(
+                'Price after discount: ',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              Text(
+                '${discountedPrice.toStringAsFixed(2)} EGP/Hour',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(Icons.calendar_today, size: 14, color: Colors.grey.shade600),
+              const SizedBox(width: 4),
+              Text(
+                'Valid: ${offer.validFrom} - ${offer.validTo}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+}

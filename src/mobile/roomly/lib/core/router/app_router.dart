@@ -23,8 +23,9 @@ import 'package:roomly/features/help/presentation/screens/settings_screen.dart';
 import 'package:roomly/features/help/presentation/screens/terms_and_policies_screen.dart';
 import 'package:roomly/features/home/presentation/home_screen.dart';
 import 'package:roomly/features/loyalty/presentation/screens/loyalty_page.dart';
-import 'package:roomly/features/payment/presentation/add_card_screen.dart';
-import 'package:roomly/features/payment/presentation/cards_screen.dart';
+import 'package:roomly/features/payment/presentation/di/payment_injection.dart';
+import 'package:roomly/features/payment/presentation/screens/add_card_screen.dart';
+import 'package:roomly/features/payment/presentation/screens/cards_screen.dart';
 import 'package:roomly/features/profile/data/data_source/user_local_data_source.dart';
 import 'package:roomly/features/profile/data/data_source/user_remote_data_source.dart';
 import 'package:roomly/features/profile/data/repository/user_repository_impl.dart';
@@ -65,6 +66,7 @@ import '../../features/map/presentaion/services/location_manager.dart';
 import '../../features/map/presentaion/services/location_service.dart';
 import '../../features/map/presentaion/services/secure_storage_service.dart';
 import '../../features/map/presentaion/services/state/location_event.dart';
+import '../../features/payment/presentation/cubit/payment_cubit.dart';
 
 
 final GoRouter appRouter = GoRouter(
@@ -235,14 +237,30 @@ final GoRouter appRouter = GoRouter(
     ),
 
 
+    // GoRoute(
+    //   path: '/cards',
+    //   builder: (context, state) => const CardsScreen(),
+    // ),
+    // GoRoute(
+    //   path: '/add-card',
+    //   builder: (context, state) => const AddCardScreen(),
+    // ),
+
     GoRoute(
       path: '/cards',
-      builder: (context, state) => const CardsScreen(),
+      builder: (context, state) => BlocProvider(
+        create: (context) => sl<PaymentCubit>(),
+        child: const CardsScreen(),
+      ),
     ),
     GoRoute(
       path: '/add-card',
-      builder: (context, state) => const AddCardScreen(),
+      builder: (context, state) => BlocProvider(
+        create: (context) => sl<PaymentCubit>(),
+        child: const AddCardScreen(),
+      ),
     ),
+
     GoRoute(
       path: '/filter',
       builder: (context, state) => const FilterScreen(),
