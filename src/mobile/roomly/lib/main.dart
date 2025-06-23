@@ -16,10 +16,11 @@ import 'features/auth/domain/usecases/verify_usecase.dart';
 import 'features/auth/presentation/blocs/auth_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart';
-import 'package:roomly/features/payment/presentation/di/payment_injection.dart'
-    as payment_di;
-
+import 'package:roomly/features/payment/presentation/di/payment_injection.dart'as payment_di;
 import 'features/map/presentaion/services/cubic/location_bloc.dart';
+import 'package:roomly/features/request/presentation/di/requests_injection_container.dart' as requests_di;
+import 'package:roomly/features/favorite/presentation/di/favorite_injection_container.dart' as favorite_di;
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,18 +28,24 @@ Future<void> main() async {
   // Initialize GetIt dependencies -- Mostafa
   await initDependencies();
 
-  // Initialize room management dependencies
-  await payment_di.initPaymentDependencies();
-
   runApp(const RoomlyApp());
 }
 
 Future<void> initDependencies() async {
   // Register Dio first as it's needed by other dependencies
   sl.registerLazySingleton<Dio>(() => Dio());
-
+  
   // Initialize room management dependencies
   await initRoomManagementDependencies();
+
+  // Initialize room management dependencies
+  await payment_di.initPaymentDependencies();
+
+  // Requests feature dependencies
+  await requests_di.initRequestsDependencies();
+
+  // Initialize Favorite feature dependencies
+  await favorite_di.initFavoriteDependencies();
 }
 
 class RoomlyApp extends StatelessWidget {

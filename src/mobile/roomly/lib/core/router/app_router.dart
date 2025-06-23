@@ -12,9 +12,6 @@ import 'package:roomly/features/BookingsStatus/presentation/cubit/bookings_cubit
 import 'package:roomly/features/BookingsStatus/presentation/screens/Activity.dart';
 import 'package:roomly/features/account/presentation/account_screen.dart';
 import 'package:roomly/features/auth/presentation/screens/OTP_Screen.dart';
-import 'package:roomly/features/favorite/data/data_sources/favorite_remote_data_source.dart';
-import 'package:roomly/features/favorite/data/repositories/favorite_repository_impl.dart';
-import 'package:roomly/features/favorite/domain/usecases/get_favorite_rooms.dart';
 import 'package:roomly/features/favorite/presentation/cubit/favorite_cubit.dart';
 import 'package:roomly/features/help/presentation/screens/about_app_screen.dart';
 import 'package:roomly/features/help/presentation/screens/help_center_screen.dart';
@@ -35,8 +32,7 @@ import 'package:roomly/features/profile/domain/usecases/update_user.dart';
 import 'package:roomly/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:roomly/features/profile/presentation/screens/profile_screen.dart';
 import 'package:roomly/features/room_management/presentation/cubits/room_details_cubit.dart';
-import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart'
-    as di;
+import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart'as di;
 import 'package:roomly/features/room_management/presentation/screens/room_details_screen.dart';
 import 'package:roomly/features/room_management/presentation/screens/room_list_screen.dart';
 import 'package:roomly/features/room_management/presentation/screens/Booking_2nd_Screen.dart';
@@ -58,15 +54,20 @@ import 'package:roomly/features/workspace/data/repositories/workspace_repository
 import 'package:roomly/features/workspace/domain/usecases/get_room_details_usecase.dart';
 import 'package:roomly/features/workspace/domain/usecases/get_workspace_details_usecase.dart';
 import 'package:roomly/features/workspace/presentation/cubits/workspace_details_cubit.dart';
-
 import '../../features/map/presentaion/map_screen.dart';
 import '../../features/map/presentaion/services/cubic/location_bloc.dart';
-import '../../features/map/presentaion/services/geocoding_service.dart';
 import '../../features/map/presentaion/services/location_manager.dart';
-import '../../features/map/presentaion/services/location_service.dart';
-import '../../features/map/presentaion/services/secure_storage_service.dart';
 import '../../features/map/presentaion/services/state/location_event.dart';
 import '../../features/payment/presentation/cubit/payment_cubit.dart';
+import 'package:roomly/features/favorite/data/data_source/favorite_remote_data_source.dart';
+import 'package:roomly/features/favorite/data/repository/favorite_repository_impl.dart';
+import 'package:roomly/features/favorite/domain/usecases/get_favorite_rooms_usecase.dart';
+import 'package:roomly/features/favorite/domain/usecases/remove_favorite_room_usecase.dart';
+import 'package:roomly/features/request/domain/entities/request.dart';
+import 'package:roomly/features/request/presentation/cubit/requests_cubit.dart';
+import 'package:roomly/features/request/presentation/screens/request_detail_screen.dart';
+import 'package:roomly/features/request/presentation/screens/requests_screen.dart';
+import 'package:roomly/features/workspace/domain/usecases/get_workspace_schedules_usecase.dart';
 
 
 final GoRouter appRouter = GoRouter(
@@ -170,14 +171,6 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const LoyaltyPage(),
     ),
 
-    // GoRoute(
-    //   path: '/workspace/:id',
-    //   builder: (context, state) {
-    //     final String id = state.pathParameters['id']!;
-    //     return WorkspaceDetailsScreen(workspaceId: id);
-    //   },
-    // ),
-
     GoRoute(
       path: '/workspace/:id',
       builder: (context, state) {
@@ -191,11 +184,13 @@ final GoRouter appRouter = GoRouter(
             final getWorkspaceDetailsUseCase = GetWorkspaceDetailsUseCase(repository: repository);
             final getWorkspaceReviewsUseCase = GetWorkspaceReviewsUseCase(repository);
             final getRoomDetailsUseCase = GetRoomDetailsUseCase(repository: repository);
-            
+            final getWorkspaceSchedulesUseCase = GetWorkspaceSchedulesUseCase(repository);
+
             return WorkspaceDetailsCubit(
               getWorkspaceDetailsUseCase: getWorkspaceDetailsUseCase,
               getRoomDetailsUseCase: getRoomDetailsUseCase, 
               getWorkspaceReviewsUseCase: getWorkspaceReviewsUseCase,
+              getWorkspaceSchedulesUseCase: getWorkspaceSchedulesUseCase,
             );
           },
           child: WorkspaceDetailsScreen(workspaceId: id),
@@ -207,11 +202,6 @@ final GoRouter appRouter = GoRouter(
       path: '/reservation-qrcode',
       builder: (context, state) => const ReservationQRCodeScreen(),
     ),
-
-    // GoRoute(
-    //   path: '/reviews',
-    //   builder: (context, state) => const ReviewsScreen(),
-    // ),
 
     GoRoute(
       path: '/reviews/:workspaceId',
@@ -236,16 +226,6 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
-
-    // GoRoute(
-    //   path: '/cards',
-    //   builder: (context, state) => const CardsScreen(),
-    // ),
-    // GoRoute(
-    //   path: '/add-card',
-    //   builder: (context, state) => const AddCardScreen(),
-    // ),
-
     GoRoute(
       path: '/cards',
       builder: (context, state) => BlocProvider(
@@ -269,21 +249,22 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: '/rooms', builder: (context, state) => const RoomListScreen()),
 
-    // GoRoute(
-    //   path: '/room/:id',
-    //   builder: (context, state) {
-    //     final String id = state.pathParameters['id'] ?? '';
-    //     return BlocProvider<RoomDetailsCubit>(
-    //       create: (context) => di.sl<RoomDetailsCubit>(),
-    //       child: RoomDetailsScreen(roomId: id),
-    //     );
-    //   },
-    // ),
-
     GoRoute(
       path: '/room/:id',
       builder: (context, state) {
         final String id = state.pathParameters['id'] ?? '';
+        final workspaceCubit = state.extra as WorkspaceDetailsCubit?;
+
+        if (workspaceCubit != null) {
+          return BlocProvider.value(
+            value: workspaceCubit,
+            child: BlocProvider<RoomDetailsCubit>(
+              create: (context) => di.sl<RoomDetailsCubit>(),
+              child: RoomDetailsScreen(roomId: id),
+            ),
+          );
+        }
+
         return BlocProvider<RoomDetailsCubit>(
           create: (context) => di.sl<RoomDetailsCubit>(),
           child: RoomDetailsScreen(roomId: id),
@@ -309,24 +290,21 @@ final GoRouter appRouter = GoRouter(
         );
       },
     ),
+
     GoRoute(
       path: '/favorite',
       builder: (context, state) {
         return BlocProvider(
           create: (context) {
             final dio = Dio();
-            final roomRemoteDataSource = RoomRemoteDataSource(dio: dio);
-            final remoteDataSource = FavoriteRemoteDataSource(
-              dio: dio,
-              roomRemoteDataSource: roomRemoteDataSource,
-            );
-            final repository =
-                FavoriteRepositoryImpl(remoteDataSource: remoteDataSource);
+            final remoteDataSource = FavoriteRemoteDataSourceImpl(dio: dio);
+            final repository = FavoriteRepositoryImpl(remoteDataSource: remoteDataSource);
             return FavoriteCubit(
-              getFavoriteRooms: GetFavoriteRooms(repository),
+              getFavoriteRoomsUseCase: GetFavoriteRoomsUseCase(repository),
+              removeFavoriteRoomUseCase: RemoveFavoriteRoomUseCase(repository),
             );
           },
-          child: const FavoriteScreen(userId: 'usr001'),
+          child: const FavoriteScreen(), // userId will be fetched inside FavoriteScreen
         );
       },
     ),
@@ -350,6 +328,21 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/about-app',
       builder: (context, state) => const AboutAppScreen(),
+    ),
+
+    GoRoute(
+      path: '/requests',
+      builder: (context, state) => BlocProvider(
+        create: (context) => sl<RequestsCubit>(),
+        child: const RequestsScreen(),
+      ),
+    ),
+    GoRoute(
+      path: '/request-details',
+      builder: (context, state) {
+        final request = state.extra as Request;
+        return RequestDetailScreen(request: request);
+      },
     ),
   ],
 );
