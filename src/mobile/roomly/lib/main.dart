@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:roomly/core/router/app_router.dart';
 import 'package:roomly/features/auth/domain/usecases/ResetPasswordUseCase.dart';
+import 'package:roomly/features/auth/domain/usecases/continue_with_google.dart';
 import 'package:roomly/features/auth/domain/usecases/login_usecase.dart';
 import 'package:http/http.dart' as http;
+import 'package:roomly/features/map/presentaion/services/location_manager.dart';
 import 'features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'features/auth/data/repositories/auth_repository.dart';
 import 'features/auth/domain/usecases/complete_profile_case.dart';
@@ -14,9 +16,10 @@ import 'features/auth/domain/usecases/verify_usecase.dart';
 import 'features/auth/presentation/blocs/auth_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart';
-import 'package:roomly/features/payment/presentation/di/payment_injection.dart' as payment_di;
+import 'package:roomly/features/payment/presentation/di/payment_injection.dart'
+    as payment_di;
 
-
+import 'features/map/presentaion/services/cubic/location_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +36,7 @@ Future<void> main() async {
 Future<void> initDependencies() async {
   // Register Dio first as it's needed by other dependencies
   sl.registerLazySingleton<Dio>(() => Dio());
-  
+
   // Initialize room management dependencies
   await initRoomManagementDependencies();
 }
@@ -60,23 +63,26 @@ class RoomlyApp extends StatelessWidget {
                   AuthRepositoryImpl(remoteDataSource: remoteDataSource);
 
               return AuthCubit(
-                loginUseCase: LoginUseCase(repository: repository),
-                registerCustomerUseCase:
-                    RegisterCustomerUseCase(repository: repository),
-                registerStaffUseCase:
-                    RegisterStaffUseCase(repository: repository),
-                verifyUserUseCase: VerifyUserUseCase(repository: repository),
-                completeProfileUseCase:
-                    CompleteProfileUseCase(repository: repository),
-                resetPasswordUseCase:
-                    ResetPasswordUseCase(repository: repository),
-                sendForgotPasswordOtpUseCase:
-                    SendForgotPasswordOtpUseCase(repository),
-                verifyResetOtpUseCase: VerifyResetOtpUseCase(repository),
-              );
+                  loginUseCase: LoginUseCase(repository: repository),
+                  registerCustomerUseCase:
+                      RegisterCustomerUseCase(repository: repository),
+                  registerStaffUseCase:
+                      RegisterStaffUseCase(repository: repository),
+                  verifyUserUseCase: VerifyUserUseCase(repository: repository),
+                  completeProfileUseCase:
+                      CompleteProfileUseCase(repository: repository),
+                  resetPasswordUseCase:
+                      ResetPasswordUseCase(repository: repository),
+                  sendForgotPasswordOtpUseCase:
+                      SendForgotPasswordOtpUseCase(repository),
+                  verifyResetOtpUseCase: VerifyResetOtpUseCase(repository),
+                  continueWithGoogleUseCase:
+                      ContinueWithGoogleUseCase(repository: repository));
             },
           ),
-        
+          BlocProvider<LocationBloc>(
+            create: (_) => LocationBloc(locationManager: LocationManager()),
+          ),
         ],
         child: MaterialApp.router(
           title: 'Roomly',

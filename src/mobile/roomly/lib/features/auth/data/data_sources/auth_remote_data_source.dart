@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
+import 'package:roomly/features/auth/data/models/google_user_model.dart';
 
 import '../../../../core/network/app_api.dart';
 import '../../domain/entities/login_request_entity.dart';
@@ -9,17 +11,22 @@ import '../../domain/entities/registration_request_entity.dart';
 import '../models/login_request_model.dart';
 import '../models/registration_request_model.dart';
 import '../models/user_model.dart';
+import '../../domain/entities/google_user_entity.dart';
 
 abstract class AuthRemoteDataSource {
   Future<Map<String, dynamic>> login(LoginRequestEntity loginRequest);
-  Future<Map<String, dynamic>> registerCustomer(RegistrationRequestEntity registrationRequest);
-  Future<Map<String, dynamic>> registerStaff(RegistrationRequestEntity registrationRequest);
+  Future<Map<String, dynamic>> registerCustomer(
+      RegistrationRequestEntity registrationRequest);
+  Future<Map<String, dynamic>> registerStaff(
+      RegistrationRequestEntity registrationRequest);
   Future<Map<String, dynamic>> verifyUser(int otp);
-  Future<Map<String, dynamic>> completeProfile(Map<String, dynamic> profileData);
+  Future<Map<String, dynamic>> completeProfile(
+      Map<String, dynamic> profileData);
   Future<Map<String, dynamic>> resetPassword(String email, String newPassword);
   Future<Map<String, dynamic>> sendForgotPasswordOtp(String email);
   Future<Map<String, dynamic>> verifyResetOtp(String email, int otp);
-
+  Future<Map<String, dynamic>> continueWithGoogle(
+      GoogleUserModel googleUserModel);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -79,8 +86,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw Exception('Login failed: ${e.toString()}');
     }
   }
+
   @override
-  Future<Map<String, dynamic>> registerCustomer(RegistrationRequestEntity registrationRequest) async {
+  Future<Map<String, dynamic>> registerCustomer(
+      RegistrationRequestEntity registrationRequest) async {
     final response = await client.post(
       Uri.parse('${AppApi.baseUrl}/api/users/auth/register-customer'),
       headers: {'Content-Type': 'application/json'},
@@ -100,7 +109,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<Map<String, dynamic>> registerStaff(RegistrationRequestEntity registrationRequest) async {
+  Future<Map<String, dynamic>> registerStaff(
+      RegistrationRequestEntity registrationRequest) async {
     final response = await client.post(
       Uri.parse('${AppApi.baseUrl}/api/users/auth/register-staff'),
       headers: {'Content-Type': 'application/json'},
@@ -137,7 +147,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<Map<String, dynamic>> completeProfile(Map<String, dynamic> profileData) async {
+  Future<Map<String, dynamic>> completeProfile(
+      Map<String, dynamic> profileData) async {
     final userId = await SecureStorage.getId(); // Or from your state management
 
     final completeData = {
@@ -212,8 +223,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw Exception('OTP verification failed: ${e.toString()}');
     }
   }
+
   @override
-  Future<Map<String, dynamic>> resetPassword(String email, String newPassword) async {
+  Future<Map<String, dynamic>> resetPassword(
+      String email, String newPassword) async {
     final response = await client.post(
       Uri.parse('${AppApi.baseUrl}/api/users/auth/reset-password'),
       headers: {'Content-Type': 'application/json'},
@@ -230,6 +243,67 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
+  @override
+  Future<Map<String, dynamic>> continueWithGoogle(
+      GoogleUserModel googleUserModel) async {
+    try {
+      final response = await client.post(
+        Uri.parse('${AppApi.baseUrl}/api/users/auth/continue-google'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(GoogleUserModel(
+          id: googleUserModel.id,
+          email: googleUserModel.email,
+          firstName: googleUserModel.firstName,
+          lastName: googleUserModel.lastName,
+        ).toJson()),
+      );
 
+      final jsonResponse = jsonDecode(response.body);
+
+      // Debug print - remove in production
+      print('google register response: ${response.statusCode} - $jsonResponse');
+
+      if (response.statusCode == 200) {
+        if (jsonResponse['user'] != null && jsonResponse['token'] != null) {
+          await SecureStorage.saveToken(jsonResponse['token']);
+          // final googleUserModel =
+          //     GoogleUserModel.fromJson(jsonResponse['user']);
+          final userModel = UserModel.fromJson(jsonResponse['user']);
+          // final userModel = UserModel(
+          //   id: googleUserModel.id,
+          //   email: googleUserModel.email,
+          //   firstName: googleUserModel.firstName,
+          //   lastName: googleUserModel.lastName,
+          //   phone: '',
+          //   address: '',
+          // );
+          await SecureStorage.saveId(userModel);
+          await SecureStorage.saveUserData(userModel);
+          return {
+            'user': userModel.toJson(),
+            'token': jsonResponse['token'],
+          };
+        }
+        // Handle wrong credentials
+        else if (jsonResponse['error'] != null) {
+          throw Exception(jsonResponse['error']);
+        }
+        // Handle malformed response
+        else {
+          throw const FormatException('Invalid server response format');
+        }
+      } else {
+        // Handle other status codes
+        final errorMsg = jsonResponse['error'] ??
+            'Login failed (Status: ${response.statusCode})';
+        throw Exception(errorMsg);
+      }
+    } on SocketException {
+      throw Exception('No internet connection');
+    } on FormatException catch (e) {
+      throw Exception('Invalid server response: ${e.message}');
+    } catch (e) {
+      throw Exception('Login failed: ${e.toString()}');
+    }
+  }
 }
-

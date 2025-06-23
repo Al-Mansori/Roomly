@@ -50,53 +50,52 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Scaffold(
         appBar: const CustomAppBar(icon: FontAwesomeIcons.xmark),
         body: BlocConsumer<AuthCubit, AuthState>(
-      listener: (context, state) {
-        if (state is AuthError) {
-          showCustomDialog(
-            context: context,
-            title: 'Error',
-            message: state.message,
-            alertType: AlertType.error,
-          );
-        }
-        else if (state is AuthLoggedIn) {
-          // Navigate to home first
-          context.go('/home');
-          bool requireCompletion = state.user.firstName == null ||
-              state.user.lastName == null ||
-              state.user.phone == null ||
-              state.user.address == null ;
-          // Check if profile needs completion
-          if (requireCompletion) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showDialog(
+          listener: (context, state) {
+            if (state is AuthError) {
+              showCustomDialog(
                 context: context,
-                barrierDismissible: true,
-                barrierColor: Colors.black.withOpacity(0.7),
-                builder: (context) => ProfileForm(
-                  email: state.user.email,
-                  onSavePressed: (profileData) async {
-                    await context.read<AuthCubit>().completeProfile({
-                      'id': state.user.id,
-                      ...profileData,
-                    });
-                  },
-                  onClose: () {
-                    Navigator.of(context).pop();
-
-                  },
-                  requireCompletion: requireCompletion,
-                ),
+                title: 'Error',
+                message: state.message,
+                alertType: AlertType.error,
               );
-
-            });
-          }
-        }      },
+            } else if (state is AuthLoggedIn) {
+              // Navigate to home first
+              context.go('/home');
+              bool requireCompletion = state.user.firstName == null ||
+                  state.user.lastName == null ||
+                  state.user.phone == null ||
+                  state.user.address == null;
+              // Check if profile needs completion
+              if (requireCompletion) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: true,
+                    barrierColor: Colors.black.withOpacity(0.7),
+                    builder: (context) => ProfileForm(
+                      email: state.user.email,
+                      onSavePressed: (profileData) async {
+                        await context.read<AuthCubit>().completeProfile({
+                          'id': state.user.id,
+                          ...profileData,
+                        });
+                      },
+                      onClose: () {
+                        Navigator.of(context).pop();
+                      },
+                      requireCompletion: requireCompletion,
+                    ),
+                  );
+                });
+              }
+            }
+          },
           builder: (context, state) {
             return SingleChildScrollView(
               child: Center(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 30, right: 30, bottom: 30),
+                  padding:
+                      const EdgeInsets.only(left: 30, right: 30, bottom: 30),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -126,7 +125,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 30),
                       ReusableTextField(
-
                         hintText: "Password",
                         obscureText: true,
                         controller: _passwordController,
@@ -146,24 +144,25 @@ class _LoginScreenState extends State<LoginScreen> {
                       state is AuthLoading
                           ? const CircularProgressIndicator()
                           : ReusableButton(
-                        text: "Login",
-                        onPressed: () {
-                          if (_emailController.text.isEmpty ||
-                              _passwordController.text.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Please fill all fields')),
-                            );
-                            return;
-                          }
+                              text: "Login",
+                              onPressed: () {
+                                if (_emailController.text.isEmpty ||
+                                    _passwordController.text.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content:
+                                            Text('Please fill all fields')),
+                                  );
+                                  return;
+                                }
 
-                          context.read<AuthCubit>().login(
-                            _emailController.text,
-                            _passwordController.text,
-                            _isStaff,
-                          );
-                        },
-                      ),
+                                context.read<AuthCubit>().login(
+                                      _emailController.text,
+                                      _passwordController.text,
+                                      _isStaff,
+                                    );
+                              },
+                            ),
                       const SizedBox(height: 15),
                       const Text(
                         'or login with',
@@ -193,7 +192,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         text: 'Continue with Google',
                         onPressed: () {
                           // Handle Google login
-                          // context.read<AuthCubit>().loginWithGoogle();
+                          context.read<AuthCubit>().continueWithGoogle();
                         },
                       ),
                       Row(
@@ -231,4 +230,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
