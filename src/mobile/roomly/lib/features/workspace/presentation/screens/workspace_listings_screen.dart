@@ -40,10 +40,18 @@ class WorkspaceListingsScreen extends StatelessWidget {
 
   Widget _buildRoomItem(BuildContext context, RoomEntity room) {
     return GestureDetector(
+      // onTap: () {
+      //   // Navigate to RoomDetailsScreen when a room card is tapped
+      //   context.push('/room/${room.id}');
+      // },
       onTap: () {
-        // Navigate to RoomDetailsScreen when a room card is tapped
-        context.push('/room/${room.id}');
+        final workspaceCubit = context.read<WorkspaceDetailsCubit>();
+        context.push(
+          '/room/${room.id}',
+          extra: workspaceCubit,
+        );
       },
+
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,

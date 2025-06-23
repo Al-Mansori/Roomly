@@ -1,34 +1,33 @@
+
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/entities/favorite_room.dart';
-import '../../domain/usecases/get_favorite_rooms.dart';
-
-abstract class FavoriteState {}
-
-class FavoriteInitial extends FavoriteState {}
-
-class FavoriteLoading extends FavoriteState {}
-
-class FavoriteLoaded extends FavoriteState {
-  final List<FavoriteRoom> rooms;
-  FavoriteLoaded(this.rooms);
-}
-
-class FavoriteError extends FavoriteState {
-  final String message;
-  FavoriteError(this.message);
-}
+import '../../domain/usecases/get_favorite_rooms_usecase.dart';
+import '../../domain/usecases/remove_favorite_room_usecase.dart';
+import 'favorite_state.dart';
 
 class FavoriteCubit extends Cubit<FavoriteState> {
-  final GetFavoriteRooms getFavoriteRooms;
-  FavoriteCubit({required this.getFavoriteRooms}) : super(FavoriteInitial());
+  final GetFavoriteRoomsUseCase getFavoriteRoomsUseCase;
+  final RemoveFavoriteRoomUseCase removeFavoriteRoomUseCase;
 
-  Future<void> loadFavorites(String userId) async {
+  FavoriteCubit({
+    required this.getFavoriteRoomsUseCase,
+    required this.removeFavoriteRoomUseCase,
+  }) : super(FavoriteInitial());
+
+  Future<void> getFavoriteRooms(String userId) async {
     emit(FavoriteLoading());
-    try {
-      final rooms = await getFavoriteRooms(userId);
-      emit(FavoriteLoaded(rooms));
-    } catch (e) {
-      emit(FavoriteError(e.toString()));
-    }
+    final failureOrFavoriteRooms = await getFavoriteRoomsUseCase(userId);
+    failureOrFavoriteRooms.fold(
+      (failure) => emit(FavoriteError(message: failure.toString())),
+      (favoriteRooms) => emit(FavoriteLoaded(favoriteRooms: favoriteRooms)),
+    );
+  }
+
+  Future<void> removeFavoriteRoom(String userId, String roomId) async {
+    final failureOrSuccess = await removeFavoriteRoomUseCase(userId, roomId);
+    failureOrSuccess.fold(
+      (failure) => emit(FavoriteError(message: failure.toString())),
+      (_) => emit(FavoriteRoomRemoved(roomId: roomId)),
+    );
   }
 }
+
