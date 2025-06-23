@@ -1,5 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:roomly/features/auth/domain/usecases/continue_with_google.dart';
 import '../../data/data_sources/secure_storage.dart';
+import '../../domain/entities/google_user_entity.dart';
 import '../../domain/entities/login_request_entity.dart';
 import '../../domain/entities/registration_request_entity.dart';
 import '../../domain/entities/user_entity.dart';
@@ -21,6 +24,7 @@ class AuthCubit extends Cubit<AuthState> {
   final SendForgotPasswordOtpUseCase sendForgotPasswordOtpUseCase;
   final VerifyResetOtpUseCase verifyResetOtpUseCase;
   final ResetPasswordUseCase resetPasswordUseCase;
+  final ContinueWithGoogleUseCase continueWithGoogleUseCase;
 
   AuthCubit({
     required this.loginUseCase,
@@ -31,16 +35,13 @@ class AuthCubit extends Cubit<AuthState> {
     required this.resetPasswordUseCase,
     required this.sendForgotPasswordOtpUseCase,
     required this.verifyResetOtpUseCase,
-
-
+    required this.continueWithGoogleUseCase,
   }) : super(AuthInitial());
-
 
   Future<void> logout() async {
     await SecureStorage.clearAll();
     emit(AuthInitial());
   }
-
 
   Future<void> login(String email, String password, bool isStaff) async {
     emit(AuthLoading());
@@ -74,6 +75,47 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  Future<void> continueWithGoogle() async {
+    emit(AuthLoading());
+    try {
+      final googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
+      final googleUser = await googleSignIn.signIn();
+
+      if (googleUser == null) {
+        emit(AuthError('Google Sign-In aborted'));
+        return;
+      }
+
+      final googleUserEntity = GoogleUserEntity(
+        id: googleUser.id,
+        email: googleUser.email,
+        firstName: googleUser.displayName?.split(' ').first ?? '',
+        lastName: googleUser.displayName?.split(' ').last ?? '',
+      );
+
+      final response = await continueWithGoogleUseCase(googleUserEntity);
+
+      if (response['user'] != null && response['token'] != null) {
+        final userMap = response['user'] as Map<String, dynamic>;
+        final userEntity = UserEntity(
+          id: userMap['id'],
+          email: userMap['email'],
+          firstName: userMap['firstName'],
+          lastName: userMap['lastName'],
+          phone: userMap['phone'],
+          address: userMap['address'],
+        );
+
+        await SecureStorage.saveToken(response['token']);
+        emit(AuthLoggedIn(userEntity, response['token']));
+      } else {
+        emit(AuthError('Google Sign-In failed - invalid response'));
+      }
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
   Future<void> register({
     required String email,
     required String password,
@@ -88,17 +130,17 @@ class AuthCubit extends Cubit<AuthState> {
 
       final response = isStaff
           ? await registerStaffUseCase(RegistrationRequestEntity(
-        email: email,
-        password: password,
-        confirmPassword: confirmPassword,
-        isStaff: true,
-      ))
+              email: email,
+              password: password,
+              confirmPassword: confirmPassword,
+              isStaff: true,
+            ))
           : await registerCustomerUseCase(RegistrationRequestEntity(
-        email: email,
-        password: password,
-        confirmPassword: confirmPassword,
-        isStaff: false,
-      ));
+              email: email,
+              password: password,
+              confirmPassword: confirmPassword,
+              isStaff: false,
+            ));
 
       if (response['registrationStatus'] == true) {
         emit(AuthRegistrationSuccess(
@@ -127,7 +169,6 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthError(e.toString()));
     }
   }
-
 
   Future<void> completeProfile(Map<String, dynamic> profileData) async {
     emit(AuthLoading());
@@ -180,5 +221,4 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthError(e.toString()));
     }
   }
-
 }
