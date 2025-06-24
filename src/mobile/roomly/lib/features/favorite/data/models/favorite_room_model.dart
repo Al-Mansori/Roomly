@@ -3,7 +3,7 @@ import '../../domain/entities/favorite_room_entity.dart';
 class FavoriteRoomModel extends FavoriteRoomEntity {
   const FavoriteRoomModel({
     required String roomId,
-    required String? workspaceId,
+    required String workspaceId,
   }) : super(
           roomId: roomId,
           workspaceId: workspaceId,

@@ -17,31 +17,16 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     
-    // Initialize animation controller
     _animationController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     );
-    
-    // Create pulsing animation
-    _animation = Tween<double>(
-      begin: 0.8,
-      end: 1.2,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-    
-    // Start the pulsing animation
+
+    _animation = Tween<double>(begin: 0.8, end: 1.2).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
     _animationController.repeat(reverse: true);
-    
-    // Navigate to next screen after 3 seconds
-    Timer(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/report-problem');
-        // Or use: Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ReportProblemScreen()));
-      }
-    });
   }
 
   @override

@@ -1,22 +1,3 @@
-// import 'package:dartz/dartz.dart';
-// import 'package:roomly/core/error/failures.dart';
-// import 'package:roomly/features/workspace/domain/repositories/workspace_repository.dart';
-
-// class GetWorkspaceReviewsUseCase {
-//   final WorkspaceRepository repository;
-
-//   GetWorkspaceReviewsUseCase(this.repository);
-
-//   Future<Either<Failure, List<dynamic>>> call(String workspaceId) async {
-//     return await repository.getWorkspaceReviews(workspaceId);
-//   }
-// }
-
-
-
-// v5 ------------------------------------------------
-
-
 import 'package:dartz/dartz.dart';
 import 'package:roomly/core/error/failures.dart';
 import 'package:roomly/features/workspace/domain/entities/review_entity.dart';

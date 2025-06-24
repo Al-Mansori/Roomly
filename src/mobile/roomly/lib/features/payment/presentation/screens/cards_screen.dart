@@ -5,7 +5,6 @@ import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
 import '../cubit/payment_cubit.dart';
 import '../cubit/payment_state.dart';
 import '../widgets/customized_card_widget.dart';
-import 'add_card_screen.dart';
 
 class CardsScreen extends StatefulWidget {
   const CardsScreen({Key? key}) : super(key: key);
@@ -106,27 +105,40 @@ class _CardsScreenState extends State<CardsScreen> {
                         child: CircularProgressIndicator(),
                       );
                     } else if (state is PaymentError) {
+                      // Show a nice empty state when there are no cards
                       return Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.error_outline,
+                            const Icon(
+                              Icons.credit_card_off,
                               size: 64,
-                              color: Colors.grey[400],
+                              color: Colors.green, // Changed to green
                             ),
                             const SizedBox(height: 16),
-                            Text(
-                              'Error: ${state.message}',
+                            const Text(
+                              'No Available Cards',
                               style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey[600],
+                                fontSize: 20,
+                                color: Colors.green, // Green color
+                                fontWeight: FontWeight.bold,
                               ),
-                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Add your first card to get started',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                              ),
                             ),
                             const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: _loadUserCards,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green, // Green button
+                                foregroundColor: Colors.white,
+                              ),
                               child: const Text('Retry'),
                             ),
                           ],
@@ -134,29 +146,30 @@ class _CardsScreenState extends State<CardsScreen> {
                       );
                     } else if (state is PaymentCardsLoaded) {
                       if (state.cards.isEmpty) {
-                        return Center(
+                        return const Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
                                 Icons.credit_card_off,
                                 size: 64,
-                                color: Colors.grey[400],
+                                color: Colors.green, // Changed to green
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'No cards found',
+                                'No Available Cards',
                                 style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.grey[600],
+                                  fontSize: 20,
+                                  color: Colors.green, // Green color
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Text(
+                              const Text(
                                 'Add your first card to get started',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.grey[500],
+                                  color: Colors.grey,
                                 ),
                               ),
                             ],
@@ -183,6 +196,7 @@ class _CardsScreenState extends State<CardsScreen> {
                   },
                 ),
               ),
+
 
               // Add Card Button
               Container(
