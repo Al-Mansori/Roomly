@@ -25,3 +25,8 @@ class NoDataFailure extends Failure {
   const NoDataFailure({required super.message});
 }
 
+class NoCardsFailure extends Failure {
+  const NoCardsFailure({required super.message});
+}
+
+

@@ -17,18 +17,21 @@ class PaymentRepositoryImpl implements PaymentRepository {
   });
 
   @override
-  Future<Either<Failure, List<CardEntity>>> getUserCards(String userId) async {
-    if (await networkInfo.isConnected) {
-      try {
-        final cards = await remoteDataSource.getUserCards(userId);
-        return Right(cards);
-      } on ServerException catch (e) {
-        return Left(ServerFailure(message: e.toString()));
+Future<Either<Failure, List<CardEntity>>> getUserCards(String userId) async {
+  if (await networkInfo.isConnected) {
+    try {
+      final cards = await remoteDataSource.getUserCards(userId);
+      if (cards.isEmpty) {
+        return const Left(NoCardsFailure(message: 'No cards found'));
       }
-    } else {
-      return const Left(NetworkFailure(message: 'No internet connection'));
+      return Right(cards);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.toString()));
     }
+  } else {
+    return const Left(NetworkFailure(message: 'No internet connection'));
   }
+}
 
   @override
   Future<Either<Failure, void>> addCard(AddCardRequest request) async {

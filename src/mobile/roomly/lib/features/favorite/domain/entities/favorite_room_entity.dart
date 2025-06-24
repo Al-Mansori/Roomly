@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class FavoriteRoomEntity extends Equatable {
   final String roomId;
-  final String? workspaceId;
+  final String workspaceId;
 
   const FavoriteRoomEntity({
     required this.roomId,
