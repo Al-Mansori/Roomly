@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:roomly/features/BookingsStatus/domain/entities/booking_with_room.dart';
 import 'package:roomly/features/BookingsStatus/presentation/cubit/bookings_cubit.dart';
 import 'package:roomly/features/BookingsStatus/presentation/screens/BookingCard.dart';
+import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
+import 'dart:developer' as developer;
 import '../../../GlobalWidgets/TabBar.dart';
 import '../../../GlobalWidgets/navBar.dart';
 
@@ -19,14 +21,31 @@ class _ActivityScreenState extends State<ActivityScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isNavVisible = true;
   bool _isScrollingDown = false;
+  String? _currentUserId;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    context
-        .read<BookingsCubit>()
-        .loadBookings('usr001'); // Replace with actual user ID
+    _loadCurrentUserId();
+  }
+
+  Future<void> _loadCurrentUserId() async {
+    try {
+      final userId = await SecureStorage.getId();
+      if (userId != null) {
+        setState(() {
+          _currentUserId = userId;
+        });
+        context.read<BookingsCubit>().loadBookings(userId);
+      } else {
+        // Handle case where user is not logged in
+        // context.read<BookingsCubit>().loadBookings('usr001');
+        print('No user ID found - user may not be logged in');
+      }
+    } catch (e) {
+      print('Error loading user ID: $e');
+    }
   }
 
   void _onScroll() {
@@ -208,8 +227,13 @@ class _ActivityScreenState extends State<ActivityScreen> {
                             const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: () {
-                                context.read<BookingsCubit>().loadBookings(
-                                    'usr001'); // Replace with actual user ID
+                                if (_currentUserId != null) {
+                                  context
+                                      .read<BookingsCubit>()
+                                      .loadBookings(_currentUserId!);
+                                } else {
+                                  _loadCurrentUserId();
+                                }
                               },
                               child: const Text('Retry'),
                             ),

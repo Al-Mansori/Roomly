@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=C:\Tools\flutter"
-export "FLUTTER_APPLICATION_PATH=D:\GitHub Projects\Roomly\src\mobile\roomly"
+export "FLUTTER_ROOT=C:\Users\user\flutter"
+export "FLUTTER_APPLICATION_PATH=C:\Users\user\Desktop\Roomly\Roomly\src\mobile\roomly"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=1.0.0"
