@@ -252,22 +252,66 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/room/:id',
       builder: (context, state) {
-        final String id = state.pathParameters['id'] ?? '';
-        final workspaceCubit = state.extra as WorkspaceDetailsCubit?;
+        final String roomId = state.pathParameters['id'] ?? '';
 
+        final extras = state.extra as Map<String, dynamic>?;
+
+        final WorkspaceDetailsCubit? workspaceCubit = extras?['workspaceCubit'];
+        final String? workspaceId = extras?['workspaceId'];
+
+        // Case 1: WorkspaceDetailsCubit is passed
         if (workspaceCubit != null) {
-          return BlocProvider.value(
-            value: workspaceCubit,
-            child: BlocProvider<RoomDetailsCubit>(
-              create: (context) => di.sl<RoomDetailsCubit>(),
-              child: RoomDetailsScreen(roomId: id),
-            ),
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider.value(value: workspaceCubit),
+              BlocProvider<RoomDetailsCubit>(
+                create: (_) => di.sl<RoomDetailsCubit>(),
+              ),
+            ],
+            child: RoomDetailsScreen(roomId: roomId),
           );
         }
 
+        // Case 2: Only workspaceId is passed
+        if (workspaceId != null) {
+          return MultiBlocProvider(
+            providers: [
+              BlocProvider<WorkspaceDetailsCubit>(
+                create: (_) {
+                  // Manual creation logic
+                  final client = http.Client();
+                  final remoteDataSource = WorkspaceRemoteDataSourceImpl(client: client);
+                  final repository = WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
+                  final getWorkspaceDetailsUseCase = GetWorkspaceDetailsUseCase(repository: repository);
+                  final getWorkspaceReviewsUseCase = GetWorkspaceReviewsUseCase(repository);
+                  final getRoomDetailsUseCase = GetRoomDetailsUseCase(repository: repository);
+                  final getWorkspaceSchedulesUseCase = GetWorkspaceSchedulesUseCase(repository);
+
+                  final cubit = WorkspaceDetailsCubit(
+                    getWorkspaceDetailsUseCase: getWorkspaceDetailsUseCase,
+                    getRoomDetailsUseCase: getRoomDetailsUseCase,
+                    getWorkspaceReviewsUseCase: getWorkspaceReviewsUseCase,
+                    getWorkspaceSchedulesUseCase: getWorkspaceSchedulesUseCase,
+                  );
+
+                  // Trigger the fetch
+                  cubit.getWorkspaceDetails(workspaceId);
+
+                  return cubit;
+                },
+              ),
+              BlocProvider<RoomDetailsCubit>(
+                create: (_) => di.sl<RoomDetailsCubit>(),
+              ),
+            ],
+            child: RoomDetailsScreen(roomId: roomId),
+          );
+        }
+
+        // Fallback if workspaceCubit or workspaceId is null
         return BlocProvider<RoomDetailsCubit>(
-          create: (context) => di.sl<RoomDetailsCubit>(),
-          child: RoomDetailsScreen(roomId: id),
+          create: (_) => di.sl<RoomDetailsCubit>(),
+          child: RoomDetailsScreen(roomId: roomId),
         );
       },
     ),

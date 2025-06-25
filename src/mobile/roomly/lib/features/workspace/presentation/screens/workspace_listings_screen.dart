@@ -48,7 +48,10 @@ class WorkspaceListingsScreen extends StatelessWidget {
         final workspaceCubit = context.read<WorkspaceDetailsCubit>();
         context.push(
           '/room/${room.id}',
-          extra: workspaceCubit,
+          // extra: workspaceCubit,
+          extra: {
+            'workspaceCubit': workspaceCubit,
+          },
         );
       },
 
