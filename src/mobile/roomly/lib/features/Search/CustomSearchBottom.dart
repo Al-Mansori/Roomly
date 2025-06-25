@@ -23,7 +23,6 @@ class CustomSearchBottomSheet extends StatelessWidget {
               // Top Row with Close Button and Search Input
               Row(
                 children: [
-
                   IconButton(
                     icon: Icon(Icons.close, color: Colors.grey),
                     onPressed: () {
@@ -31,7 +30,8 @@ class CustomSearchBottomSheet extends StatelessWidget {
                       Navigator.of(context).pop();
                     },
                   ),
-                  Text("Search",
+                  Text(
+                    "Search",
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -48,7 +48,7 @@ class CustomSearchBottomSheet extends StatelessWidget {
                   filled: true,
                   fillColor: Colors.grey[200],
                   contentPadding:
-                  EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 ),
                 onChanged: (value) {
                   // Handle search input changes
@@ -70,21 +70,21 @@ class CustomSearchBottomSheet extends StatelessWidget {
                   children: [
                     WorkspaceResultCard(
                       imageUrl:
-                      "https://i.pinimg.com/736x/45/01/b0/4501b0f6bad0e29cdadb7e0a329ce9ca.jpg",
+                          "https://i.pinimg.com/736x/45/01/b0/4501b0f6bad0e29cdadb7e0a329ce9ca.jpg",
                       distance: "5.3",
                       workspaceName: "Cozy Workspace",
                     ),
                     SizedBox(width: 20),
                     WorkspaceResultCard(
                       imageUrl:
-                      "https://i.pinimg.com/736x/97/79/38/97793811512dfde7d01cef874a86ca18.jpg",
+                          "https://i.pinimg.com/736x/97/79/38/97793811512dfde7d01cef874a86ca18.jpg",
                       distance: "3.2",
                       workspaceName: "Modern Office",
                     ),
                     SizedBox(width: 20),
                     WorkspaceResultCard(
                       imageUrl:
-                      "https://i.pinimg.com/736x/97/79/38/97793811512dfde7d01cef874a86ca18.jpg",
+                          "https://i.pinimg.com/736x/97/79/38/97793811512dfde7d01cef874a86ca18.jpg",
                       distance: "3.2",
                       workspaceName: "Modern Office",
                     ),
@@ -97,7 +97,7 @@ class CustomSearchBottomSheet extends StatelessWidget {
                 children: [
                   RoomResultCard(
                     imageUrl:
-                    "https://i.pinimg.com/736x/94/1e/89/941e8944db3e73b4248cefbcd9b45241.jpg",
+                        "https://i.pinimg.com/736x/94/1e/89/941e8944db3e73b4248cefbcd9b45241.jpg",
                     title: "Desk",
                     workspaceName: "in workspace-name",
                     details: "30 Seats . 10.0 KM away",
@@ -106,7 +106,7 @@ class CustomSearchBottomSheet extends StatelessWidget {
                   SizedBox(height: 20),
                   RoomResultCard(
                     imageUrl:
-                    "https://i.pinimg.com/736x/94/1e/89/941e8944db3e73b4248cefbcd9b45241.jpg",
+                        "https://i.pinimg.com/736x/94/1e/89/941e8944db3e73b4248cefbcd9b45241.jpg",
                     title: "Desk",
                     workspaceName: "in workspace-name",
                     details: "30 Seats . 10.0 KM away",
@@ -115,7 +115,7 @@ class CustomSearchBottomSheet extends StatelessWidget {
                   SizedBox(height: 20),
                   RoomResultCard(
                     imageUrl:
-                    "https://i.pinimg.com/736x/94/1e/89/941e8944db3e73b4248cefbcd9b45241.jpg",
+                        "https://i.pinimg.com/736x/94/1e/89/941e8944db3e73b4248cefbcd9b45241.jpg",
                     title: "Desk",
                     workspaceName: "in workspace-name",
                     details: "30 Seats . 10.0 KM away",
