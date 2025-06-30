@@ -242,6 +242,7 @@ class _CustomSearchBottomSheetState extends State<CustomSearchBottomSheet> {
                           : "https://i.pinimg.com/736x/45/01/b0/4501b0f6bad0e29cdadb7e0a329ce9ca.jpg",
                       distance: "5.3", // You might want to calculate this
                       workspaceName: workspace.name,
+                      workspaceId: workspace.id,
                     ),
                   );
                 }).toList(),
@@ -385,69 +386,77 @@ class RecommendationsWidget extends StatelessWidget {
               final enriched = enrichedRecommendations[index];
               final rec = enriched.recommendation;
               final workspace = enriched.workspace;
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: (workspace.workspaceImages != null &&
-                                workspace.workspaceImages!.isNotEmpty)
-                            ? Image.network(
-                                workspace.workspaceImages!.first.imageUrl,
-                                width: 90,
-                                height: 70,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    width: 90,
-                                    height: 70,
-                                    color: Colors.grey[300],
-                                    child: const Icon(Icons.image,
-                                        size: 40, color: Colors.grey),
-                                  );
-                                },
-                              )
-                            : Container(
-                                width: 90,
-                                height: 70,
-                                color: Colors.grey[300],
-                                child: const Icon(Icons.image,
-                                    size: 40, color: Colors.grey),
-                              ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              workspace.name,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            // Description and amenities are commented out by user
-                            Text('Type:  ${workspace.type}',
-                                style: const TextStyle(
-                                    fontSize: 12, color: Colors.black54)),
-                            Text('Rating: ${workspace.avgRating}',
-                                style: const TextStyle(
-                                    fontSize: 12, color: Colors.black54)),
-                            // Text('Price Range: ${rec.priceRange}',
-                            //     style: const TextStyle(
-                            //         fontSize: 12, color: Colors.black54)),
-                          ],
+              void _navigateToWorkspace() {
+                context.push('/workspace/${workspace.id}');
+              }
+
+              return GestureDetector(
+                onTap: _navigateToWorkspace,
+                child: Card(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: (workspace.workspaceImages != null &&
+                                  workspace.workspaceImages!.isNotEmpty)
+                              ? Image.network(
+                                  workspace.workspaceImages!.first.imageUrl,
+                                  width: 90,
+                                  height: 70,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: 90,
+                                      height: 70,
+                                      color: Colors.grey[300],
+                                      child: const Icon(Icons.image,
+                                          size: 40, color: Colors.grey),
+                                    );
+                                  },
+                                )
+                              : Container(
+                                  width: 90,
+                                  height: 70,
+                                  color: Colors.grey[300],
+                                  child: const Icon(Icons.image,
+                                      size: 40, color: Colors.grey),
+                                ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                workspace.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              // Description and amenities are commented out by user
+                              Text('Type:  ${workspace.type}',
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.black54)),
+                              Text('Rating: ${workspace.avgRating}',
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.black54)),
+                              // Text('Price Range: ${rec.priceRange}',
+                              //     style: const TextStyle(
+                              //         fontSize: 12, color: Colors.black54)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );

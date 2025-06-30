@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class RoomResultCard extends StatefulWidget {
   final String imageUrl;
@@ -33,19 +34,26 @@ class _RoomResultCardState extends State<RoomResultCard> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
+    void _navigateToRoom() {
+      context.push('/room/${widget.title}');
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Stack(
           alignment: Alignment.topRight,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                widget.imageUrl,
-                width: screenWidth * 0.9,
-                height: screenWidth * 0.4,
-                fit: BoxFit.cover,
+            GestureDetector(
+              onTap: _navigateToRoom,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  widget.imageUrl,
+                  width: screenWidth * 0.9,
+                  height: screenWidth * 0.4,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ],
@@ -76,12 +84,8 @@ class _RoomResultCardState extends State<RoomResultCard> {
               ],
             ),
             InkWell(
-              onTap: () {
-                // Add your button click logic here
-                print("Button clicked!");
-              },
-              borderRadius: BorderRadius.circular(
-                  30), // Match the container's border radius
+              onTap: _navigateToRoom,
+              borderRadius: BorderRadius.circular(30),
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(
