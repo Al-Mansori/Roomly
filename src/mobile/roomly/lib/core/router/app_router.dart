@@ -32,7 +32,8 @@ import 'package:roomly/features/profile/domain/usecases/update_user.dart';
 import 'package:roomly/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:roomly/features/profile/presentation/screens/profile_screen.dart';
 import 'package:roomly/features/room_management/presentation/cubits/room_details_cubit.dart';
-import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart'as di;
+import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart'
+    as di;
 import 'package:roomly/features/room_management/presentation/screens/room_details_screen.dart';
 import 'package:roomly/features/room_management/presentation/screens/room_list_screen.dart';
 import 'package:roomly/features/room_management/presentation/screens/Booking_2nd_Screen.dart';
@@ -42,7 +43,14 @@ import '../../features/auth/presentation/screens/forget_password_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/reset_password_screen.dart';
 import '../../features/auth/presentation/screens/signup_screen.dart';
-import '../../features/Search/filter_screen.dart';
+import '../../features/Search/presentation/screens/filter_screen.dart';
+import '../../features/Search/presentation/screens/filter_popup_screen.dart';
+import '../../features/Search/presentation/screens/CustomSearchBottom.dart';
+import '../../features/Search/data/data_sources/search_remote_data_source.dart';
+import '../../features/Search/data/repositories/search_repository_impl.dart';
+import '../../features/Search/domain/usecases/search_usecase.dart';
+import '../../features/Search/domain/usecases/filter_rooms_usecase.dart';
+import '../../features/Search/presentation/cubit/search_cubit.dart';
 import 'package:roomly/features/favorite/presentation/screens/favorite_screen.dart';
 import 'package:roomly/features/workspace/domain/usecases/get_user_name_usecase.dart';
 import 'package:roomly/features/workspace/domain/usecases/get_workspace_reviews_usecase.dart';
@@ -68,7 +76,8 @@ import 'package:roomly/features/request/presentation/cubit/requests_cubit.dart';
 import 'package:roomly/features/request/presentation/screens/request_detail_screen.dart';
 import 'package:roomly/features/request/presentation/screens/requests_screen.dart';
 import 'package:roomly/features/workspace/domain/usecases/get_workspace_schedules_usecase.dart';
-
+import '../../features/Search/data/data_sources/recommendation_remote_data_source.dart';
+import '../../features/Search/domain/usecases/get_recommendations_usecase.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -77,7 +86,8 @@ final GoRouter appRouter = GoRouter(
       path: '/',
       builder: (context, state) {
         return BlocProvider(
-          create: (_) => LocationBloc(locationManager: LocationManager())..add(LoadInitialLocation()),
+          create: (_) => LocationBloc(locationManager: LocationManager())
+            ..add(LoadInitialLocation()),
           child: const HomeScreen(),
         );
       },
@@ -122,7 +132,6 @@ final GoRouter appRouter = GoRouter(
             ..add(const LoadInitialLocation()),
           child: const MapScreen(), // أو اللي عندك
         );
-
       },
     ),
 
@@ -134,21 +143,24 @@ final GoRouter appRouter = GoRouter(
             UserRepositoryImpl(
               remoteDataSource: UserRemoteDataSourceImpl(client: http.Client()),
               localDataSource: UserLocalDataSourceImpl(),
-              networkInfo: NetworkInfoImpl(InternetConnectionChecker.createInstance()),
+              networkInfo:
+                  NetworkInfoImpl(InternetConnectionChecker.createInstance()),
             ),
           ),
           updateUser: UpdateUser(
             UserRepositoryImpl(
               remoteDataSource: UserRemoteDataSourceImpl(client: http.Client()),
               localDataSource: UserLocalDataSourceImpl(),
-              networkInfo: NetworkInfoImpl(InternetConnectionChecker.createInstance()),
+              networkInfo:
+                  NetworkInfoImpl(InternetConnectionChecker.createInstance()),
             ),
           ),
           deleteUser: DeleteUser(
             UserRepositoryImpl(
               remoteDataSource: UserRemoteDataSourceImpl(client: http.Client()),
               localDataSource: UserLocalDataSourceImpl(),
-              networkInfo: NetworkInfoImpl(InternetConnectionChecker.createInstance()),
+              networkInfo:
+                  NetworkInfoImpl(InternetConnectionChecker.createInstance()),
             ),
           ),
         ),
@@ -179,16 +191,22 @@ final GoRouter appRouter = GoRouter(
           create: (context) {
             // Create dependencies manually
             final client = http.Client();
-            final remoteDataSource = WorkspaceRemoteDataSourceImpl(client: client);
-            final repository = WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
-            final getWorkspaceDetailsUseCase = GetWorkspaceDetailsUseCase(repository: repository);
-            final getWorkspaceReviewsUseCase = GetWorkspaceReviewsUseCase(repository);
-            final getRoomDetailsUseCase = GetRoomDetailsUseCase(repository: repository);
-            final getWorkspaceSchedulesUseCase = GetWorkspaceSchedulesUseCase(repository);
+            final remoteDataSource =
+                WorkspaceRemoteDataSourceImpl(client: client);
+            final repository =
+                WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
+            final getWorkspaceDetailsUseCase =
+                GetWorkspaceDetailsUseCase(repository: repository);
+            final getWorkspaceReviewsUseCase =
+                GetWorkspaceReviewsUseCase(repository);
+            final getRoomDetailsUseCase =
+                GetRoomDetailsUseCase(repository: repository);
+            final getWorkspaceSchedulesUseCase =
+                GetWorkspaceSchedulesUseCase(repository);
 
             return WorkspaceDetailsCubit(
               getWorkspaceDetailsUseCase: getWorkspaceDetailsUseCase,
-              getRoomDetailsUseCase: getRoomDetailsUseCase, 
+              getRoomDetailsUseCase: getRoomDetailsUseCase,
               getWorkspaceReviewsUseCase: getWorkspaceReviewsUseCase,
               getWorkspaceSchedulesUseCase: getWorkspaceSchedulesUseCase,
             );
@@ -211,10 +229,13 @@ final GoRouter appRouter = GoRouter(
           create: (context) {
             // Create dependencies manually
             final client = http.Client();
-            final remoteDataSource = WorkspaceRemoteDataSourceImpl(client: client);
-            final repository = WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
-            final getWorkspaceReviewsUseCase = GetWorkspaceReviewsUseCase(repository);
-            
+            final remoteDataSource =
+                WorkspaceRemoteDataSourceImpl(client: client);
+            final repository =
+                WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
+            final getWorkspaceReviewsUseCase =
+                GetWorkspaceReviewsUseCase(repository);
+
             return ReviewsCubit(
               getWorkspaceReviewsUseCase: getWorkspaceReviewsUseCase,
               getUserNameUseCase: GetUserNameUseCase(repository),
@@ -244,6 +265,54 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/filter',
       builder: (context, state) => const FilterScreen(),
+    ),
+
+    GoRoute(
+      path: '/filter-popup',
+      builder: (context, state) {
+        return BlocProvider(
+          create: (context) {
+            final dio = Dio();
+            final remoteDataSource = SearchRemoteDataSourceImpl(dio: dio);
+            final recommendationRemoteDataSource =
+                RecommendationRemoteDataSource();
+            final repository = SearchRepositoryImpl(
+              remoteDataSource: remoteDataSource,
+              recommendationRemoteDataSource: recommendationRemoteDataSource,
+            );
+            return SearchCubit(
+              searchUseCase: SearchUseCase(repository: repository),
+              filterRoomsUseCase: FilterRoomsUseCase(repository: repository),
+              getRecommendationsUseCase: GetRecommendationsUseCase(repository),
+            );
+          },
+          child: const FilterPopupScreen(),
+        );
+      },
+    ),
+
+    GoRoute(
+      path: '/search',
+      builder: (context, state) {
+        return BlocProvider(
+          create: (context) {
+            final dio = Dio();
+            final remoteDataSource = SearchRemoteDataSourceImpl(dio: dio);
+            final recommendationRemoteDataSource =
+                RecommendationRemoteDataSource();
+            final repository = SearchRepositoryImpl(
+              remoteDataSource: remoteDataSource,
+              recommendationRemoteDataSource: recommendationRemoteDataSource,
+            );
+            return SearchCubit(
+              searchUseCase: SearchUseCase(repository: repository),
+              filterRoomsUseCase: FilterRoomsUseCase(repository: repository),
+              getRecommendationsUseCase: GetRecommendationsUseCase(repository),
+            );
+          },
+          child: const CustomSearchBottomSheet(),
+        );
+      },
     ),
 
     GoRoute(
@@ -280,12 +349,18 @@ final GoRouter appRouter = GoRouter(
                 create: (_) {
                   // Manual creation logic
                   final client = http.Client();
-                  final remoteDataSource = WorkspaceRemoteDataSourceImpl(client: client);
-                  final repository = WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
-                  final getWorkspaceDetailsUseCase = GetWorkspaceDetailsUseCase(repository: repository);
-                  final getWorkspaceReviewsUseCase = GetWorkspaceReviewsUseCase(repository);
-                  final getRoomDetailsUseCase = GetRoomDetailsUseCase(repository: repository);
-                  final getWorkspaceSchedulesUseCase = GetWorkspaceSchedulesUseCase(repository);
+                  final remoteDataSource =
+                      WorkspaceRemoteDataSourceImpl(client: client);
+                  final repository = WorkspaceRepositoryImpl(
+                      remoteDataSource: remoteDataSource);
+                  final getWorkspaceDetailsUseCase =
+                      GetWorkspaceDetailsUseCase(repository: repository);
+                  final getWorkspaceReviewsUseCase =
+                      GetWorkspaceReviewsUseCase(repository);
+                  final getRoomDetailsUseCase =
+                      GetRoomDetailsUseCase(repository: repository);
+                  final getWorkspaceSchedulesUseCase =
+                      GetWorkspaceSchedulesUseCase(repository);
 
                   final cubit = WorkspaceDetailsCubit(
                     getWorkspaceDetailsUseCase: getWorkspaceDetailsUseCase,
@@ -342,13 +417,15 @@ final GoRouter appRouter = GoRouter(
           create: (context) {
             final dio = Dio();
             final remoteDataSource = FavoriteRemoteDataSourceImpl(dio: dio);
-            final repository = FavoriteRepositoryImpl(remoteDataSource: remoteDataSource);
+            final repository =
+                FavoriteRepositoryImpl(remoteDataSource: remoteDataSource);
             return FavoriteCubit(
               getFavoriteRoomsUseCase: GetFavoriteRoomsUseCase(repository),
               removeFavoriteRoomUseCase: RemoveFavoriteRoomUseCase(repository),
             );
           },
-          child: const FavoriteScreen(), // userId will be fetched inside FavoriteScreen
+          child:
+              const FavoriteScreen(), // userId will be fetched inside FavoriteScreen
         );
       },
     ),

@@ -39,8 +39,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
         });
         context.read<BookingsCubit>().loadBookings(userId);
       } else {
-        // Handle case where user is not logged in
-        // context.read<BookingsCubit>().loadBookings('usr001');
         print('No user ID found - user may not be logged in');
       }
     } catch (e) {
