@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
@@ -10,11 +10,5 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class NavAuthComponent{
 
-  // constructor(private el: ElementRef) {}
 
-  // ngAfterViewInit() {
-  //   // Set CSS variable with navbar height
-  //   const height = this.el.nativeElement.offsetHeight;
-  //   document.documentElement.style.setProperty('--navbar-height', `${height}px`);
-  // }
 }

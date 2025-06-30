@@ -1,37 +1,36 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-
-interface MenuItem {
-  id: string;
-  label: string;
-  link: string;
-  active: boolean;
-}
+import { Router, RouterLink, RouterLinkActive, RouterModule, RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-side-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [
+    CommonModule,
+    RouterLink,
+    RouterLinkActive,
+    RouterModule,
+  ],
   templateUrl: './side-navbar.component.html',
   styleUrl: './side-navbar.component.scss'
 })
 export class SideNavbarComponent {
-
+  constructor(public router: Router) { }
   isOpen = true;
-  
-  menuItems: MenuItem[] = [
-    { id: 'dashboard', label: 'Dashboard', link: '/dashboard', active: false },
-    { id: 'workspaces', label: 'My Workspaces', link: '/workspaces', active: false },
-    { id: 'booking', label: 'Booking', link: '/booking', active: true },
-    { id: 'userlist', label: 'User list', link: '/users', active: false }
-  ];
 
   toggleSidebar() {
     this.isOpen = !this.isOpen;
   }
 
+  // isActive(route: string): boolean {
+  //   return this.router.url.startsWith(route);
+  // }
+  isActive(route: string): boolean {
+    return this.router.url === route ||
+      (route !== '/' && this.router.url.startsWith(route));
+  }
+
   logout() {
-    // Implement logout functionality
     console.log('Logout clicked');
   }
 }
