@@ -48,31 +48,6 @@ class _RoomResultCardState extends State<RoomResultCard> {
                 fit: BoxFit.cover,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(
-                onTap: _toggleFavorite,
-                child: Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 4,
-                        offset: Offset(2, 4),
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    isFavorited ? Icons.favorite : Icons.favorite_border,
-                    color: isFavorited ? Colors.red : Colors.grey,
-                    size: 24,
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
         SizedBox(height: 8),
@@ -91,7 +66,7 @@ class _RoomResultCardState extends State<RoomResultCard> {
                 ),
                 SizedBox(width: 8),
                 Text(
-                  'in ${widget.workspaceName}',
+                  widget.workspaceName,
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: screenWidth * 0.04,
@@ -105,7 +80,8 @@ class _RoomResultCardState extends State<RoomResultCard> {
                 // Add your button click logic here
                 print("Button clicked!");
               },
-              borderRadius: BorderRadius.circular(30), // Match the container's border radius
+              borderRadius: BorderRadius.circular(
+                  30), // Match the container's border radius
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(
@@ -128,7 +104,8 @@ class _RoomResultCardState extends State<RoomResultCard> {
                   ),
                 ),
               ),
-            )          ],
+            )
+          ],
         ),
         SizedBox(height: 4),
         Text(

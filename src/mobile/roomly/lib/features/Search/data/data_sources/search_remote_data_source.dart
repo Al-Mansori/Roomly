@@ -49,7 +49,7 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
       if (response.statusCode == 200) {
         final List<dynamic> roomsJson = response.data;
         return roomsJson
-            .map((roomJson) => RoomModel.fromJson(roomJson))
+            .map((roomJson) => RoomModel.fromJson(roomJson['room']))
             .toList();
       } else {
         throw Exception('Failed to filter rooms: ${response.statusCode}');

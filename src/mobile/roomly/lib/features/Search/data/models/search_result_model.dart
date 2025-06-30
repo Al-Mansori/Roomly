@@ -9,7 +9,7 @@ class SearchResultModel extends SearchResult {
   factory SearchResultModel.fromJson(Map<String, dynamic> json) {
     return SearchResultModel(
       rooms: (json['rooms'] as List<dynamic>?)
-              ?.map((roomJson) => RoomModel.fromJson(roomJson))
+              ?.map((roomJson) => RoomModel.fromJson(roomJson['room']))
               .toList() ??
           [],
       workspaces: (json['workspaces'] as List<dynamic>?)
