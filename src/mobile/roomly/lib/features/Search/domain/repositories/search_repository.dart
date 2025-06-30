@@ -8,4 +8,5 @@ abstract class SearchRepository {
   Future<List<Room>> filterRooms(FilterParams filterParams);
   Future<List<Recommendation>> getRecommendations(String userId,
       {int topN = 5});
+  Future<Workspace> getWorkspaceDetails(String workspaceId);
 }

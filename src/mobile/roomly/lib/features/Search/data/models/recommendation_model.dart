@@ -1,4 +1,5 @@
 import '../../domain/entities/recommendation.dart';
+import '../models/search_result_model.dart';
 
 class RecommendationModel extends Recommendation {
   RecommendationModel({
@@ -28,4 +29,14 @@ class RecommendationModel extends Recommendation {
       matchStatus: json['match_status'] ?? '',
     );
   }
+}
+
+class EnrichedRecommendationModel {
+  final RecommendationModel recommendation;
+  final WorkspaceModel workspace;
+
+  EnrichedRecommendationModel({
+    required this.recommendation,
+    required this.workspace,
+  });
 }

@@ -6,6 +6,8 @@ import '../../domain/entities/recommendation.dart';
 import '../../domain/usecases/search_usecase.dart';
 import '../../domain/usecases/filter_rooms_usecase.dart';
 import '../../domain/usecases/get_recommendations_usecase.dart';
+import '../../data/models/recommendation_model.dart';
+import '../../data/models/search_result_model.dart';
 
 // Events
 abstract class SearchEvent extends Equatable {
@@ -94,6 +96,13 @@ class RecommendationsError extends SearchState {
   List<Object> get props => [message];
 }
 
+class EnrichedRecommendationsLoaded extends SearchState {
+  final List<EnrichedRecommendationModel> enrichedRecommendations;
+  const EnrichedRecommendationsLoaded(this.enrichedRecommendations);
+  @override
+  List<Object> get props => [enrichedRecommendations];
+}
+
 // Cubit
 class SearchCubit extends Cubit<SearchState> {
   final SearchUseCase searchUseCase;
@@ -144,6 +153,26 @@ class SearchCubit extends Cubit<SearchState> {
       final recs = await getRecommendationsUseCase(userId, topN: topN);
       _recommendations = recs;
       emit(RecommendationsLoaded(recs));
+    } catch (e) {
+      emit(RecommendationsError(e.toString()));
+    }
+  }
+
+  Future<void> fetchEnrichedRecommendations(String userId,
+      {int topN = 5}) async {
+    emit(RecommendationsLoading());
+    try {
+      final recs = await getRecommendationsUseCase(userId, topN: topN);
+      final List<EnrichedRecommendationModel> enriched = [];
+      for (final rec in recs) {
+        if (rec is RecommendationModel) {
+          final workspace = await getRecommendationsUseCase.repository
+              .getWorkspaceDetails(rec.workspaceId);
+          enriched.add(EnrichedRecommendationModel(
+              recommendation: rec, workspace: workspace as WorkspaceModel));
+        }
+      }
+      emit(EnrichedRecommendationsLoaded(enriched));
     } catch (e) {
       emit(RecommendationsError(e.toString()));
     }

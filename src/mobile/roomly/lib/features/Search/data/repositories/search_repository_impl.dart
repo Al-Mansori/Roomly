@@ -45,4 +45,14 @@ class SearchRepositoryImpl implements SearchRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<Workspace> getWorkspaceDetails(String workspaceId) async {
+    try {
+      return await recommendationRemoteDataSource
+          .getWorkspaceDetails(workspaceId);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

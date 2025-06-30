@@ -9,6 +9,7 @@ import 'package:roomly/features/Search/presentation/cubit/search_cubit.dart';
 import 'package:roomly/features/Search/domain/entities/search_result.dart';
 import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
 import '../../domain/entities/recommendation.dart';
+import '../../data/models/recommendation_model.dart';
 
 class CustomSearchBottomSheet extends StatefulWidget {
   const CustomSearchBottomSheet({Key? key}) : super(key: key);
@@ -32,7 +33,7 @@ class _CustomSearchBottomSheetState extends State<CustomSearchBottomSheet> {
     final userId = await SecureStorage.getId();
     if (userId != null) {
       setState(() => _userId = userId);
-      context.read<SearchCubit>().fetchRecommendations(userId);
+      context.read<SearchCubit>().fetchEnrichedRecommendations(userId);
     }
   }
 
@@ -190,9 +191,9 @@ class _CustomSearchBottomSheetState extends State<CustomSearchBottomSheet> {
                       ),
                     );
                   } else if (_searchController.text.isEmpty &&
-                      state is RecommendationsLoaded) {
+                      state is EnrichedRecommendationsLoaded) {
                     return RecommendationsWidget(
-                        recommendations: state.recommendations);
+                        enrichedRecommendations: state.enrichedRecommendations);
                   } else if (_searchController.text.isEmpty &&
                       state is RecommendationsLoading) {
                     return const Center(child: CircularProgressIndicator());
@@ -355,43 +356,105 @@ class _CustomSearchBottomSheetState extends State<CustomSearchBottomSheet> {
 }
 
 class RecommendationsWidget extends StatelessWidget {
-  final List<Recommendation> recommendations;
-  const RecommendationsWidget({Key? key, required this.recommendations})
+  final List<EnrichedRecommendationModel> enrichedRecommendations;
+  const RecommendationsWidget({Key? key, required this.enrichedRecommendations})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (recommendations.isEmpty) {
+    if (enrichedRecommendations.isEmpty) {
       return const Center(child: Text('No recommendations found.'));
     }
-    return ListView.builder(
-      itemCount: recommendations.length,
-      itemBuilder: (context, index) {
-        final rec = recommendations[index];
-        return Card(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          child: ListTile(
-            title: Text(rec.name),
-            subtitle: Text(rec.description),
-            trailing: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(rec.priceRange,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.star, color: Colors.amber, size: 16),
-                    Text(rec.rating.toString()),
-                  ],
-                ),
-              ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            'Recommended for you',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
-            isThreeLine: true,
           ),
-        );
-      },
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: enrichedRecommendations.length,
+            itemBuilder: (context, index) {
+              final enriched = enrichedRecommendations[index];
+              final rec = enriched.recommendation;
+              final workspace = enriched.workspace;
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: (workspace.workspaceImages != null &&
+                                workspace.workspaceImages!.isNotEmpty)
+                            ? Image.network(
+                                workspace.workspaceImages!.first.imageUrl,
+                                width: 90,
+                                height: 70,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    width: 90,
+                                    height: 70,
+                                    color: Colors.grey[300],
+                                    child: const Icon(Icons.image,
+                                        size: 40, color: Colors.grey),
+                                  );
+                                },
+                              )
+                            : Container(
+                                width: 90,
+                                height: 70,
+                                color: Colors.grey[300],
+                                child: const Icon(Icons.image,
+                                    size: 40, color: Colors.grey),
+                              ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              workspace.name,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            // Description and amenities are commented out by user
+                            Text('Type:  ${workspace.type}',
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.black54)),
+                            Text('Rating: ${workspace.avgRating}',
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.black54)),
+                            Text('Price Range: ${rec.priceRange}',
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.black54)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
