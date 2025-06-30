@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/entities/filter_params.dart';
+import '../cubit/search_cubit.dart';
+import 'package:go_router/go_router.dart';
 
 class FilterPopupScreen extends StatefulWidget {
   const FilterPopupScreen({Key? key}) : super(key: key);
@@ -10,74 +14,114 @@ class FilterPopupScreen extends StatefulWidget {
 class _FilterPopupScreenState extends State<FilterPopupScreen> {
   // Room type selection
   String? selectedRoomType;
-  
+
   // Number of seats
   int numberOfSeats = 0;
-  
+
   // Price range
   double priceValue = 500.0;
   final TextEditingController minPriceController = TextEditingController();
   final TextEditingController maxPriceController = TextEditingController();
-  
+
   // Amenities selection
   final Map<String, bool> amenities = {
+    // Most Essential
     'WiFi': false,
-    'Free Coffee': false,
-    'Free Parking': false,
+    'Beverage': false,
+    'Whiteboard': false,
+    'Chairs': false,
+    'Desks': false,
+    'Tech': false,
+    'Parking': false,
+    // Less Important
+    'TV': false,
+    'Coffee': false,
+    'Projector': false,
+    'Air Conditioner': false,
+    'Bathroom': false,
+    'Phone': false,
     'Printer': false,
+    'Monitor': false,
+    'Art Tools': false,
+    'Safe': false,
+    'Screen': false,
+    'Services': false,
+    'Nice View': false,
+    'Design': false,
   };
-  
+
   // Plan selection
   String? selectedPlan;
-  
+
   // Payment method selection
   String? selectedPaymentMethod;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
+    return BlocListener<SearchCubit, SearchState>(
+      listener: (context, state) {
+        if (state is SearchLoading) {
+          // Show loading indicator
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Applying filters...'),
+              duration: Duration(seconds: 1),
+            ),
+          );
+        } else if (state is FilterLoaded) {
+          // Filter applied successfully, navigate back to search
+          context.pop();
+        } else if (state is SearchError) {
+          // Show error message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: ${state.message}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+      child: FractionallySizedBox(
+        heightFactor: 0.90,
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Header
-            _buildHeader(),
-            
-            // Scrollable content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildRoomTypeSection(),
-                    _buildDivider(),
-                    _buildNumberOfSeatsSection(),
-                    _buildDivider(),
-                    _buildPriceRangeSection(),
-                    _buildDivider(),
-                    _buildAmenitiesSection(),
-                    _buildDivider(),
-                    _buildYourPlanSection(),
-                    _buildDivider(),
-                    _buildPaymentMethodSection(),
-                    SizedBox(height: 16),
-                  ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Header
+              _buildHeader(),
+
+              // Scrollable content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildRoomTypeSection(),
+                      _buildDivider(),
+                      _buildNumberOfSeatsSection(),
+                      _buildDivider(),
+                      _buildPriceRangeSection(),
+                      _buildDivider(),
+                      _buildAmenitiesSection(),
+                      _buildDivider(),
+                      _buildYourPlanSection(),
+                      _buildDivider(),
+                      _buildPaymentMethodSection(),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            
-            // Bottom buttons
-            _buildBottomButtons(),
-          ],
+
+              // Bottom buttons
+              _buildBottomButtons(),
+            ],
+          ),
         ),
       ),
     );
@@ -85,25 +129,25 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
 
   Widget _buildHeader() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(16),
-          topRight: Radius.circular(16),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
         ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 1,
-            offset: Offset(0, 1),
+            offset: const Offset(0, 1),
           ),
         ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
+          const Text(
             'Filters',
             style: TextStyle(
               fontSize: 18,
@@ -111,14 +155,14 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
             ),
           ),
           InkWell(
-            onTap: () => Navigator.pop(context),
+            onTap: () => context.pop(),
             child: Container(
-              padding: EdgeInsets.all(4),
+              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.grey.shade200,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.close,
                 size: 20,
                 color: Colors.black54,
@@ -142,8 +186,8 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
             'Room Type',
             style: TextStyle(
@@ -218,11 +262,11 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
               size: 20,
               color: Colors.black87,
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                 ),
               ),
@@ -243,8 +287,8 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 8.0),
           child: Row(
             children: [
               Icon(
@@ -285,7 +329,7 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
               ),
               child: Text(
                 '$numberOfSeats',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
@@ -331,8 +375,8 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
             'Price range',
             style: TextStyle(
@@ -354,12 +398,13 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
                       color: Colors.grey.shade600,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   TextField(
                     controller: minPriceController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(4),
                         borderSide: BorderSide(color: Colors.grey.shade300),
@@ -373,7 +418,7 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
                 ],
               ),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -385,12 +430,13 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
                       color: Colors.grey.shade600,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   TextField(
                     controller: maxPriceController,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(4),
                         borderSide: BorderSide(color: Colors.grey.shade300),
@@ -406,7 +452,7 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
             ),
           ],
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Row(
           children: [
             Expanded(
@@ -415,8 +461,10 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
                   activeTrackColor: Colors.blue,
                   inactiveTrackColor: Colors.grey.shade300,
                   thumbColor: Colors.white,
-                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8),
-                  overlayShape: RoundSliderOverlayShape(overlayRadius: 16),
+                  thumbShape:
+                      const RoundSliderThumbShape(enabledThumbRadius: 8),
+                  overlayShape:
+                      const RoundSliderOverlayShape(overlayRadius: 16),
                 ),
                 child: Slider(
                   value: priceValue,
@@ -430,7 +478,7 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
                 ),
               ),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
               '\$${priceValue.toInt()}',
               style: TextStyle(
@@ -449,8 +497,8 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
             'Amenities',
             style: TextStyle(
@@ -459,59 +507,61 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
             ),
           ),
         ),
-        _buildCheckboxListTile(
-          title: 'WiFi',
-          value: amenities['WiFi']!,
-          icon: Icons.wifi,
-          onChanged: (value) {
-            setState(() {
-              amenities['WiFi'] = value!;
-            });
-          },
+        const Padding(
+          padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+          child: Text('Most Essential:',
+              style: TextStyle(fontWeight: FontWeight.bold)),
         ),
-        _buildCheckboxListTile(
-          title: 'Free Coffee',
-          value: amenities['Free Coffee']!,
-          icon: Icons.coffee,
-          onChanged: (value) {
-            setState(() {
-              amenities['Free Coffee'] = value!;
-            });
-          },
-        ),
-        _buildCheckboxListTile(
-          title: 'Free Parking',
-          value: amenities['Free Parking']!,
-          icon: Icons.local_parking,
-          onChanged: (value) {
-            setState(() {
-              amenities['Free Parking'] = value!;
-            });
-          },
-        ),
-        _buildCheckboxListTile(
-          title: 'Printer',
-          value: amenities['Printer']!,
-          icon: Icons.print,
-          onChanged: (value) {
-            setState(() {
-              amenities['Printer'] = value!;
-            });
-          },
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 4.0, bottom: 8.0),
-          child: GestureDetector(
-            onTap: () {
-              // Handle show all amenities
+        ...[
+          'WiFi',
+          'Beverage',
+          'Whiteboard',
+          'Chairs',
+          'Desks',
+          'Tech',
+          'Parking'
+        ].map(
+          (amenity) => _buildCheckboxListTile(
+            title: amenity,
+            value: amenities[amenity]!,
+            icon: Icons.check_box_outline_blank,
+            onChanged: (value) {
+              setState(() {
+                amenities[amenity] = value!;
+              });
             },
-            child: Text(
-              'Show all',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade700,
-              ),
-            ),
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.only(top: 8.0, bottom: 4.0),
+          child: Text('more:',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        ...[
+          'TV',
+          'Coffee',
+          'Projector',
+          'Air Conditioner',
+          'Bathroom',
+          'Phone',
+          'Printer',
+          'Monitor',
+          'Art Tools',
+          'Safe',
+          'Screen',
+          'Services',
+          'Nice View',
+          'Design'
+        ].map(
+          (amenity) => _buildCheckboxListTile(
+            title: amenity,
+            value: amenities[amenity]!,
+            icon: Icons.check_box_outline_blank,
+            onChanged: (value) {
+              setState(() {
+                amenities[amenity] = value!;
+              });
+            },
           ),
         ),
       ],
@@ -535,11 +585,11 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
               size: 20,
               color: Colors.black87,
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
                 ),
               ),
@@ -566,8 +616,8 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
             'Your plan',
             style: TextStyle(
@@ -628,8 +678,8 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
             'Payment method',
             style: TextStyle(
@@ -665,55 +715,147 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
   }
 
   Widget _buildBottomButtons() {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: Offset(0, -2),
+    return BlocBuilder<SearchCubit, SearchState>(
+      builder: (context, state) {
+        final isLoading = state is SearchLoading;
+
+        return Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
+                offset: const Offset(0, -2),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: () {
-            // Handle clear all results
-            setState(() {
-              selectedRoomType = null;
-              numberOfSeats = 0;
-              priceValue = 500.0;
-              minPriceController.clear();
-              maxPriceController.clear();
-              amenities.forEach((key, value) {
-                amenities[key] = false;
-              });
-              selectedPlan = null;
-              selectedPaymentMethod = null;
-            });
-            // Optionally close the popup after clearing
-            // Navigator.pop(context);
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+          child: Row(
+            children: [
+              // Clear All button (left)
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          // Handle clear all results
+                          setState(() {
+                            selectedRoomType = null;
+                            numberOfSeats = 0;
+                            priceValue = 500.0;
+                            minPriceController.clear();
+                            maxPriceController.clear();
+                            amenities.forEach((key, value) {
+                              amenities[key] = false;
+                            });
+                            selectedPlan = null;
+                            selectedPaymentMethod = null;
+                          });
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[300],
+                    foregroundColor: Colors.black87,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Clear All',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Done button (right)
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          // Apply filters and close modal
+                          _applyFilters();
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: isLoading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Text(
+                          'Done',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                ),
+              ),
+            ],
           ),
-          child: Text(
-            'Clear All Results',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-      ),
+        );
+      },
     );
+  }
+
+  void _applyFilters() {
+    // Get selected amenities
+    final selectedAmenities = amenities.entries
+        .where((entry) => entry.value)
+        .map((entry) => entry.key)
+        .toList();
+
+    // Check if any filters are selected
+    final hasFilters = selectedRoomType != null ||
+        numberOfSeats > 0 ||
+        minPriceController.text.isNotEmpty ||
+        maxPriceController.text.isNotEmpty ||
+        selectedAmenities.isNotEmpty ||
+        selectedPlan != null ||
+        selectedPaymentMethod != null;
+
+    if (!hasFilters) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select at least one filter'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    // Create filter parameters
+    final filterParams = FilterParams(
+      roomType: selectedRoomType,
+      numberOfSeats: numberOfSeats > 0 ? numberOfSeats : null,
+      minPrice: minPriceController.text.isNotEmpty
+          ? double.tryParse(minPriceController.text)
+          : null,
+      maxPrice: maxPriceController.text.isNotEmpty
+          ? double.tryParse(maxPriceController.text)
+          : null,
+      amenities: selectedAmenities.isNotEmpty ? selectedAmenities : null,
+      plan: selectedPlan,
+      paymentMethod: selectedPaymentMethod,
+    );
+
+    // Apply filters using the cubit
+    context.read<SearchCubit>().filterRooms(filterParams);
   }
 }
