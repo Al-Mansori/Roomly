@@ -20,7 +20,7 @@ class FilterParams {
   Map<String, dynamic> toQueryParams() {
     final Map<String, dynamic> params = {};
 
-    if (roomType != null) params['roomType'] = roomType;
+    if (roomType != null) params['roomType'] = roomType!.toUpperCase();
     if (numberOfSeats != null) params['numberOfSeats'] = numberOfSeats;
     if (minPrice != null) params['minPrice'] = minPrice;
     if (maxPrice != null) params['maxPrice'] = maxPrice;
