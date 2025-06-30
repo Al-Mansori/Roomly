@@ -25,10 +25,29 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
 
   // Amenities selection
   final Map<String, bool> amenities = {
+    // Most Essential
     'WiFi': false,
-    'Free Coffee': false,
-    'Free Parking': false,
+    'Beverage': false,
+    'Whiteboard': false,
+    'Chairs': false,
+    'Desks': false,
+    'Tech': false,
+    'Parking': false,
+    // Less Important
+    'TV': false,
+    'Coffee': false,
+    'Projector': false,
+    'Air Conditioner': false,
+    'Bathroom': false,
+    'Phone': false,
     'Printer': false,
+    'Monitor': false,
+    'Art Tools': false,
+    'Safe': false,
+    'Screen': false,
+    'Services': false,
+    'Nice View': false,
+    'Design': false,
   };
 
   // Plan selection
@@ -488,59 +507,61 @@ class _FilterPopupScreenState extends State<FilterPopupScreen> {
             ),
           ),
         ),
-        _buildCheckboxListTile(
-          title: 'WiFi',
-          value: amenities['WiFi']!,
-          icon: Icons.wifi,
-          onChanged: (value) {
-            setState(() {
-              amenities['WiFi'] = value!;
-            });
-          },
+        const Padding(
+          padding: EdgeInsets.only(top: 4.0, bottom: 4.0),
+          child: Text('Most Essential:',
+              style: TextStyle(fontWeight: FontWeight.bold)),
         ),
-        _buildCheckboxListTile(
-          title: 'Free Coffee',
-          value: amenities['Free Coffee']!,
-          icon: Icons.coffee,
-          onChanged: (value) {
-            setState(() {
-              amenities['Free Coffee'] = value!;
-            });
-          },
-        ),
-        _buildCheckboxListTile(
-          title: 'Free Parking',
-          value: amenities['Free Parking']!,
-          icon: Icons.local_parking,
-          onChanged: (value) {
-            setState(() {
-              amenities['Free Parking'] = value!;
-            });
-          },
-        ),
-        _buildCheckboxListTile(
-          title: 'Printer',
-          value: amenities['Printer']!,
-          icon: Icons.print,
-          onChanged: (value) {
-            setState(() {
-              amenities['Printer'] = value!;
-            });
-          },
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 4.0, bottom: 8.0),
-          child: GestureDetector(
-            onTap: () {
-              // Handle show all amenities
+        ...[
+          'WiFi',
+          'Beverage',
+          'Whiteboard',
+          'Chairs',
+          'Desks',
+          'Tech',
+          'Parking'
+        ].map(
+          (amenity) => _buildCheckboxListTile(
+            title: amenity,
+            value: amenities[amenity]!,
+            icon: Icons.check_box_outline_blank,
+            onChanged: (value) {
+              setState(() {
+                amenities[amenity] = value!;
+              });
             },
-            child: Text(
-              'Show all',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade700,
-              ),
-            ),
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.only(top: 8.0, bottom: 4.0),
+          child: Text('more:',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+        ),
+        ...[
+          'TV',
+          'Coffee',
+          'Projector',
+          'Air Conditioner',
+          'Bathroom',
+          'Phone',
+          'Printer',
+          'Monitor',
+          'Art Tools',
+          'Safe',
+          'Screen',
+          'Services',
+          'Nice View',
+          'Design'
+        ].map(
+          (amenity) => _buildCheckboxListTile(
+            title: amenity,
+            value: amenities[amenity]!,
+            icon: Icons.check_box_outline_blank,
+            onChanged: (value) {
+              setState(() {
+                amenities[amenity] = value!;
+              });
+            },
           ),
         ),
       ],
