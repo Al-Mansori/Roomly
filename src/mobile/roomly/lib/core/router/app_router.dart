@@ -103,12 +103,10 @@ final GoRouter appRouter = GoRouter(
         return BlocProvider(
           create: (_) => LocationBloc(locationManager: LocationManager())..add(LoadInitialLocation()),
           child: const BotLayout(child: HomeScreen()),
-          create: (_) => LocationBloc(locationManager: LocationManager())
-            ..add(LoadInitialLocation()),
-          child: const HomeScreen(),
         );
       },
     ),
+
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     // GoRoute(path: '/complete-profile', builder: (context, state) =>  CompleteProfileScreen(userId: )),
     GoRoute(
@@ -357,12 +355,6 @@ final GoRouter appRouter = GoRouter(
             final remoteDataSource = WorkspaceRemoteDataSourceImpl(client: client);
             final repository = WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
             final getWorkspaceReviewsUseCase = GetWorkspaceReviewsUseCase(repository);
-            final remoteDataSource =
-                WorkspaceRemoteDataSourceImpl(client: client);
-            final repository =
-                WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
-            final getWorkspaceReviewsUseCase =
-                GetWorkspaceReviewsUseCase(repository);
 
             return ReviewsCubit(
               getWorkspaceReviewsUseCase: getWorkspaceReviewsUseCase,
@@ -489,35 +481,6 @@ final GoRouter appRouter = GoRouter(
             providers: [
               BlocProvider<WorkspaceDetailsCubit>(
                 create: (_) => _createWorkspaceCubit(workspaceId),
-
-                create: (_) {
-                  // Manual creation logic
-                  final client = http.Client();
-                  final remoteDataSource =
-                      WorkspaceRemoteDataSourceImpl(client: client);
-                  final repository = WorkspaceRepositoryImpl(
-                      remoteDataSource: remoteDataSource);
-                  final getWorkspaceDetailsUseCase =
-                      GetWorkspaceDetailsUseCase(repository: repository);
-                  final getWorkspaceReviewsUseCase =
-                      GetWorkspaceReviewsUseCase(repository);
-                  final getRoomDetailsUseCase =
-                      GetRoomDetailsUseCase(repository: repository);
-                  final getWorkspaceSchedulesUseCase =
-                      GetWorkspaceSchedulesUseCase(repository);
-
-                  final cubit = WorkspaceDetailsCubit(
-                    getWorkspaceDetailsUseCase: getWorkspaceDetailsUseCase,
-                    getRoomDetailsUseCase: getRoomDetailsUseCase,
-                    getWorkspaceReviewsUseCase: getWorkspaceReviewsUseCase,
-                    getWorkspaceSchedulesUseCase: getWorkspaceSchedulesUseCase,
-                  );
-
-                  // Trigger the fetch
-                  cubit.getWorkspaceDetails(workspaceId);
-
-                  return cubit;
-                },
               ),
               BlocProvider<RoomDetailsCubit>(
                 create: (_) => createRoomDetailsCubitSafely(),
@@ -537,6 +500,7 @@ final GoRouter appRouter = GoRouter(
         );
       },
     ),
+
 
     GoRoute(
       path: '/booking',
