@@ -7,7 +7,8 @@ import 'package:roomly/features/favorite/domain/usecases/get_favorite_rooms_usec
 import 'package:roomly/features/favorite/domain/usecases/add_favorite_room_usecase.dart';
 import 'package:roomly/features/favorite/domain/usecases/remove_favorite_room_usecase.dart';
 
-final sl = GetIt.instance;
+import '../../../../core/service_locator/service_locator.dart';
+
 
 Future<void> initFavoriteDependencies() async {
   // Use cases

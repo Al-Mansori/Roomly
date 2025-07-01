@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
+import '../../../GlobalWidgets/app_session.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 import '../cubit/payment_cubit.dart';
 import '../cubit/payment_state.dart';
 import '../widgets/customized_card_widget.dart';
@@ -21,10 +23,10 @@ class _CardsScreenState extends State<CardsScreen> {
   }
 
   Future<void> _loadUserCards() async {
-    final userId = await SecureStorage.getId();
-    if (userId != null) {
-      context.read<PaymentCubit>().getUserCards(userId);
-    }
+    UserEntity? user = AppSession().currentUser;
+    final String? userId = user?.id;
+    context.read<PaymentCubit>().getUserCards(userId!);
+
   }
 
   void _showPaymentDialog() {

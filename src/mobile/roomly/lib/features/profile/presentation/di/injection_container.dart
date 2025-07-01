@@ -11,7 +11,8 @@ import 'package:roomly/features/profile/domain/usecases/get_cached_user.dart';
 import 'package:roomly/features/profile/domain/usecases/update_user.dart';
 import 'package:roomly/features/profile/presentation/cubit/profile_cubit.dart';
 
-final sl = GetIt.instance;
+import '../../../../core/service_locator/service_locator.dart';
+
 
 Future<void> init() async {
   //! Features - User

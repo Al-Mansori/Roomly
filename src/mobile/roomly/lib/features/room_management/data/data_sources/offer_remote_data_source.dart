@@ -15,7 +15,7 @@ class OfferRemoteDataSourceImpl implements OfferRemoteDataSource {
   Future<List<OfferModel>> getRoomOffers(String roomId) async {
     try {
       final response = await dio.get('${AppApi.baseUrl}/api/staff/offers/room/$roomId');
-      if (response.data == null) {
+      if (response.data == null || response.data.isEmpty) {
         return [];
       }
       return (response.data as List).map((e) => OfferModel.fromJson(e)).toList();

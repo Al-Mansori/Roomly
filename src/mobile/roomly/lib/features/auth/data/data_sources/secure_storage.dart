@@ -6,6 +6,7 @@ import 'package:roomly/features/auth/data/models/user_model.dart';
 class SecureStorage {
   static const _tokenKey = 'auth_token';
   static const _userId = 'user_id';
+  static const _userIdString = '_userIdString';
   static const _userData = 'user_data';
   static const _refreshTokenKey = 'refresh_token';
   static const _userEmailKey = 'user_email';
@@ -16,9 +17,11 @@ class SecureStorage {
     await _storage.write(key: _tokenKey, value: token);
   }
   static Future<void> saveId(UserModel user) async {
-    await _storage.write(key: _userId, value: user.id);
+    await _storage.write(key: _userIdString, value: user.id);
   }
-
+  static Future<void> saveIdString(String userId) async {
+    await _storage.write(key: _userId, value: userId);
+  }
   static Future<void> saveUserData(UserModel user) async {
     await _storage.write(key: _userData, value: jsonEncode(user.toJson()));
   }
@@ -42,7 +45,11 @@ class SecureStorage {
   static Future<void> deleteToken() async {
     await _storage.delete(key: _tokenKey);
   }
-
+  static Future<String?> getIdString() async {
+    final id = await _storage.read(key: _userIdString);
+    print('📌 Retrieved userId from SecureStorage: $id');
+    return id;
+  }
   static Future<void> saveRefreshToken(String token) async {
     await _storage.write(key: _refreshTokenKey, value: token);
   }

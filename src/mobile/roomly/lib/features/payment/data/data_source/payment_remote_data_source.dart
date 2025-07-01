@@ -7,6 +7,14 @@ import '../models/card_model.dart';
 abstract class PaymentRemoteDataSource {
   Future<List<CardModel>> getUserCards(String userId);
   Future<void> addCard(AddCardRequest request);
+  Future<Map<String, dynamic>> processPayment({  // Changed from String to Map
+    required String reservationId,
+    required String userId,
+    required String cardNumber,
+    required String cvv,
+    required String paymentMethod,
+    required double amount,
+  });
 }
 
 class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
@@ -65,6 +73,44 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
         rethrow;
       }
       throw ServerException();
+    }
+  }
+  @override
+  Future<Map<String, dynamic>> processPayment({
+    required String reservationId,
+    required String userId,
+    required String cardNumber,
+    required String cvv,
+    required String paymentMethod,
+    required double amount,
+  }) async {
+    final url = Uri.parse('https://feminist-abigael-roomly-5d3753ef.koyeb.app/api/customer/pay')
+        .replace(queryParameters: {
+      'reservationId': reservationId,
+      'userId': userId,
+      'cardNumber': cardNumber,
+      'cvv': cvv,
+      'paymentMethod': paymentMethod,
+      'amount': amount.toString(),
+    });
+
+    print("📡 Final API URL: $url");
+
+    try {
+      final response = await client.post(url);
+      print("📥 Response Status: ${response.statusCode}");
+      print("📦 Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        // هنا بنعرض سبب الخطأ، مش بنرمي استثناء ساكت
+        throw Exception('Server responded with status: ${response.statusCode}, body: ${response.body}');
+      }
+    } catch (e, stackTrace) {
+      print("❌ Exception while calling payment API: $e");
+      print("📍 StackTrace: $stackTrace");
+      throw Exception('Unexpected error occurred while processing payment: $e');
     }
   }
 }

@@ -18,4 +18,24 @@ class UserEntity {
     this.address,
     this.isStaff,
   });
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'firstName': firstName,
+    'lastName': lastName,
+    'email': email,
+    'phone': phone,
+    'address': address,
+    'isStaff': isStaff,
+  };
+
+  factory UserEntity.fromJson(Map<String, dynamic> json) => UserEntity(
+    id: json['id'],
+    firstName: json['firstName'],
+    lastName: json['lastName'],
+    email: json['email'],
+    phone: json['phone'],
+    address: json['address'],
+    isStaff: json['isStaff'],
+  );
+
 }

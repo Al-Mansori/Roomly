@@ -33,6 +33,8 @@ class WorkspaceModel extends WorkspaceEntity {
         );
 
   factory WorkspaceModel.fromJson(Map<String, dynamic> json) {
+    print("📥 Received JSON in fromJson: $json"); // ✅ هنا الطباعه
+
     final id = json["id"];
     final name = json["name"];
 

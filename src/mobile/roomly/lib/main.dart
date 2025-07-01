@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:roomly/core/router/app_router.dart';
 import 'package:roomly/features/auth/domain/usecases/ResetPasswordUseCase.dart';
 import 'package:roomly/features/auth/domain/usecases/continue_with_google.dart';
@@ -20,23 +21,46 @@ import 'package:roomly/features/payment/presentation/di/payment_injection.dart' 
 import 'package:roomly/features/request/presentation/di/requests_injection_container.dart' as requests_di;
 import 'package:roomly/features/favorite/presentation/di/favorite_injection_container.dart' as favorite_di;
 
-void main() {
+import 'features/home/domain/usecases/initHomeDependencies.dart';
+import 'features/home/presentation/bloc/cubit/workspace_cubit.dart';
+import 'features/room_management/presentation/cubits/booking/di.dart';
+import 'features/room_management/presentation/cubits/di_request.dart' as request_di;
+import 'features/room_management/presentation/cubits/di_request.dart';
+import 'features/room_management/presentation/di/staff_injection_container.dart';
+final sl = GetIt.instance;
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initDependencies(); // ⬅️ استنى تسجيل كل الـ dependencies
+
   runApp(const RoomlyApp());
 }
 
 
 Future<void> initDependencies() async {
-  // Register Dio first (this must happen before anything else that uses Dio)
-  sl.registerLazySingleton<Dio>(() => Dio());
+  // Dio
+  if (!sl.isRegistered<Dio>()) {
+    sl.registerLazySingleton<Dio>(() => Dio());
+  }
 
-  // Run independent dependency initializations in parallel
+  // Core
+  setupDependencies();
+
+
+  await initHomeDependencies();
+  setupDependencies(); // ✅ موجودة هنا
+
   await Future.wait([
     initRoomManagementDependencies(),
     payment_di.initPaymentDependencies(),
     requests_di.initRequestsDependencies(),
     favorite_di.initFavoriteDependencies(),
   ]);
+  await initSendRequestDependencies();
+  // await payment_di.initPaymentDependencies();
+  // await requests_di.initRequestsDependencies();
+  await initStaffDependencies(); // ⬅️ الجديد
+
 }
 
 
@@ -45,7 +69,6 @@ class RoomlyApp extends StatelessWidget {
 
   Future<void> _initializeApp() async {
     await Future.wait([
-      initDependencies(),
       Future.delayed(const Duration(seconds: 5)), // optional delay
     ]);
   }
@@ -90,6 +113,17 @@ class RoomlyApp extends StatelessWidget {
                   );
                 },
               ),
+              BlocProvider<WorkspaceCubit>(
+
+                create: (_) => WorkspaceCubit(
+
+                  getNearbyWorkspaces: sl(),
+                  getTopRatedWorkspaces: sl(),
+                  getWorkspaceDetails: sl(),
+                  getWorkspaceImages: sl(),
+                )..loadInitialData(),
+              ),
+
             ],
             child: MaterialApp.router(
               title: 'Roomly',

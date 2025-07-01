@@ -9,12 +9,13 @@ import 'package:roomly/features/room_management/domain/usecases/get_room_images_
 import 'package:roomly/features/room_management/domain/usecases/get_room_offers_usecase.dart';
 import 'package:roomly/features/room_management/presentation/cubits/room_details_cubit.dart';
 
-final sl = GetIt.instance;
+import '../../../../core/service_locator/service_locator.dart';
+
 
 Future<void> initRoomManagementDependencies() async {
   // Cubits
   sl.registerFactory(
-    () => RoomDetailsCubit(
+        () => RoomDetailsCubit(
       getRoomDetailsUseCase: sl(),
       getRoomImagesUseCase: sl(),
       getRoomOffersUseCase: sl(),
@@ -31,7 +32,7 @@ Future<void> initRoomManagementDependencies() async {
 
   // Repositories
   sl.registerLazySingleton<RoomRepository>(
-    () => RoomRepositoryImpl(
+        () => RoomRepositoryImpl(
       remoteDataSource: sl(),
       offerRemoteDataSource: sl(),
     ),
@@ -39,10 +40,9 @@ Future<void> initRoomManagementDependencies() async {
 
   // Data sources
   sl.registerLazySingleton<RoomRemoteDataSource>(
-    () => RoomRemoteDataSourceImpl(dio: sl<Dio>()),
+        () => RoomRemoteDataSourceImpl(dio: sl<Dio>()),
   );
   sl.registerLazySingleton<OfferRemoteDataSource>(
-    () => OfferRemoteDataSourceImpl(dio: sl<Dio>()),
+        () => OfferRemoteDataSourceImpl(dio: sl<Dio>()),
   );
 }
-

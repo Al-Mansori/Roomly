@@ -21,6 +21,22 @@ class PaymentCardsLoaded extends PaymentState {
   List<Object> get props => [cards];
 }
 
+class PaymentProcessing extends PaymentState {}
+
+class PaymentProcessed extends PaymentState {
+  final double amount;
+  final String transactionId;
+  final Map<String, dynamic> apiResponse;
+
+  const PaymentProcessed({
+    required this.amount,
+    required this.transactionId,
+    required this.apiResponse,
+  });
+
+  @override
+  List<Object> get props => [amount, transactionId, apiResponse];
+}
 class PaymentError extends PaymentState {
   final String message;
 
@@ -40,6 +56,3 @@ class PaymentCardAddError extends PaymentState {
   @override
   List<Object> get props => [message];
 }
-
-
-
