@@ -9,8 +9,8 @@ import 'package:roomly/features/home/presentation/widget/room_card_for_types.dar
 import '../../data/models/room_for_type_model.dart';
 import '../../domain/repositories/room_repo.dart';
 import '../bloc/cubit/room_cubit.dart';
-import '../bloc/cubit/workspace_cubit.dart';
 import '../bloc/state/room_state.dart' show RoomsErrorForType, RoomsLoadedForType, RoomsLoadingForType, RoomsState, RoomsStateForType;
+
 class RoomsScreen extends StatelessWidget {
   final String roomType;
 
@@ -20,38 +20,51 @@ class RoomsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // عند الضغط على زر الرجوع، نعود للصفحة السابقة
+        // Handle back button press
         context.go('/home');
-        return false; // نمنع الخروج من التطبيق
+        return false;
       },
       child: Scaffold(
         appBar: AppBar(
           title: Text('$roomType Rooms'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => context.go('/home'),
+          ),
         ),
-        body: BlocProvider(
-          create: (context) => RoomsCubit(
-            roomRepository: context.read<RoomRepository>(),
-          )..fetchRoomsByType(roomType.toLowerCase()),
-          child: BlocBuilder<RoomsCubit, RoomsStateForType>(
-            builder: (context, state) {
-              if (state is RoomsLoadingForType) { // تغيير من RoomsLoading إلى RoomsLoadingForType
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: 3,
-                  itemBuilder: (context, index) {
-                    return const Padding(
-                      padding: EdgeInsets.only(bottom: 16),
-                      child: RoomCardShimmer(),
-                    );
-                  },
-                );
-              } else if (state is RoomsErrorForType) {
-                return Center(child: Text(state.message));
-              } else if (state is RoomsLoadedForType) {
-                return _buildRoomsList(state.rooms);
-              }
-              return const Center(child: Text('No rooms available'));
-            },
+        body: GestureDetector(
+          onHorizontalDragEnd: (details) {
+            // Handle swipe to go back
+            if (details.primaryVelocity! > 0) {
+              // Swiped from left to right
+              context.go('/home');
+            }
+          },
+          child: BlocProvider(
+            create: (context) => RoomsCubit(
+              roomRepository: context.read<RoomRepository>(),
+            )..fetchRoomsByType(roomType.toLowerCase()),
+            child: BlocBuilder<RoomsCubit, RoomsStateForType>(
+              builder: (context, state) {
+                if (state is RoomsLoadingForType) {
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: 3,
+                    itemBuilder: (context, index) {
+                      return const Padding(
+                        padding: EdgeInsets.only(bottom: 16),
+                        child: RoomCardShimmer(),
+                      );
+                    },
+                  );
+                } else if (state is RoomsErrorForType) {
+                  return Center(child: Text(state.message));
+                } else if (state is RoomsLoadedForType) {
+                  return _buildRoomsList(state.rooms);
+                }
+                return const Center(child: Text('No rooms available'));
+              },
+            ),
           ),
         ),
       ),
@@ -78,7 +91,7 @@ class RoomsScreen extends StatelessWidget {
               images: RoomModelForType.images ?? [],
               availableCount: RoomModelForType.availableCount,
             ),
-            workspaceId: RoomModelForType.workspaceId, // Pass workspaceId separately
+            workspaceId: RoomModelForType.workspaceId,
           ),
         );
       },

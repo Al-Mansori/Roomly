@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:roomly/core/network/network_info.dart';
-import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
 import 'package:roomly/features/loyalty/data/data_source/loyalty_points_remote_data_source.dart';
 import 'package:roomly/features/loyalty/data/repository/loyalty_points_repository_impl.dart';
 import 'package:roomly/features/loyalty/domain/entities/loyalty_points_entity.dart';
@@ -14,6 +13,9 @@ import 'package:roomly/features/loyalty/presentation/widgets/expiration_warning.
 import 'package:roomly/features/loyalty/presentation/widgets/loyalty_header_section.dart';
 import 'package:roomly/features/loyalty/presentation/widgets/points_vouchers_section.dart';
 import 'package:roomly/features/loyalty/presentation/widgets/workspace_card.dart';
+
+import '../../../GlobalWidgets/app_session.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 
 class LoyaltyPage extends StatelessWidget {
   const LoyaltyPage({super.key});
@@ -82,7 +84,8 @@ class _LoyaltyPageContentState extends State<LoyaltyPageContent> {
 
   Future<void> _loadUserName() async {
     try {
-      final userData = await SecureStorage.getUserData();
+      final UserEntity? userData = AppSession().currentUser;
+
       if (userData != null && mounted) {
         final firstName = userData.firstName ?? '';
         final lastName = userData.lastName ?? '';

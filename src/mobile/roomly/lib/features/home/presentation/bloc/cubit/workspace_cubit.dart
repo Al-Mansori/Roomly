@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 
-import '../../../../auth/data/data_sources/secure_storage.dart';
+import '../../../../GlobalWidgets/app_session.dart';
+import '../../../../auth/domain/entities/user_entity.dart';
 import '../../../data/data_sources/constants.dart';
 import '../../../domain/entities/workspace.dart';
 import '../../../domain/usecases/workspace_details_usecase.dart';
@@ -186,11 +187,13 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
     await loadInitialData();
   }
   Future<void> fetchNearbyWorkspaces(double lat, double long) async {
-    final userId = await SecureStorage.getId() ?? "user01";
+    final UserEntity? user = AppSession().currentUser;
+
+    final userId = user?.id;
 
     emit(WorkspaceLoading());
     final result = await getNearbyWorkspaces(
-      userId: userId,
+      userId: userId!,
       latitude: lat,
       longitude: long,
     );
@@ -253,11 +256,12 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
 
   // Helper methods
   Future<void> _loadNearbyWorkspaces() async {
-    final userId = await SecureStorage.getId() ?? "user01";
+    final UserEntity? user = AppSession().currentUser;
+    final userId = user?.id;
     final coordinates = await HomeConstants.getDefaultCoordinates();
 
     final result = await getNearbyWorkspaces(
-      userId: userId,
+      userId: userId!,
       latitude: coordinates.latitude,
       longitude: coordinates.longitude,
     );
@@ -283,9 +287,10 @@ class WorkspaceCubit extends Cubit<WorkspaceState> {
   }
 
   Future<void> _loadTopRatedWorkspaces() async {
-    final userId = await SecureStorage.getId() ?? "user01";
+    final UserEntity? user = AppSession().currentUser;
+    final userId = user?.id;
 
-    final result = await getTopRatedWorkspaces(userId: userId);
+    final result = await getTopRatedWorkspaces(userId: userId!);
 
     await result.fold(
           (failure) async {

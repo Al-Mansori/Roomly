@@ -1,4 +1,3 @@
-import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
 
 import '../../../map/presentaion/services/geocoding_service.dart';
 import 'address_resolver.dart';
@@ -17,10 +16,7 @@ class HomeConstants {
   static const String workspaceDetailsUrl =
       'https://feminist-abigael-roomly-5d3753ef.koyeb.app/api/customer/workspace/details?';
 
-  /// ✅ Use this from async context when needed
-  static Future<String?> getUserId() async {
-    return (await SecureStorage.getUserData())?.id;
-  }
+
 
   /// ✅ Get default location dynamically
   static Future<LocationCoordinates> getDefaultCoordinates() async {

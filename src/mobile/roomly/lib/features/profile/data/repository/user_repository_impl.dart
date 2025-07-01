@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
+import 'package:roomly/features/GlobalWidgets/app_session.dart';
 import 'package:roomly/features/auth/data/models/user_model.dart';
 import 'package:roomly/features/auth/domain/entities/user_entity.dart';
-import 'package:roomly/features/profile/data/data_source/user_local_data_source.dart';
 import 'package:roomly/features/profile/data/data_source/user_remote_data_source.dart';
 import 'package:roomly/features/profile/domain/repository/user_repository.dart';
 import '../../../../core/error/failures.dart';
@@ -10,21 +10,19 @@ import '../../../../core/network/network_info.dart';
 
 class UserRepositoryImpl implements UserRepository {
   final UserRemoteDataSource remoteDataSource;
-  final UserLocalDataSource localDataSource;
   final NetworkInfo networkInfo;
 
   UserRepositoryImpl({
     required this.remoteDataSource,
-    required this.localDataSource,
     required this.networkInfo,
   });
 
   @override
   Future<Either<Failure, UserEntity>> getCachedUser() async {
     try {
-      final cachedUser = await localDataSource.getCachedUser();
+      final cachedUser = AppSession().currentUser;
       if (cachedUser != null) {
-        return Right(cachedUser.toEntity());
+        return Right(cachedUser);
       } else {
         return Left(CacheFailure(message: 'No user data found in cache'));
       }
@@ -51,8 +49,8 @@ class UserRepositoryImpl implements UserRepository {
         final result = await remoteDataSource.updateUser(userModel);
         
         // Update local cache with the updated user data
-        await localDataSource.cacheUser(userModel);
-        
+        AppSession().setUser(userModel);
+
         return Right(result);
       } on ServerException {
         return Left(ServerFailure(message: 'Failed to update user'));
@@ -69,8 +67,7 @@ class UserRepositoryImpl implements UserRepository {
         final result = await remoteDataSource.deleteUser(userId);
         
         // Clear local cache after successful deletion
-        await localDataSource.clearUserData();
-        
+        AppSession().clearUser();
         return Right(result);
       } on ServerException {
         return Left(ServerFailure(message: 'Failed to delete user'));

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:roomly/core/error/exceptions.dart';
 import 'package:roomly/core/network/app_api.dart';
-import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
 import '../../../GlobalWidgets/app_session.dart';
 import '../models/loyalty_points_model.dart';
 
@@ -78,7 +77,7 @@ class LoyaltyPointsRemoteDataSourceImpl implements LoyaltyPointsRemoteDataSource
   @override
   Future<LoyaltyPointsModel> updateLoyaltyPoints(LoyaltyPointsModel loyaltyPoints) async {
     try {
-      final token = await SecureStorage.getToken();
+      final token = AppSession().token;
       if (token == null) {
         throw Exception('No auth token found');
       }
@@ -108,7 +107,7 @@ class LoyaltyPointsRemoteDataSourceImpl implements LoyaltyPointsRemoteDataSource
   @override
   Future<bool> addPoints(String userId, int points) async {
     try {
-      final token = await SecureStorage.getToken();
+      final token = AppSession().token;
       if (token == null) {
         throw Exception('No auth token found');
       }
@@ -136,7 +135,7 @@ class LoyaltyPointsRemoteDataSourceImpl implements LoyaltyPointsRemoteDataSource
   @override
   Future<bool> redeemPoints(String userId, int points) async {
     try {
-      final token = await SecureStorage.getToken();
+      final token = AppSession().token;
       if (token == null) {
         throw Exception('No auth token found');
       }

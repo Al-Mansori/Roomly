@@ -32,6 +32,10 @@ class AppSession {
   Future<void> loadToken() async {
     _token = await _storage.read(key: 'auth_token');
   }
+  Future<void> clearSession() async {
+    clearUser(); // Clears _currentUser
+    await clearToken(); // Clears auth_token from secure storage
+  }
 
   Future<void> clearToken() async {
     _token = null;

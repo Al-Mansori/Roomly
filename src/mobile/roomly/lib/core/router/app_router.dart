@@ -22,10 +22,8 @@ import 'package:roomly/features/help/presentation/screens/settings_screen.dart';
 import 'package:roomly/features/help/presentation/screens/terms_and_policies_screen.dart';
 import 'package:roomly/features/home/presentation/screens/home_screen.dart';
 import 'package:roomly/features/loyalty/presentation/screens/loyalty_page.dart';
-import 'package:roomly/features/payment/presentation/di/payment_injection.dart';
 import 'package:roomly/features/payment/presentation/screens/add_card_screen.dart';
 import 'package:roomly/features/payment/presentation/screens/cards_screen.dart';
-import 'package:roomly/features/profile/data/data_source/user_local_data_source.dart';
 import 'package:roomly/features/profile/data/data_source/user_remote_data_source.dart';
 import 'package:roomly/features/profile/data/repository/user_repository_impl.dart';
 import 'package:roomly/features/profile/domain/usecases/delete_user.dart';
@@ -34,8 +32,6 @@ import 'package:roomly/features/profile/domain/usecases/update_user.dart';
 import 'package:roomly/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:roomly/features/profile/presentation/screens/profile_screen.dart';
 import 'package:roomly/features/room_management/presentation/cubits/room_details_cubit.dart';
-import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart'
-    as di;
 import 'package:roomly/features/room_management/presentation/screens/room_details_screen.dart';
 import 'package:roomly/features/room_management/presentation/screens/room_list_screen.dart';
 import 'package:roomly/features/room_management/presentation/screens/Booking_2nd_Screen.dart';
@@ -83,10 +79,8 @@ import 'package:roomly/features/request/presentation/screens/request_detail_scre
 import 'package:roomly/features/request/presentation/screens/requests_screen.dart';
 import 'package:roomly/features/workspace/domain/usecases/get_workspace_schedules_usecase.dart';
 import '../../features/payment/presentation/screens/payment_screen.dart';
-import '../../features/room_management/data/data_sources/api_service.dart';
 import '../../features/room_management/domain/entities/room_entity.dart';
 import '../../features/room_management/presentation/cubits/booking/cubit/booking_cubit.dart';
-import '../../features/room_management/presentation/cubits/booking/di.dart';
 import '../../features/room_management/presentation/cubits/request.dart';
 import '../../features/room_management/presentation/screens/booking_3rd_screen.dart';
 import '../../features/room_management/presentation/screens/send_request_screen.dart';
@@ -154,7 +148,6 @@ final GoRouter appRouter = GoRouter(
           getCachedUser: GetCachedUser(
             UserRepositoryImpl(
               remoteDataSource: UserRemoteDataSourceImpl(client: http.Client()),
-              localDataSource: UserLocalDataSourceImpl(),
               networkInfo:
                   NetworkInfoImpl(InternetConnectionChecker.createInstance()),
             ),
@@ -162,7 +155,6 @@ final GoRouter appRouter = GoRouter(
           updateUser: UpdateUser(
             UserRepositoryImpl(
               remoteDataSource: UserRemoteDataSourceImpl(client: http.Client()),
-              localDataSource: UserLocalDataSourceImpl(),
               networkInfo:
                   NetworkInfoImpl(InternetConnectionChecker.createInstance()),
             ),
@@ -170,7 +162,6 @@ final GoRouter appRouter = GoRouter(
           deleteUser: DeleteUser(
             UserRepositoryImpl(
               remoteDataSource: UserRemoteDataSourceImpl(client: http.Client()),
-              localDataSource: UserLocalDataSourceImpl(),
               networkInfo:
                   NetworkInfoImpl(InternetConnectionChecker.createInstance()),
             ),
@@ -590,14 +581,7 @@ final GoRouter appRouter = GoRouter(
     ),
   ],
 );
-// Helper function to extract workspace ID from cubit state
-String? _getWorkspaceIdFromCubit(WorkspaceDetailsCubit cubit) {
-  final state = cubit.state;
-  if (state is WorkspaceDetailsLoaded) {
-    return state.workspace.id;
-  }
-  return null;
-}
+
 
 // Helper function to create a new WorkspaceDetailsCubit
 WorkspaceDetailsCubit _createWorkspaceCubit(String workspaceId) {

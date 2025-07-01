@@ -10,7 +10,6 @@ import 'package:roomly/features/home/presentation/component/search_section.dart'
 
 import '../../../GlobalWidgets/app_session.dart';
 import '../../../GlobalWidgets/navBar.dart';
-import '../../../auth/data/data_sources/secure_storage.dart';
 import '../../../auth/domain/entities/user_entity.dart';
 import '../component/skeleton_loading_screen.dart';
 

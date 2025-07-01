@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
-import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
+import 'package:roomly/features/GlobalWidgets/app_session.dart';
 import 'package:roomly/features/auth/data/models/google_user_model.dart';
 
 import '../../../../core/network/app_api.dart';
@@ -55,10 +55,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (response.statusCode == 200) {
         // Handle successful login
         if (jsonResponse['user'] != null && jsonResponse['token'] != null) {
-          await SecureStorage.saveToken(jsonResponse['token']);
+          AppSession().setToken(jsonResponse['token']);
           final userModel = UserModel.fromJson(jsonResponse['user']);
-          await SecureStorage.saveId(userModel);
-          await SecureStorage.saveUserData(userModel);
+          AppSession().setUser(userModel);
+
           return {
             'user': UserModel.fromJson(jsonResponse['user']),
             'token': jsonResponse['token'],
@@ -149,7 +149,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<Map<String, dynamic>> completeProfile(
       Map<String, dynamic> profileData) async {
-    final userId = await SecureStorage.getId(); // Or from your state management
+    final userId = AppSession().currentUser?.id; // Or from your state management
 
     final completeData = {
       'id': userId, // Add the required ID field
@@ -265,7 +265,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       if (response.statusCode == 200) {
         if (jsonResponse['user'] != null && jsonResponse['token'] != null) {
-          await SecureStorage.saveToken(jsonResponse['token']);
+          AppSession().setToken(jsonResponse['token']);
           // final googleUserModel =
           //     GoogleUserModel.fromJson(jsonResponse['user']);
           final userModel = UserModel.fromJson(jsonResponse['user']);
@@ -277,8 +277,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           //   phone: '',
           //   address: '',
           // );
-          await SecureStorage.saveId(userModel);
-          await SecureStorage.saveUserData(userModel);
+          AppSession().setUser(userModel);
           return {
             'user': userModel.toJson(),
             'token': jsonResponse['token'],

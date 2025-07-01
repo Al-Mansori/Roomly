@@ -10,7 +10,8 @@ import 'package:roomly/features/room_management/presentation/cubits/room_details
 import 'package:roomly/features/room_management/presentation/cubits/room_details_state.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../auth/data/data_sources/secure_storage.dart';
+import '../../../GlobalWidgets/app_session.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 
 class RoomDetailsScreen extends StatefulWidget {
   final String roomId;
@@ -39,7 +40,9 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
     // If workspaceId is provided, fetch workspace details
   }
   Future<void> loadUserId() async {
-    final fetchedUserId = await SecureStorage.getId();
+    final UserEntity? user = AppSession().currentUser;
+
+    final fetchedUserId = user?.id;
     print("From Details UserId = ${fetchedUserId} ");
     setState(() {
       userId = fetchedUserId;

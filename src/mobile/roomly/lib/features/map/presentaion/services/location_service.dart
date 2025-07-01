@@ -1,5 +1,4 @@
 import 'package:geolocator/geolocator.dart';
-import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
 import 'package:roomly/features/map/presentaion/services/secure_storage_service.dart';
 
 class LocationService {

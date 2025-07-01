@@ -3,7 +3,6 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:http/http.dart' as http;
 import '../../../../../core/network/network_info.dart';
 import '../../../../../core/service_locator/service_locator.dart';
-import '../../../../auth/data/data_sources/secure_storage.dart';
 import '../../../../loyalty/data/data_source/loyalty_points_remote_data_source.dart';
 import '../../../../loyalty/data/repository/loyalty_points_repository_impl.dart';
 import '../../../../loyalty/domain/repository/loyalty_points_repository.dart';
@@ -36,10 +35,7 @@ void setupDependencies() {
     sl.registerSingleton<http.Client>(http.Client());
   }
 
-  // Secure Storage
-  if (!sl.isRegistered<SecureStorage>()) {
-    sl.registerSingleton<SecureStorage>(SecureStorage());
-  }
+
 
   // LoyaltyPointsRemoteDataSource
   if (!sl.isRegistered<LoyaltyPointsRemoteDataSource>()) {
