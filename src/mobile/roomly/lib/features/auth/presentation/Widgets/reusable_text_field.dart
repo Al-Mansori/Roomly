@@ -4,13 +4,27 @@ class ReusableTextField extends StatelessWidget {
   final String hintText;
   final TextEditingController? controller;
   final bool obscureText;
+  final TextInputType? keyboardType;
+  final void Function()? onTap;
+  final void Function(String)? onChanged;
+  final bool? enabled;
+  final String? Function(String?)? validator;
+  final InputBorder? border;
+  final EdgeInsetsGeometry? contentPadding;
 
   const ReusableTextField({
-    Key? key,
+    super.key,
     required this.hintText,
     this.controller,
     this.obscureText = false,
-  }) : super(key: key);
+    this.keyboardType,
+    this.onTap,
+    this.onChanged,
+    this.enabled,
+    this.validator,
+    this.border,
+    this.contentPadding,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,19 +35,27 @@ class ReusableTextField extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.25),
-            offset: Offset(2, 4),
+            offset: const Offset(2, 4),
             blurRadius: 4,
           ),
         ],
       ),
-      child: TextField(
+      child: TextFormField(
         controller: controller,
         obscureText: obscureText,
+        keyboardType: keyboardType,
+        onTap: onTap,
+        onChanged: onChanged,
+        enabled: enabled ?? true,
+        validator: validator,
         decoration: InputDecoration(
           hintText: hintText,
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-
+          border: border ?? InputBorder.none,
+          contentPadding: contentPadding ??
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          errorBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red),
+          ),
         ),
       ),
     );

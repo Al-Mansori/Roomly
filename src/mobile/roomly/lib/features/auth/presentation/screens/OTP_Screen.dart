@@ -1,45 +1,92 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
 
+import '../../../GlobalWidgets/pop_p.dart';
+import '../../../GlobalWidgets/show_custom_pop_up.dart';
+import '../../data/models/otp_enum.dart';
 import '../../styleHelperComponents.dart';
 import '../Widgets/CustomAppBar.dart';
+import '../blocs/auth_cubit.dart';
 
 class OtpVerifyScreen extends StatelessWidget {
-  const OtpVerifyScreen({super.key});
+  final _otpController = TextEditingController();
+  final String? email;
+  final String? userId;
+  final bool? isStaff;
+  final String? password;
+  final OtpVerifyType type;
+
+  OtpVerifyScreen({
+    super.key,
+    this.email,
+    this.userId,
+    this.isStaff,
+    this.password,
+    required this.type,
+  });
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
-    return
-      Dismissible(
-        key: const Key("login_screen"),
-        direction: DismissDirection.startToEnd,
-        onDismissed: (direction) {
-        if (context.canPop()) {
-        context.pop();
-        } else {
-        context.go('/');
+    return BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is AuthError) {
+          showCustomDialog(
+            context: context,
+            title: 'Error',
+            message: state.message,
+            alertType: AlertType.error,
+          );
+
+        } else if (state is AuthVerificationSuccess ) {
+          showCustomDialog(
+            context: context,
+            title: 'Success',
+            message: 'Account Created Successfully!',
+            alertType: AlertType.success,
+            onPressed: () {
+              Navigator.of(context).pop();
+              context.go('/login');
+            },
+          );
         }
-        },
-      child: Scaffold(
-      appBar: const CustomAppBar(icon: FontAwesomeIcons.arrowLeft),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 30, right: 30, bottom: 30),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
+        else if (state is ResetOtpVerified) {
+          context.go('/reset-password', extra: {
+            'email': state.email,
+
+          });
+        }
+      },
+      builder: (context, state) {
+        return Dismissible(
+          key: const Key("otp_screen"),
+          direction: DismissDirection.startToEnd,
+          onDismissed: (direction) {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/');
+            }
+          },
+          child: Scaffold(
+            appBar: const CustomAppBar(icon: FontAwesomeIcons.arrowLeft),
+            body: SingleChildScrollView(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 30, right: 30, bottom: 30),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                  Container(
                   child: Stack(
-                    alignment: Alignment.bottomCenter,
+                  alignment: Alignment.bottomCenter,
                     children: [
                       SvgPicture.asset(
                         'assets/images/Enter OTP-rafiki 1.svg',
@@ -47,7 +94,7 @@ class OtpVerifyScreen extends StatelessWidget {
                         height: screenHeight * 0.4,
                       ),
                       const Text(
-                        'Login to Process further',
+                        'Verify your email',
                         style: TextStyle(
                           shadows: [kCustomShadow],
                           fontWeight: FontWeight.w600,
@@ -57,25 +104,23 @@ class OtpVerifyScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
                 RichText(
-                  text: const TextSpan(
+                  text: TextSpan(
                     text: "Enter the OTP sent to ",
-                    style: TextStyle(color: Colors.black),
+                    style: const TextStyle(color: Colors.black),
                     children: [
                       TextSpan(
-                        text: "salmaom3r@gmail.com",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        text: email,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
-
                 Pinput(
                   length: 6,
+                  controller: _otpController,
                   defaultPinTheme: PinTheme(
                     width: 50,
                     height: 50,
@@ -85,6 +130,9 @@ class OtpVerifyScreen extends StatelessWidget {
                       border: Border.all(color: Colors.black),
                     ),
                   ),
+                  onCompleted: (pin) {
+                    context.read<AuthCubit>().verifyOtp(int.parse(pin));
+                  },
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -92,35 +140,66 @@ class OtpVerifyScreen extends StatelessWidget {
                   children: [
                     const Text("Didn't receive the OTP?"),
                     TextButton(
-                      onPressed: () {},
-                      child: const Text("Resend OTP", style: TextStyle(color:  const Color(0xFF0A3FB3))),
+                      onPressed: () {
+                        if (type == OtpVerifyType.register) {
+                          context.read<AuthCubit>().register(
+                            email: email!,
+                            password: password!,
+                            confirmPassword: password!,
+                            isStaff: isStaff!,
+                          );
+                        } else if (type == OtpVerifyType.forgetPassword) {
+                          context.read<AuthCubit>().sendForgotPasswordOtp(email!);
+                        }
+
+                      },
+                      child: const Text(
+                          "Resend OTP",
+                          style: TextStyle(color: Color(0xFF0A3FB3))
+                      ),
+                    )],
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: state is AuthLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0A3FB3),
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onPressed: () {
+                          if (_otpController.text.length == 6) {
+                              if (type == OtpVerifyType.register) {
+                                context.read<AuthCubit>().verifyOtp(int.parse(_otpController.text));
+                              }
+                              else if (type == OtpVerifyType.forgetPassword) {
+                                context.read<AuthCubit>().verifyResetOtp( email!,int.parse(_otpController.text));
+                              }
+                          }
+                          else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Please enter a valid OTP')),
+                            );
+                          }
+                        },
+                        child: const Text(
+                            "Verify & Proceed",
+                            style: TextStyle(color: Colors.white, fontSize: 16)),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:  const Color(0xFF0A3FB3),
-                      padding: const EdgeInsets.symmetric(vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: () {
-                      print("OTP Verified");
-                    },
-                    child: const Text("Verify & Proceed", style: TextStyle(color: Colors.white, fontSize: 16)),
-                  ),
-                ),
-
-              ],
+              ),
             ),
           ),
         ),
-      ),
-    )
-      );
+        );
+      },
+    );
   }
 }
