@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:roomly/features/GlobalWidgets/app_session.dart';
+import 'package:roomly/features/auth/domain/entities/user_entity.dart';
 
 import '../../../data/data_sources/constants.dart';
 import '../../../domain/entities/workspace.dart';
@@ -73,8 +75,8 @@ class WorkspaceProvider extends ChangeNotifier {
       _nearbyState = WorkspaceState.loading;
       _nearbyError = null;
       notifyListeners();
-
-      final resolvedUserId = userId ?? await HomeConstants.getUserId();
+      final UserEntity? user= AppSession().currentUser;
+      final resolvedUserId = user?.id;
       if (resolvedUserId == null) {
         _nearbyState = WorkspaceState.error;
         _nearbyError = 'User ID not available';
@@ -119,7 +121,8 @@ class WorkspaceProvider extends ChangeNotifier {
       _topRatedError = null;
       notifyListeners();
 
-      final resolvedUserId = userId ?? await HomeConstants.getUserId();
+      final UserEntity? user= AppSession().currentUser;
+      final resolvedUserId = user?.id;
       if (resolvedUserId == null) {
         _topRatedState = WorkspaceState.error;
         _topRatedError = 'User ID not available';

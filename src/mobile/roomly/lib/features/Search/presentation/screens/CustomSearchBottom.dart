@@ -7,7 +7,8 @@ import 'package:roomly/features/Search/presentation/screens/workSpaceSection.dar
 import 'package:roomly/features/Search/presentation/screens/filter_popup_screen.dart';
 import 'package:roomly/features/Search/presentation/cubit/search_cubit.dart';
 import 'package:roomly/features/Search/domain/entities/search_result.dart';
-import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
+import '../../../GlobalWidgets/app_session.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 import '../../domain/entities/recommendation.dart';
 import '../../data/models/recommendation_model.dart';
 
@@ -30,7 +31,9 @@ class _CustomSearchBottomSheetState extends State<CustomSearchBottomSheet> {
   }
 
   Future<void> _initUserAndFetchRecommendations() async {
-    final userId = await SecureStorage.getId();
+    final UserEntity? user = AppSession().currentUser;
+
+    final userId = user?.id;
     if (userId != null) {
       setState(() => _userId = userId);
       context.read<SearchCubit>().fetchEnrichedRecommendations(userId);

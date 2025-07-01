@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
 import 'package:roomly/features/room_management/domain/usecases/get_room_details_usecase.dart';
 import 'package:roomly/features/room_management/domain/usecases/get_room_images_usecase.dart';
 import 'package:roomly/features/room_management/domain/usecases/get_room_offers_usecase.dart';
@@ -7,6 +6,9 @@ import 'package:roomly/features/room_management/presentation/cubits/room_details
 import 'package:roomly/features/favorite/domain/usecases/get_favorite_rooms_usecase.dart';
 import 'package:roomly/features/favorite/domain/usecases/add_favorite_room_usecase.dart';
 import 'package:roomly/features/favorite/domain/usecases/remove_favorite_room_usecase.dart';
+
+import '../../../GlobalWidgets/app_session.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 
 class RoomDetailsCubit extends Cubit<RoomDetailsState> {
   final GetRoomDetailsUseCase getRoomDetailsUseCase;
@@ -31,7 +33,9 @@ class RoomDetailsCubit extends Cubit<RoomDetailsState> {
       final room = await getRoomDetailsUseCase(roomId);
       final images = await getRoomImagesUseCase(roomId);
       final offers = await getRoomOffersUseCase(roomId);
-      final userId = await SecureStorage.getId();
+      final UserEntity? user = AppSession().currentUser;
+
+      final userId = user?.id;
       bool isFavorite = false;
       if (userId != null) {
         final favoriteRoomsEither = await getFavoriteRoomsUseCase(userId);
@@ -49,7 +53,9 @@ class RoomDetailsCubit extends Cubit<RoomDetailsState> {
   }
 
   Future<void> toggleFavoriteStatus(String roomId, bool currentStatus) async {
-    final userId = await SecureStorage.getId();
+    final UserEntity? user = AppSession().currentUser;
+
+    final userId = user?.id;
     if (userId == null) {
       emit(const RoomDetailsError(message: 'User not logged in'));
       return;

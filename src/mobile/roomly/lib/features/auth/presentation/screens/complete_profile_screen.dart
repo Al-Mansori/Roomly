@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:roomly/features/GlobalWidgets/app_session.dart';
 import '../../../GlobalWidgets/pop_p.dart';
 import '../../../GlobalWidgets/show_custom_pop_up.dart';
-import '../../data/data_sources/secure_storage.dart';
 import '../blocs/auth_cubit.dart';
 
 class ProfileForm extends StatefulWidget {
@@ -32,6 +31,7 @@ class _ProfileFormState extends State<ProfileForm> {
   late final TextEditingController _phoneController;
 
   bool _isLoading = true;
+  bool _hasChanges = false;
 
   @override
   void initState() {
@@ -41,12 +41,31 @@ class _ProfileFormState extends State<ProfileForm> {
     _locationController = TextEditingController();
     _phoneController = TextEditingController();
 
+    // Add listeners to detect changes
+    _firstNameController.addListener(_checkChanges);
+    _lastNameController.addListener(_checkChanges);
+    _locationController.addListener(_checkChanges);
+    _phoneController.addListener(_checkChanges);
+
     _loadUserData();
+  }
+
+  void _checkChanges() {
+    final currentChanges = _firstNameController.text.isNotEmpty ||
+        _lastNameController.text.isNotEmpty ||
+        _locationController.text.isNotEmpty ||
+        _phoneController.text.isNotEmpty;
+
+    if (_hasChanges != currentChanges) {
+      setState(() {
+        _hasChanges = currentChanges;
+      });
+    }
   }
 
   Future<void> _loadUserData() async {
     try {
-      final userData = await SecureStorage.getUserData();
+      final userData = AppSession().currentUser;
       if (userData != null) {
         _firstNameController.text = userData.firstName ?? '';
         _lastNameController.text = userData.lastName ?? '';
@@ -62,8 +81,39 @@ class _ProfileFormState extends State<ProfileForm> {
     }
   }
 
+  Future<bool> _onWillPop() async {
+    if (!_hasChanges || !widget.requireCompletion) {
+      return true;
+    }
+
+    final shouldExit = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Unsaved Changes'),
+        content: const Text('You have unsaved changes. Are you sure you want to exit?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Exit'),
+          ),
+        ],
+      ),
+    );
+
+    return shouldExit ?? false;
+  }
+
   @override
   void dispose() {
+    _firstNameController.removeListener(_checkChanges);
+    _lastNameController.removeListener(_checkChanges);
+    _locationController.removeListener(_checkChanges);
+    _phoneController.removeListener(_checkChanges);
+
     _firstNameController.dispose();
     _lastNameController.dispose();
     _locationController.dispose();
@@ -77,48 +127,37 @@ class _ProfileFormState extends State<ProfileForm> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return BlocConsumer<AuthCubit, AuthState>(
-      listener: (context, state) {
-        if (state is AuthProfileCompleted) {
-          if (state.response['firstName'] != null) {
-            _firstNameController.text = state.response['firstName'];
-          }
-          if (state.response['lastName'] != null) {
-            _lastNameController.text = state.response['lastName'];
-          }
-          if (state.response['address'] != null) {
-            _locationController.text = state.response['address'];
-          }
-          if (state.response['phone'] != null) {
-            _phoneController.text = state.response['phone'];
-          }
-
-          Navigator.of(context).pop();
-          showCustomDialog(
-            context: context,
-            title: 'Success',
-            message: state.response['message'] ?? 'Profile updated successfully',
-            alertType: AlertType.success,
-            buttonText: 'OK',
-            onPressed: () {
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: BlocConsumer<AuthCubit, AuthState>(
+          listener: (context, state) {
+            if (state is AuthProfileCompleted) {
               Navigator.of(context).pop();
-            },
-          );
-        } else if (state is AuthError) {
-          showCustomDialog(
-            context: context,
-            title: 'Error',
-            message: state.message,
-            alertType: AlertType.error,
-            buttonText: 'OK',
-            onPressed: () => Navigator.of(context).pop(),
-          );
-        }
-      },
-      builder: (context, state) {
-        return Material(
-            type: MaterialType.transparency,
-            child: Center(
+              showCustomDialog(
+                context: context,
+                title: 'Success',
+                message: state.response['message'] ?? 'Profile updated successfully',
+                alertType: AlertType.success,
+                buttonText: 'OK',
+                onPressed: () => Navigator.of(context).pop(),
+              );
+            } else if (state is AuthError) {
+              showCustomDialog(
+                context: context,
+                title: 'Error',
+                message: state.message,
+                alertType: AlertType.error,
+                buttonText: 'OK',
+                onPressed: () => Navigator.of(context).pop(),
+              );
+            }
+          },
+          builder: (context, state) {
+            return Material(
+              type: MaterialType.transparency,
+              child: Center(
                 child: Container(
                   constraints: const BoxConstraints(
                     maxWidth: 400,
@@ -130,270 +169,291 @@ class _ProfileFormState extends State<ProfileForm> {
                     child: Material(
                       color: Colors.white,
                       child: Stack(
-                          children: [
-                      SingleChildScrollView(
-                      padding: const EdgeInsets.only(bottom: 20),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                          // Header
-                          Container(
-                          width: double.infinity,
-                          height: 86,
-                          color: const Color(0xFFEBEBEB),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            'Complete your profile',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-
-                        // Avatar and Email
-                        Padding(
-                          padding: const EdgeInsets.only(top: 20),
-                          child: Column(
-                            children: [
-                              // Avatar
-                              Container(
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFD9D9D9),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: const Color(0xFF0A3FB3),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Text(
-                                widget.email,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xFF808080),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        // Form Fields
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 20),
-                          child: Column(
-                            children: [
-                          // Name
-                          Row(
-                          children: [
-                          const SizedBox(
-                          width: 80,
-                            child: Text(
-                              'Name',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF808080),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: _buildInputField(
-                                    hint: 'First',
-                                    controller: _firstNameController,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Required';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: _buildInputField(
-                                    hint: 'Last',
-                                    controller: _lastNameController,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Required';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Email (read-only)
-                        Row(
-                          children: [
-                            const SizedBox(
-                              width: 80,
-                              child: Text(
-                                'Email',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Color(0xFF808080),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: TextFormField(
-                                enabled: false,
-                                initialValue: widget.email,
-                                decoration: InputDecoration(
-                                  hintText: widget.email,
-                                  hintStyle: const TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xFF8E8991),
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 12),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: const BorderSide(
-                                        color: Color(0xFFDBD9DC)),
-                                  ),
-                                ),
-                              ),
-                                  )],
-                            ),
-                            const SizedBox(height: 20),
-
-                            // Location
-                            Row(
-                              children: [
-                                const SizedBox(
-                                  width: 80,
-                                  child: Text(
-                                    'Location',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xFF808080),
+                        children: [
+                          SingleChildScrollView(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  // Header with close button
+                                  Container(
+                                    width: double.infinity,
+                                    height: 86,
+                                    color: const Color(0xFFEBEBEB),
+                                    alignment: Alignment.center,
+                                    child: Stack(
+                                      children: [
+                                        const Center(
+                                          child: Text(
+                                            'Complete your profile',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                          right: 20,
+                                          top: 20,
+                                          child: IconButton(
+                                            icon: const Icon(Icons.close),
+                                            onPressed: () async {
+                                              if (await _onWillPop()) {
+                                                widget.onClose();
+                                              }
+                                            },
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
-                                Expanded(
-                                  child: _buildInputField(
-                                    hint: '30street-dokki',
-                                    controller: _locationController,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
 
-                            // Phone
-                            Row(
-                              children: [
-                                const SizedBox(
-                                  width: 80,
-                                  child: Text(
-                                    'Phone',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xFF808080),
+                                  // Avatar and Email
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 20),
+                                    child: Column(
+                                      children: [
+                                        // Avatar
+                                        Container(
+                                          width: 60,
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFD9D9D9),
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: const Color(0xFF0A3FB3),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          widget.email,
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Color(0xFF808080),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
-                                Expanded(
-                                  child: _buildInputField(
-                                    hint: 'xxx-xxx-xxx',
-                                    controller: _phoneController,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Required';
-                                      }
-                                      if (!RegExp(r'^[0-9\-]+$').hasMatch(value)) {
-                                        return 'Invalid phone number';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
 
-                      // Save Button
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: state is AuthLoading
-                                ? null
-                                : () {
-                              if (_formKey.currentState?.validate() ?? false) {
-                                final profileData = {
-                                  'firstName': _firstNameController.text,
-                                  'lastName': _lastNameController.text,
-                                  'address': _locationController.text,
-                                  'phone': _phoneController.text,
-                                };
-                                widget.onSavePressed(profileData);
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF0A3FB3),
-                              minimumSize: const Size(double.infinity, 44),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                                  // Form Fields
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 30, vertical: 20),
+                                    child: Column(
+                                      children: [
+                                        // Name
+                                        Row(
+                                          children: [
+                                            const SizedBox(
+                                              width: 80,
+                                              child: Text(
+                                                'Name',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Color(0xFF808080),
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Row(
+                                                children: [
+                                                  Expanded(
+                                                    child: _buildInputField(
+                                                      hint: 'First',
+                                                      controller: _firstNameController,
+                                                      validator: (value) {
+                                                        if (value == null || value.isEmpty) {
+                                                          return 'Required';
+                                                        }
+                                                        return null;
+                                                      },
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 10),
+                                                  Expanded(
+                                                    child: _buildInputField(
+                                                      hint: 'Last',
+                                                      controller: _lastNameController,
+                                                      validator: (value) {
+                                                        if (value == null || value.isEmpty) {
+                                                          return 'Required';
+                                                        }
+                                                        return null;
+                                                      },
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 20),
+
+                                        // Email (read-only)
+                                        Row(
+                                          children: [
+                                            const SizedBox(
+                                              width: 80,
+                                              child: Text(
+                                                'Email',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Color(0xFF808080),
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: TextFormField(
+                                                enabled: false,
+                                                initialValue: widget.email,
+                                                decoration: InputDecoration(
+                                                  hintText: widget.email,
+                                                  hintStyle: const TextStyle(
+                                                    fontSize: 12,
+                                                    color: Color(0xFF8E8991),
+                                                  ),
+                                                  contentPadding: const EdgeInsets.symmetric(
+                                                      horizontal: 8, vertical: 12),
+                                                  border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    borderSide: const BorderSide(
+                                                        color: Color(0xFFDBD9DC)),
+                                                  ),
+                                                ),
+                                              ),
+                                            )],
+                                        ),
+                                        const SizedBox(height: 20),
+
+                                        // Location
+                                        Row(
+                                          children: [
+                                            const SizedBox(
+                                              width: 80,
+                                              child: Text(
+                                                'Location',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Color(0xFF808080),
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: _buildInputField(
+                                                hint: '30street-dokki',
+                                                controller: _locationController,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 20),
+
+                                        // Phone
+                                        Row(
+                                          children: [
+                                            const SizedBox(
+                                              width: 80,
+                                              child: Text(
+                                                'Phone',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Color(0xFF808080),
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: _buildInputField(
+                                                hint: 'xxx-xxx-xxx',
+                                                controller: _phoneController,
+                                                validator: (value) {
+                                                  if (value == null || value.isEmpty) {
+                                                    return 'Required';
+                                                  }
+                                                  if (!RegExp(r'^[0-9\-]+$').hasMatch(value)) {
+                                                    return 'Invalid phone number';
+                                                  }
+                                                  return null;
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+
+                                  // Save Button
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                                    child: SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        onPressed: state is AuthLoading
+                                            ? null
+                                            : () {
+                                          if (_formKey.currentState?.validate() ?? false) {
+                                            final profileData = {
+                                              'firstName': _firstNameController.text,
+                                              'lastName': _lastNameController.text,
+                                              'address': _locationController.text,
+                                              'phone': _phoneController.text,
+                                            };
+                                            widget.onSavePressed(profileData);
+                                          }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color(0xFF0A3FB3),
+                                          minimumSize: const Size(double.infinity, 44),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                        ),
+                                        child: state is AuthLoading
+                                            ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                            : const Text(
+                                          'Save',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                            ),
-                            child: state is AuthLoading
-                                ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                                : const Text(
-                              'Save',
-                              style: TextStyle(fontSize: 16),
                             ),
                           ),
-                        ),
+
+                          // Loading overlay
+                          if (state is AuthLoading)
+                            Positioned.fill(
+                              child: Container(
+                                color: Colors.black.withOpacity(0.2),
+                                child: const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
-                      ],
                     ),
                   ),
                 ),
-
-                // Loading overlay
-                if (state is AuthLoading)
-            Positioned.fill(
-        child: Container(
-        color: Colors.black.withOpacity(0.2),
-        child: const Center(
-        child: CircularProgressIndicator(),
+              ),
+            );
+          },
         ),
-        ),
-        ),
-        ],
-        ),
-        ),
-        ),
-        ),
-        ));
-        },
+      ),
     );
   }
 
@@ -411,8 +471,7 @@ class _ProfileFormState extends State<ProfileForm> {
           fontSize: 12,
           color: Color(0xFF8E8991),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-            horizontal: 8, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(color: Color(0xFFDBD9DC)),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
 import 'package:roomly/features/workspace/domain/entities/review_entity.dart';
 import 'package:roomly/features/workspace/presentation/cubits/reviews_cubit.dart';
+
+import '../../../GlobalWidgets/app_session.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 
 class ReviewsScreen extends StatefulWidget {
   final String workspaceId;
@@ -249,7 +251,9 @@ class _ReviewsScreenState extends State<ReviewsScreen> {
   void _submitReview() async { // Made async
     final comment = _commentController.text;
     final rating = _selectedRating.toDouble();
-    final userId = await SecureStorage.getId(); // Get user ID from secure storage
+    final UserEntity? user = AppSession().currentUser;
+
+    final userId = user?.id; // Get user ID from secure storage
     final workspaceId = widget.workspaceId;
 
     if (userId == null) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:roomly/features/GlobalWidgets/app_session.dart';
 import 'package:roomly/features/auth/data/models/user_model.dart';
 
-import '../../../auth/data/data_sources/secure_storage.dart';
 import '../widget/app_bar.dart';
 import '../widget/search_bar.dart';
 
@@ -42,27 +42,13 @@ class _SalutationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<UserModel?>(
-      future: SecureStorage.getUserData(),
-      builder: (context, snapshot) {
-        // Handle different connection states
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildGreetingText("Hello...");
-        }
+    final user = AppSession().currentUser;
+    final firstName = user?.firstName;
+    final greeting = firstName != null && firstName.isNotEmpty
+        ? "Hello $firstName!"
+        : "Hello there!";
 
-        if (snapshot.hasError) {
-          return _buildGreetingText("Hello there!");
-        }
-
-        final user = snapshot.data;
-        final firstName = user?.firstName;
-        final greeting = firstName != null && firstName.isNotEmpty
-            ? "Hello $firstName!"
-            : "Hello there!";
-
-        return _buildGreetingText(greeting);
-      },
-    );
+    return _buildGreetingText(greeting);
   }
 
   Widget _buildGreetingText(String greeting) {
@@ -80,5 +66,23 @@ class _SalutationSection extends StatelessWidget {
       ],
     );
   }
+
 }
+
+  Widget _buildGreetingText(String greeting) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          greeting,
+          style: const TextStyle(fontSize: 25, color: Colors.white),
+        ),
+        const Text(
+          "Tell us where you want to go",
+          style: TextStyle(fontSize: 20, color: Colors.white),
+        ),
+      ],
+    );
+  }
+
 
