@@ -33,7 +33,7 @@ export const routes: Routes = [
     component: BlankLayoutComponent,
     // canActivate: [authGuard], // ⛔ optional: disable during development
     children: [
-      { path: '', redirectTo: 'offers/all', pathMatch: 'full' },
+      { path: '', redirectTo: 'support', pathMatch: 'full' },
 
       {
         path: 'offers',
@@ -70,10 +70,15 @@ export const routes: Routes = [
           import('./components/profile/profile.component').then((m) => m.ProfileComponent)
       },
       {
-        path: 'my-workspaces',
-        loadComponent: () =>
-          import('./components/my-workspaces/my-workspaces.component').then((m) => m.MyWorkspacesComponent)
-      }
+        path: 'my-workspaces', loadComponent: () => import('./components/my-workspaces/my-workspaces.component').then((m) => m.MyWorkspacesComponent)
+      },
+      {
+        path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then((m) => m.RoomsFeesComponent)
+      },
+      {
+        path: 'support', loadComponent: () => import('./components/support/support.component').then((m) => m.SupportComponent)
+          
+      },
     ]
   },
 
