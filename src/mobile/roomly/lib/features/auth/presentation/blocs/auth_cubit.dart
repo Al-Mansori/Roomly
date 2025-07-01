@@ -1,7 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:roomly/features/auth/domain/usecases/continue_with_google.dart';
+import '../../../GlobalWidgets/app_session.dart';
 import '../../data/data_sources/secure_storage.dart';
+import '../../data/models/user_model.dart';
 import '../../domain/entities/google_user_entity.dart';
 import '../../domain/entities/login_request_entity.dart';
 import '../../domain/entities/registration_request_entity.dart';
@@ -62,10 +64,26 @@ class AuthCubit extends Cubit<AuthState> {
           lastName: userMap['lastName'],
           phone: userMap['phone'],
           address: userMap['address'],
-          // Add other fields as needed
+          isStaff: userMap['isStaff'] ?? isStaff, // Use provided isStaff if not in response
         );
 
+        // Save token and user data
         await SecureStorage.saveToken(response['token']);
+        await SecureStorage.saveIdString(userEntity.id!);
+        await AppSession().setToken(response['token']);
+
+        // Save complete user data in AppSession
+        AppSession().setUser(userEntity);
+
+        // Also save in SecureStorage if needed for persistence
+        final userModel = UserModel.fromEntity(userEntity);
+        await SecureStorage.saveUserData(userModel);
+
+        // Verify the saved data
+        final userId = await SecureStorage.getId();
+        print('User ID from SecureStorage: $userId');
+        print('User in AppSession: ${AppSession().currentUser?.toJson()}');
+
         emit(AuthLoggedIn(userEntity, response['token']));
       } else {
         emit(AuthError('Login failed - invalid response'));

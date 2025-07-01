@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
 import '../cubit/payment_cubit.dart';
 import '../cubit/payment_state.dart';
@@ -215,7 +216,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
       ),
       body: BlocListener<PaymentCubit, PaymentState>(

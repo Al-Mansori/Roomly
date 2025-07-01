@@ -48,4 +48,17 @@ class UserModel extends UserEntity {
       'isStaff': isStaff,
     };
   }
+  factory UserModel.fromEntity(UserEntity entity) {
+    return UserModel(
+      id: entity.id,
+      firstName: entity.firstName,
+      lastName: entity.lastName,
+      email: entity.email,
+      password: entity.password,
+      phone: entity.phone,
+      address: entity.address,
+      isStaff: entity.isStaff,
+    );
+  }
+
 }

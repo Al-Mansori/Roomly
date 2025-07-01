@@ -10,21 +10,41 @@ import 'package:roomly/features/room_management/presentation/cubits/room_details
 import 'package:roomly/features/room_management/presentation/cubits/room_details_state.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../auth/data/data_sources/secure_storage.dart';
+
 class RoomDetailsScreen extends StatefulWidget {
   final String roomId;
+  final String? workspaceId;
 
-  const RoomDetailsScreen({Key? key, required this.roomId}) : super(key: key);
+  const RoomDetailsScreen({
+    Key? key,
+    required this.roomId,
+    this.workspaceId
+  }) : super(key: key);
 
   @override
   State<RoomDetailsScreen> createState() => _RoomDetailsScreenState();
 }
-
 class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
   bool _isFavorite = false;
+  String? userId;
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
+    loadUserId();
     context.read<RoomDetailsCubit>().getRoomDetails(widget.roomId);
+
+    // If workspaceId is provided, fetch workspace details
+  }
+  Future<void> loadUserId() async {
+    final fetchedUserId = await SecureStorage.getId();
+    print("From Details UserId = ${fetchedUserId} ");
+    setState(() {
+      userId = fetchedUserId;
+      isLoading = false;
+    });
   }
 
   @override
@@ -453,87 +473,96 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                 ],
               ),
               child: SafeArea(
-                child: Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (hasActiveOffer) ...[
-                          // Original price with strikethrough
-                          Text(
-                            '${originalPrice.toStringAsFixed(2)} EGP/Hour',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
-                              decoration: TextDecoration.lineThrough,
-                              decorationColor: Colors.red,
-                              decorationThickness: 2,
+                child: Flexible(
+                  child: Row(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (hasActiveOffer) ...[
+                            // Original price with strikethrough
+                            Text(
+                              '${originalPrice.toStringAsFixed(2)} EGP/Hour',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey,
+                                decoration: TextDecoration.lineThrough,
+                                decorationColor: Colors.red,
+                                decorationThickness: 2,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            // Discounted price in green
+                            Text(
+                              '${discountedPrice.toStringAsFixed(2)} EGP/Hour',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ] else
+                            Text(
+                              '${originalPrice.toStringAsFixed(2)} EGP/Hour',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text('EGP/Hour'),
+                                Icon(Icons.keyboard_arrow_down, size: 16),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 2),
-                          // Discounted price in green
-                          Text(
-                            '${discountedPrice.toStringAsFixed(2)} EGP/Hour',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ] else
-                          Text(
-                            '${originalPrice.toStringAsFixed(2)} EGP/Hour',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        const SizedBox(height: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('EGP/Hour'),
-                              Icon(Icons.keyboard_arrow_down, size: 16),
-                            ],
+                        ],
+                      ),
+                      const Spacer(),
+                      ElevatedButton(
+                        onPressed: (room.availableCount ?? 0) > 0
+                            ? () {
+                          print('Navigating to date screen for room: ${room.id}');
+                          context.push('/select-data', extra: {
+                            'room': room,
+                            'discountedPrice': discountedPrice,
+                            'workspaceId': widget.workspaceId, // تأكد أن room تحتوي على workspaceId
+                          });
+                        }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: (room.availableCount ?? 0) > 0
+                              ? Colors.blue
+                              : Colors.grey, // Grey when disabled
+                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                      ],
-                    ),
-                    const Spacer(),
-                    ElevatedButton(
-                      onPressed: (room.availableCount ?? 0) > 0 
-                        ? () {
-                            // Navigate to booking screen
-                            context.push('/booking/${room.id}');
-                          }
-                        : null, // Disable button when no seats available
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: (room.availableCount ?? 0) > 0 
-                          ? Colors.blue 
-                          : Colors.grey, // Grey when disabled
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            (room.availableCount ?? 0) > 0
+                                ? 'Select Date'
+                                : 'No Seats Available',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
-                      child: Text(
-                        (room.availableCount ?? 0) > 0 
-                          ? 'Select Date' 
-                          : 'No Seats Available',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             );

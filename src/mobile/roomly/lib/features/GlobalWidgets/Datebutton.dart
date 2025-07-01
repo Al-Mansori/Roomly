@@ -1,64 +1,70 @@
 import 'package:flutter/material.dart';
-
+import 'package:go_router/go_router.dart';
 
 class ResponsiveContainer extends StatelessWidget {
+  final dynamic roomEntity;
+  final DateTime selectedDate;
+  final String selectedCheckInTime;
+  final String selectedCheckOutTime;
+  final String userId;
+
+  const ResponsiveContainer({
+    super.key,
+    required this.roomEntity,
+    required this.selectedDate,
+    required this.selectedCheckInTime,
+    required this.selectedCheckOutTime,
+    required this.userId,
+  });
+
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
-
     return Container(
-      width: screenWidth * 0.9,
-      height: screenHeight * 0.15,
-      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.75),
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.25),
-            blurRadius: 4,
-            offset: Offset(2, 4),
-          ),
-        ],
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Number of seats: 2',
-                  style: _textStyle(),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Total 114.0 EGP',
-                  style: _textStyle(),
-                ),
-              ],
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Number of seats:',
+                style: _textStyle(),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Total 114.0 EGP',
+                style: _textStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
           ),
-          SizedBox(width: screenWidth * 0.02), // Adds spacing
-          Expanded(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                backgroundColor: Color(0xFF0A3FB3),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+              backgroundColor: const Color(0xFF0A3FB3),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
-              onPressed: () {},
-              child: FittedBox(
-                child: Text(
-                  'Review Booking',
-                  style: _textStyle(),
-                ),
-              ),
+            ),
+            onPressed: () {
+              context.push(
+                '/review-booking',
+                extra: {
+                  'room': roomEntity,
+                  'selectedDate': selectedDate,
+                  'checkInTime': selectedCheckInTime,
+                  'checkOutTime': selectedCheckOutTime,
+                  'userId': userId,
+                },
+              );
+            },
+            child: Text(
+              'Review Booking',
+              style: _textStyle(),
             ),
           ),
         ],
@@ -66,12 +72,12 @@ class ResponsiveContainer extends StatelessWidget {
     );
   }
 
-  TextStyle _textStyle() {
+  TextStyle _textStyle({FontWeight fontWeight = FontWeight.normal}) {
     return TextStyle(
       color: Colors.white,
       fontSize: 16,
       fontFamily: 'Roboto',
-      fontWeight: FontWeight.w400,
+      fontWeight: fontWeight,
     );
   }
 }

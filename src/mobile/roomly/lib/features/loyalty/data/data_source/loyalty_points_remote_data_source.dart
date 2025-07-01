@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:roomly/core/error/exceptions.dart';
 import 'package:roomly/core/network/app_api.dart';
 import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
+import '../../../GlobalWidgets/app_session.dart';
 import '../models/loyalty_points_model.dart';
 
 // Remote Data Source
@@ -23,7 +24,9 @@ class LoyaltyPointsRemoteDataSourceImpl implements LoyaltyPointsRemoteDataSource
   Future<LoyaltyPointsModel> getLoyaltyPoints(String userId) async {
     try {
       // Get auth token from secure storage
-      final token = await SecureStorage.getToken();
+      // final token = await SecureStorage.getToken();
+      final token = AppSession().token;
+
       if (token == null) {
         throw Exception('No auth token found');
       }

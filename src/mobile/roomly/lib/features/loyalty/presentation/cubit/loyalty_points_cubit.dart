@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:roomly/features/GlobalWidgets/app_session.dart';
 import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
+import 'package:roomly/features/auth/domain/entities/user_entity.dart';
 import '../../domain/usecases/loyalty_points_usecases.dart';
 import 'loyalty_points_state.dart';
 import '../../../../core/error/failures.dart';
@@ -21,7 +23,10 @@ class LoyaltyPointsCubit extends Cubit<LoyaltyPointsState> {
       emit(LoyaltyPointsLoading());
 
       // Get userId from secure storage
-      final userId = await SecureStorage.getId();
+      // final userId = await SecureStorage.getId();
+      final UserEntity? user = AppSession().currentUser;
+      final userId = user?.id;
+
       if (userId == null) {
         emit(const LoyaltyPointsError(message: 'User not found. Please login again.'));
         return;

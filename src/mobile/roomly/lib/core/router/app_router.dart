@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -10,6 +11,7 @@ import 'package:roomly/features/BookingsStatus/data/repositories/bookings_reposi
 import 'package:roomly/features/BookingsStatus/domain/usecases/get_user_bookings.dart';
 import 'package:roomly/features/BookingsStatus/presentation/cubit/bookings_cubit.dart';
 import 'package:roomly/features/BookingsStatus/presentation/screens/Activity.dart';
+import 'package:roomly/features/GlobalWidgets/bot_layout.dart';
 import 'package:roomly/features/account/presentation/account_screen.dart';
 import 'package:roomly/features/auth/presentation/screens/OTP_Screen.dart';
 import 'package:roomly/features/favorite/presentation/cubit/favorite_cubit.dart';
@@ -18,7 +20,7 @@ import 'package:roomly/features/help/presentation/screens/help_center_screen.dar
 import 'package:roomly/features/help/presentation/screens/report_problem_screen.dart';
 import 'package:roomly/features/help/presentation/screens/settings_screen.dart';
 import 'package:roomly/features/help/presentation/screens/terms_and_policies_screen.dart';
-import 'package:roomly/features/home/presentation/home_screen.dart';
+import 'package:roomly/features/home/presentation/screens/home_screen.dart';
 import 'package:roomly/features/loyalty/presentation/screens/loyalty_page.dart';
 import 'package:roomly/features/payment/presentation/di/payment_injection.dart';
 import 'package:roomly/features/payment/presentation/screens/add_card_screen.dart';
@@ -62,6 +64,10 @@ import 'package:roomly/features/workspace/data/repositories/workspace_repository
 import 'package:roomly/features/workspace/domain/usecases/get_room_details_usecase.dart';
 import 'package:roomly/features/workspace/domain/usecases/get_workspace_details_usecase.dart';
 import 'package:roomly/features/workspace/presentation/cubits/workspace_details_cubit.dart';
+import '../../features/home/domain/repositories/room_repo.dart';
+import '../../features/home/presentation/bloc/cubit/room_cubit.dart';
+import '../../features/home/presentation/screens/rooms_by_type_screen.dart';
+import '../../features/loyalty/presentation/cubit/loyalty_points_cubit.dart';
 import '../../features/map/presentaion/map_screen.dart';
 import '../../features/map/presentaion/services/cubic/location_bloc.dart';
 import '../../features/map/presentaion/services/location_manager.dart';
@@ -76,16 +82,27 @@ import 'package:roomly/features/request/presentation/cubit/requests_cubit.dart';
 import 'package:roomly/features/request/presentation/screens/request_detail_screen.dart';
 import 'package:roomly/features/request/presentation/screens/requests_screen.dart';
 import 'package:roomly/features/workspace/domain/usecases/get_workspace_schedules_usecase.dart';
+import '../../features/payment/presentation/screens/payment_screen.dart';
+import '../../features/room_management/data/data_sources/api_service.dart';
+import '../../features/room_management/domain/entities/room_entity.dart';
+import '../../features/room_management/presentation/cubits/booking/cubit/booking_cubit.dart';
+import '../../features/room_management/presentation/cubits/booking/di.dart';
+import '../../features/room_management/presentation/cubits/request.dart';
+import '../../features/room_management/presentation/screens/booking_3rd_screen.dart';
+import '../../features/room_management/presentation/screens/send_request_screen.dart';
+import '../service_locator/service_locator.dart';
 import '../../features/Search/data/data_sources/recommendation_remote_data_source.dart';
 import '../../features/Search/domain/usecases/get_recommendations_usecase.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/login',
   routes: [
     GoRoute(
-      path: '/',
+      path: '/home',
       builder: (context, state) {
         return BlocProvider(
+          create: (_) => LocationBloc(locationManager: LocationManager())..add(LoadInitialLocation()),
+          child: const BotLayout(child: HomeScreen()),
           create: (_) => LocationBloc(locationManager: LocationManager())
             ..add(LoadInitialLocation()),
           child: const HomeScreen(),
@@ -94,7 +111,6 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
     // GoRoute(path: '/complete-profile', builder: (context, state) =>  CompleteProfileScreen(userId: )),
-    GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
     GoRoute(
       path: '/verify-otp',
       builder: (context, state) {
@@ -125,12 +141,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/map',
       builder: (context, state) {
-        final extra = state.extra as Map<String, dynamic>?;
-
         return BlocProvider(
           create: (context) => LocationBloc(locationManager: LocationManager())
             ..add(const LoadInitialLocation()),
-          child: const MapScreen(), // أو اللي عندك
+          child: const MapScreen(),
         );
       },
     ),
@@ -169,10 +183,118 @@ final GoRouter appRouter = GoRouter(
     ),
 
     GoRoute(
-      path: '/date',
-      builder: (context, state) => SelectDataScreen(),
+      path: '/payment',
+      builder: (context, state) {
+        final extras = state.extra as Map<String, dynamic>;
+        return BlocProvider(
+          create: (context) => sl<PaymentCubit>(),
+          child: PaymentScreen(
+            amount: extras['amount'] as double,
+            paymentFor: extras['paymentFor'] as String,
+            userId: extras['userId'] as String,
+            reservationId: extras['reservationId'] as String,
+            paymentMethod: extras['paymentMethod'] as String,
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/room-type/:type',
+      name: 'room-type',
+      builder: (context, state) {
+        try {
+          final type = state.pathParameters['type']?.toLowerCase();
+
+          // التحقق من صحة المعلمة
+          if (type == null || type.isEmpty) {
+            throw ArgumentError('Invalid room type parameter');
+          }
+
+          return MultiBlocProvider(
+            providers: [
+              // تقديم الـ Repository مرة واحدة لكل الشاشة
+              RepositoryProvider.value(
+                value: sl<RoomRepository>(),
+              ),
+              // تهيئة الـ Cubit مع معالجة الأخطاء
+              BlocProvider(
+                create: (context) {
+                  final cubit = RoomsCubit(
+                    roomRepository: context.read<RoomRepository>(),
+                  )..fetchRoomsByType(type);
+                  return cubit;
+                },
+              ),
+            ],
+            child: RoomsScreen(roomType: type),
+          );
+        } catch (e) {
+          // Fallback UI في حالة الخطأ
+          return Scaffold(
+            appBar: AppBar(title: const Text('Error')),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 48),
+                  const SizedBox(height: 16),
+                  Text(
+                    e.toString(),
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => GoRouter.of(context).go('/'),
+                    child: const Text('Return Home'),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      },
     ),
 
+    GoRoute(
+      path: '/review-booking',
+      builder: (context, state) {
+        final extras = state.extra as Map<String, dynamic>;
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider<LoyaltyPointsCubit>(
+              create: (context) => sl<LoyaltyPointsCubit>()..loadLoyaltyPoints(),
+            ),
+            BlocProvider<BookingCubit>(
+              create: (context) => sl<BookingCubit>(),
+            ),
+          ],
+          child: ReviewBookingScreen(
+            room: extras['room'] as RoomEntity,
+            selectedDate: extras['selectedDate'] as DateTime,
+            checkInTime: extras['checkInTime'] as String,
+            checkOutTime: extras['checkOutTime'] as String,
+            numberOfSeats: extras['numberOfSeats'] as int,
+            totalPrice: extras['totalPrice'] as double,
+            workspaceId: extras['workspaceId'] as String,
+          ),
+        );
+      },
+    ),
+
+    GoRoute(
+      path: '/select-data',
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>;
+        final room = extra['room'] as RoomEntity;
+        final workspaceId = extra['workspaceId'] as String; // Add type cast
+        final discountedPrice = extra['discountedPrice'] as double;
+        return SelectDataScreen(
+          room: room,
+          discountedPrice: discountedPrice,
+          workspaceId: workspaceId,
+        );
+      },
+    ),
     GoRoute(
       path: '/account',
       builder: (context, state) => AccountPage(),
@@ -218,7 +340,10 @@ final GoRouter appRouter = GoRouter(
 
     GoRoute(
       path: '/reservation-qrcode',
-      builder: (context, state) => const ReservationQRCodeScreen(),
+      builder: (context, state) {
+        final reservationData = state.extra as Map<String, dynamic>;
+        return ReservationQRCodeScreen(reservationData: reservationData);
+      },
     ),
 
     GoRoute(
@@ -229,6 +354,9 @@ final GoRouter appRouter = GoRouter(
           create: (context) {
             // Create dependencies manually
             final client = http.Client();
+            final remoteDataSource = WorkspaceRemoteDataSourceImpl(client: client);
+            final repository = WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
+            final getWorkspaceReviewsUseCase = GetWorkspaceReviewsUseCase(repository);
             final remoteDataSource =
                 WorkspaceRemoteDataSourceImpl(client: client);
             final repository =
@@ -322,30 +450,46 @@ final GoRouter appRouter = GoRouter(
       path: '/room/:id',
       builder: (context, state) {
         final String roomId = state.pathParameters['id'] ?? '';
-
         final extras = state.extra as Map<String, dynamic>?;
 
         final WorkspaceDetailsCubit? workspaceCubit = extras?['workspaceCubit'];
         final String? workspaceId = extras?['workspaceId'];
 
-        // Case 1: WorkspaceDetailsCubit is passed
+        RoomDetailsCubit createRoomDetailsCubitSafely() {
+          if (!sl.isRegistered<RoomDetailsCubit>()) {
+            // fallback manual creation (if needed) or show an error screen
+            return RoomDetailsCubit(
+              getRoomDetailsUseCase: sl(),
+              getRoomImagesUseCase: sl(),
+              getRoomOffersUseCase: sl(),
+              getFavoriteRoomsUseCase: sl(),
+              addFavoriteRoomUseCase: sl(),
+              removeFavoriteRoomUseCase: sl(),
+            );
+          }
+          return sl<RoomDetailsCubit>();
+        }
+
+        // ✅ Case 1: workspaceCubit is passed
         if (workspaceCubit != null) {
           return MultiBlocProvider(
             providers: [
               BlocProvider.value(value: workspaceCubit),
               BlocProvider<RoomDetailsCubit>(
-                create: (_) => di.sl<RoomDetailsCubit>(),
+                create: (_) => createRoomDetailsCubitSafely(),
               ),
             ],
             child: RoomDetailsScreen(roomId: roomId),
           );
         }
 
-        // Case 2: Only workspaceId is passed
+        // ✅ Case 2: workspaceId is passed
         if (workspaceId != null) {
           return MultiBlocProvider(
             providers: [
               BlocProvider<WorkspaceDetailsCubit>(
+                create: (_) => _createWorkspaceCubit(workspaceId),
+
                 create: (_) {
                   // Manual creation logic
                   final client = http.Client();
@@ -376,16 +520,19 @@ final GoRouter appRouter = GoRouter(
                 },
               ),
               BlocProvider<RoomDetailsCubit>(
-                create: (_) => di.sl<RoomDetailsCubit>(),
+                create: (_) => createRoomDetailsCubitSafely(),
               ),
             ],
-            child: RoomDetailsScreen(roomId: roomId),
+            child: RoomDetailsScreen(
+              roomId: roomId,
+              workspaceId: workspaceId,
+            ),
           );
         }
 
-        // Fallback if workspaceCubit or workspaceId is null
+        // ❗ Fallback (neither workspaceCubit nor workspaceId was passed)
         return BlocProvider<RoomDetailsCubit>(
-          create: (_) => di.sl<RoomDetailsCubit>(),
+          create: (_) => createRoomDetailsCubitSafely(),
           child: RoomDetailsScreen(roomId: roomId),
         );
       },
@@ -450,7 +597,19 @@ final GoRouter appRouter = GoRouter(
       path: '/about-app',
       builder: (context, state) => const AboutAppScreen(),
     ),
+    GoRoute(
+      path: '/request',
+      builder: (context, state) {
+        // Get staffId from extra parameters
+        final extra = state.extra as Map<String, String>;
+        final staffId = extra['staffId']!;
 
+        return BlocProvider(
+          create: (context) => sl<SendRequestCubit>(),
+          child: RequestScreen(staffId: staffId), // Pass staffId to screen
+        );
+      },
+    ),
     GoRoute(
       path: '/requests',
       builder: (context, state) => BlocProvider(
@@ -467,3 +626,33 @@ final GoRouter appRouter = GoRouter(
     ),
   ],
 );
+// Helper function to extract workspace ID from cubit state
+String? _getWorkspaceIdFromCubit(WorkspaceDetailsCubit cubit) {
+  final state = cubit.state;
+  if (state is WorkspaceDetailsLoaded) {
+    return state.workspace.id;
+  }
+  return null;
+}
+
+// Helper function to create a new WorkspaceDetailsCubit
+WorkspaceDetailsCubit _createWorkspaceCubit(String workspaceId) {
+  final client = http.Client();
+  final remoteDataSource = WorkspaceRemoteDataSourceImpl(client: client);
+  final repository = WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
+  final getWorkspaceDetailsUseCase = GetWorkspaceDetailsUseCase(repository: repository);
+  final getWorkspaceReviewsUseCase = GetWorkspaceReviewsUseCase(repository);
+  final getRoomDetailsUseCase = GetRoomDetailsUseCase(repository: repository);
+  final getWorkspaceSchedulesUseCase = GetWorkspaceSchedulesUseCase(repository);
+
+  final cubit = WorkspaceDetailsCubit(
+    getWorkspaceDetailsUseCase: getWorkspaceDetailsUseCase,
+    getRoomDetailsUseCase: getRoomDetailsUseCase,
+    getWorkspaceReviewsUseCase: getWorkspaceReviewsUseCase,
+    getWorkspaceSchedulesUseCase: getWorkspaceSchedulesUseCase,
+  );
+
+  // Trigger the fetch
+  cubit.getWorkspaceDetails(workspaceId);
+  return cubit;
+}
