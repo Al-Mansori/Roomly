@@ -1,0 +1,145 @@
+<div class="my-workspaces bg-light vh-100">
+    <div class="container-fluid ">
+        <div class="row ">
+            <!-- Sidebar -->
+            <div class="col-12 col-md-2 ">
+                <app-side-navbar class=""></app-side-navbar>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-12 col-md-9  d-flex mx-auto flex-column px-4 py-3">
+                <!-- Breadcrumb -->
+                <div class="mb-3">
+                    <span class="text-secondary">Pages / </span>
+                    <span class="text-dark fw-bold">My Workspaces</span>
+                </div>
+
+                <!-- Workspace Content (Split View) -->
+                <div class="row flex-grow-1 overflow-hidden">
+                    <!-- Left: Workspace List (Scrollable) -->
+                    <div class="col-lg-6 pe-3">
+                        <div class="bg-white  shadow-sm rounded-3 p-3 d-flex flex-column">
+                            <!-- Controls -->
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                <div class="input-group w-100">
+                                    <input type="text" class="form-control" placeholder="Search" />
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                </div>
+                                <button class="btn btn-outline-dark">
+                                    <i class="fa-solid fa-sort" style="color: #000000;"></i>
+                                    Sort</button>
+                                <button class="btn btn-outline-dark">
+                                    <i class="fa-solid fa-filter" style="color: #000000;"></i>
+                                    Filter</button>
+                            </div>
+
+                            <!-- Scrollable List -->
+                            <div class="overflow-auto flex-grow-1 pe-1">
+                                @for (workspace of workspaces(); track workspace.id) {
+                                <!-- <div class="card mb-3 shadow-sm" (click)="selectWorkspace(workspace)">
+                                    <div class="row g-0">
+                                        <div class="col-4 p-2">
+                                            <img [src]="workspace.image" class="img-fluid rounded" alt="Workspace Image"
+                                                style="height: 100px; object-fit: cover;" />
+                                        </div>
+                                        <div class="col-8">
+                                            <div class="card-body">
+                                                <h6 class="card-title mb-1">{{ workspace.name }}</h6>
+                                                <p class="card-text text-muted mb-2">
+                                                    <i class="fas fa-map-marker-alt me-1"></i> {{ workspace.location }}
+                                                </p>
+                                                <a href="#" class="text-primary text-decoration-underline small">
+                                                    See more <i class="fas fa-arrow-right"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> -->
+                                <div class="card mb-3 shadow-sm" (click)="selectWorkspace(workspace)"
+                                    style="min-height: 130px;">
+                                    <div class="row g-0">
+                                        <div class="col-4 p-2 d-flex align-items-center">
+                                            <img [src]="workspace.image" class="img-fluid rounded"
+                                                style="height: 110px; object-fit: cover; width: 100%;" />
+                                        </div>
+                                        <div class="col-8">
+                                            <div class="card-body">
+                                                <h6 class="card-title mb-1">{{ workspace.name }}</h6>
+                                                <p class="card-text text-muted mb-2">
+                                                    <i class="fas fa-map-marker-alt me-1"></i> {{ workspace.location }}
+                                                </p>
+                                                <a href="#" class="text-primary text-decoration-underline small">
+                                                    See more <i class="fas fa-arrow-right"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                }
+                            </div>
+
+                            <!-- Add Button -->
+                            <button class="btn btn-primary mt-3 w-100">
+                                <i class="fas fa-plus me-2"></i> Add Workspace
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Workspace Details -->
+                    <div class="col-lg-6  ps-3">
+                        <div class="card shadow-sm  d-flex flex-column p-3">
+                            <img [src]="selectedWorkspace().image" class="rounded mb-3" alt="Main Workspace Image"
+                                style="height: 180px; object-fit: cover;" />
+                            <div class="d-flex justify-content-between">
+                                <h5 class="fw-bold">{{ selectedWorkspace().name }}</h5>
+                                <p class="text-muted mb-1">
+                                    <i class="fas fa-star text-warning"></i>
+                                    {{ selectedWorkspace().rating }} ({{ selectedWorkspace().reviews }} reviews)
+                                    <a href="#" class="text-decoration-underline ms-1">View all</a>
+                                </p>
+                            </div>
+                            <p class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{
+                                selectedWorkspace().location }}</p>
+                            <p class="text-muted small">Created at: {{ selectedWorkspace().createdAt }}</p>
+
+
+                            <p class="fw-bold mt-3">Rooms</p>
+                            <div class="row g-3 mb-4">
+                                @for (room of selectedWorkspace().rooms; track room.id) {
+                                <div class="col-6">
+                                    <div class="card shadow-sm p-2">
+                                        <img [src]="room.image" class="img-fluid rounded mb-2"
+                                            style="height: 150px; object-fit: cover;" alt="Room Image" />
+                                        <p class="card-text text-center mb-0">{{ room.name }}</p>
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                            <!-- Swiper Implementation -->
+                            <!-- <div class="mb-4">
+                                <swiper-container [config]="swiperConfig" init="false">
+                                    @for (room of selectedWorkspace().rooms; track room.id) {
+                                    <swiper-slide>
+                                        <div class="card shadow-sm p-2 ">
+                                            <img [src]="room.image" class="img-fluid rounded mb-2"
+                                                style="height: 150px; object-fit: cover;" alt="Room Image" />
+                                            <p class="card-text text-center mb-0">{{ room.name }}</p>
+                                        </div>
+                                    </swiper-slide>
+                                    }
+                                </swiper-container>
+                            </div> -->
+
+                            <!-- Action Buttons -->
+                            <div class="mt-auto d-flex justify-content-between">
+                                <button class="btn btn-outline-primary">Edit Workspace</button>
+                                <button class="btn btn-danger">Delete Workspace</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

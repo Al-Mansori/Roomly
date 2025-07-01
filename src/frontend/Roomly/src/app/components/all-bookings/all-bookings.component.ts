@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { SideNavbarComponent } from "../side-navbar/side-navbar.component";
 import { CommonModule } from '@angular/common';
 
 interface Booking {
@@ -15,15 +14,14 @@ interface Booking {
   status: 'upcoming' | 'ongoing' | 'completed';
   timeRemaining: string;
 }
-
 @Component({
-  selector: 'app-booking-all',
+  selector: 'app-all-bookings',
   standalone: true,
-  imports: [SideNavbarComponent, CommonModule],
-  templateUrl: './booking-all.component.html',
-  styleUrl: './booking-all.component.scss'
+  imports: [CommonModule],
+  templateUrl: './all-bookings.component.html',
+  styleUrl: './all-bookings.component.scss'
 })
-export class BookingAllComponent {
+export class AllBookingsComponent {
   activeTab = 'all';
   indicatorPosition = 0;
   

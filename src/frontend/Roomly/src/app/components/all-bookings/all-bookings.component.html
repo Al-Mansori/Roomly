@@ -1,0 +1,71 @@
+<!-- Booking Cards -->
+<div class="row">
+    @for (booking of filteredBookings; track booking.id) {
+    <div class="col-12 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <!-- Card Header -->
+                <div class="d-flex justify-content-between flex-wrap mb-3">
+                    <h5 class="card-title mb-0 fs-6">
+                        {{ booking.room }} <small class="text-muted fs-6">{{ booking.branch }}</small>
+                    </h5>
+                    <span class="text-muted fs-6">BookID: {{ booking.id }}</span>
+                </div>
+
+                <!-- Card Content -->
+                <div class="row g-3">
+                    <!-- Booking Image -->
+                    <div class="col-12 col-md-5">
+                        <img src="./../../../assets/Images/workspace01.jpg" class="img-fluid rounded-3 w-100"
+                            style="height: 150px; object-fit: cover;" alt="Room image">
+                    </div>
+
+                    <!-- Booking Details -->
+                    <div class="col-12 col-md-7">
+                        <h6 class="fw-bold mt-2 mb-3 fs-6">Booking Details</h6>
+                        <div class="mb-2">
+                            <small class="text-muted">From:</small>
+                            <div class="fs-6">{{ booking.startDate | date:'EEE, dd MMM y hh:mm a' |
+                                lowercase }}</div>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">To:</small>
+                            <div class="fs-6">{{ booking.endDate | date:'EEE, dd MMM y hh:mm a' |
+                                lowercase }}</div>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Seats:</small>
+                            <div class="fs-6">{{ booking.seats }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted">Payment:</small>
+                            <div class="fs-6">{{ booking.paymentMethod }}: {{ booking.price |
+                                number:'1.2-2' }} EGP</div>
+                        </div>
+
+                        <!-- Status Buttons -->
+                        @if (booking.status === 'upcoming') {
+                        <div class="d-grid">
+                            <button class="btn btn-primary btn-sm shadow-sm py-2">
+                                Check in (starts in {{ booking.timeRemaining }})
+                            </button>
+                        </div>
+                        }
+                        @if (booking.status === 'ongoing') {
+                        <div class="d-grid">
+                            <button class="btn btn-danger btn-sm shadow-sm py-2">
+                                Check out (ends in {{ booking.timeRemaining }})
+                            </button>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    } @empty {
+    <div class="col-12 text-center py-5">
+        <p class="text-muted">No bookings found</p>
+    </div>
+    }
+</div>

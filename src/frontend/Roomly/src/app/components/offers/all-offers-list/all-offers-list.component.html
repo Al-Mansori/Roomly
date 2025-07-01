@@ -1,0 +1,43 @@
+<div class="all-offers-list bg-light min-vh-100">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-12 col-md-2">
+        <app-side-navbar></app-side-navbar>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-12 col-md-9 mx-auto px-4 py-4">
+        <!-- Header -->
+        <div class="bg-white rounded-4 shadow-sm p-3 mb-4">
+          <!-- Tabs with RouterLink -->
+          <ul class="nav nav-pills mb-3">
+            <li class="nav-item">
+              <a routerLink="/offers/all" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">All</a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/offers/expired" routerLinkActive="active" class="nav-link">Expired</a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/offers/present" routerLinkActive="active" class="nav-link">Present</a>
+            </li>
+          </ul>
+
+          <!-- Search & Actions -->
+          <div class="d-flex gap-2 flex-wrap align-items-center">
+            <div class="input-group input-group-sm w-25">
+              <input type="text" class="form-control" placeholder="Search by ID, listing name" />
+            </div>
+            <button class="btn btn-outline-secondary btn-sm">Filter</button>
+            <button class="btn btn-primary btn-sm">+ New Offer</button>
+          </div>
+        </div>
+
+        <!-- Offer Cards List -->
+        <div class="d-flex flex-column gap-3">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
