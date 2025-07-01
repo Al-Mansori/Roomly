@@ -1,1 +1,37 @@
-<p>ongoing-bookings works!</p>
+<!-- Ongoing Bookings -->
+<div class="row">
+  @for (booking of bookings; track booking.id) {
+    <div class="col-12 mb-4">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between flex-wrap mb-3">
+            <h5 class="card-title mb-0 fs-6">
+              Reservation Date: <small class="text-muted">{{ booking.reservationDate | date: 'mediumDate' }}</small>
+            </h5>
+            <span class="text-muted fs-6">Booking ID: {{ booking.id }}</span>
+          </div>
+          <div class="row g-3">
+            <div class="col-12 col-md-5">
+              <img src="/assets/Images/workspace01.jpg" class="img-fluid rounded-3 w-100"
+                   style="height: 150px; object-fit: cover;" />
+            </div>
+            <div class="col-12 col-md-7">
+              <h6 class="fw-bold mt-2 mb-3 fs-6">Booking Details</h6>
+              <div class="mb-2"><small class="text-muted">From:</small><div class="fs-6">{{ booking.startTime | date:'short' }}</div></div>
+              <div class="mb-2"><small class="text-muted">To:</small><div class="fs-6">{{ booking.endTime | date:'short' }}</div></div>
+              <div class="mb-2"><small class="text-muted">Access Code:</small><div class="fs-6">{{ booking.accessCode }}</div></div>
+              <div class="mb-3"><small class="text-muted">Total:</small><div class="fs-6">{{ booking.totalCost }} EGP</div></div>
+              <div class="d-grid">
+                <button class="btn btn-danger btn-sm shadow-sm py-2">
+                  Check out (ends at {{ booking.endTime | date:'shortTime' }})
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @empty {
+    <div class="col-12 text-center py-5"><p class="text-muted">No ongoing bookings found</p></div>
+  }
+</div>
