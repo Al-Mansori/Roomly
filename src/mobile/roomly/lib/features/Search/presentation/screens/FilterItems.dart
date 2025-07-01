@@ -20,11 +20,11 @@ class _FiltersSectionState extends State<FiltersSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Filters",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 8),
+        // const Text(
+        //   "Filters",
+        //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        // ),
+        const SizedBox(height: 8),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(

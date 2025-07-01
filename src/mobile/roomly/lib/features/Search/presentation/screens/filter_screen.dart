@@ -1,6 +1,6 @@
 // features/Search/filter_screen.dart
 import 'package:flutter/material.dart';
-import 'package:roomly/features/Search/filter_popup_screen.dart';
+import 'package:roomly/features/Search/presentation/screens/filter_popup_screen.dart';
 
 class FilterScreen extends StatelessWidget {
   const FilterScreen({Key? key}) : super(key: key);
