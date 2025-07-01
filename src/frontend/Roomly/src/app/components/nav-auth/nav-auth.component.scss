@@ -1,3 +1,9 @@
 .logo {
-    height: 30px; 
-  }
+  height: 30px;
+}
+
+.nav-link.active {
+  font-weight: bold;
+  color: #0A3FB3 !important;
+  border-bottom: 2px solid #0A3FB3;
+}

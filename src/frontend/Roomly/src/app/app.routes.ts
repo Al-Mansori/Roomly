@@ -1,18 +1,24 @@
 import { Routes } from '@angular/router';
 import { BlankLayoutComponent } from './layouts/blank-layout/blank-layout.component';
-// import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
+import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
 // import { authGuard } from './core/guards/auth.guard';
 // import { loggedGuard } from './core/guards/logged.guard';
 
 export const routes: Routes = [
   // 🔒 Auth routes (Temporarily disabled)
-  /*
+
+  // 🌐 Public Routes (not logged in)
   {
     path: '',
     component: AuthLayoutComponent,
-    canActivate: [loggedGuard],
+    // canActivate: [loggedGuard],
     children: [
-      { path: '', redirectTo: 'login', pathMatch: 'full' },
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      {
+        path: 'home',
+        loadComponent: () =>
+          import('./components/home/home.component').then((m) => m.HomeComponent)
+      },
       {
         path: 'login',
         loadComponent: () =>
@@ -25,16 +31,14 @@ export const routes: Routes = [
       }
     ]
   },
-  */
 
-  // ✅ Main app routes (default is now "offers/all")
   {
     path: '',
     component: BlankLayoutComponent,
     // canActivate: [authGuard], // ⛔ optional: disable during development
     children: [
-      { path: '', redirectTo: 'support', pathMatch: 'full' },
-
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      // offers
       {
         path: 'offers',
         loadComponent: () =>
@@ -77,8 +81,45 @@ export const routes: Routes = [
       },
       {
         path: 'support', loadComponent: () => import('./components/support/support.component').then((m) => m.SupportComponent)
-          
+
       },
+      {
+        path: 'my-plans', loadComponent: () => import('./components/my-plans/my-plans.component').then((m) => m.MyPlansComponent)
+
+      },
+            {
+        path: 'bookings',
+        loadComponent: () => import('./components/bookings/bookings-list/bookings-list.component').then(m => m.BookingsListComponent),
+        children: [
+          { path: '', redirectTo: 'all', pathMatch: 'full' },
+          {
+            path: 'all',
+            loadComponent: () => import('./components/bookings/all-bookings/all-bookings.component').then(m => m.AllBookingsComponent),
+          },
+          {
+            path: 'requests',
+            loadComponent: () => import('./components/bookings/requests/requests.component').then(m => m.RequestsComponent),
+          },
+          {
+            path: 'upcoming',
+            loadComponent: () => import('./components/bookings/upcoming-bookings/upcoming-bookings.component').then(m => m.UpcomingBookingsComponent),
+          },
+          {
+            path: 'ongoing',
+            loadComponent: () => import('./components/bookings/ongoing-bookings/ongoing-bookings.component').then(m => m.OngoingBookingsComponent),
+          },
+          {
+            path: 'history',
+            loadComponent: () => import('./components/bookings/history/history.component').then(m => m.HistoryComponent),
+          }
+        ]
+      }
+      // {
+      //   path: 'bookings-list', loadComponent: () => import('./components/bookings/bookings-list/bookings-list.component').then((m) => m.BookingsListComponent)
+
+      // },
+
+
     ]
   },
 

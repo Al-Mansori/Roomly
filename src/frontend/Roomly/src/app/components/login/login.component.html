@@ -1,76 +1,147 @@
-<!-- Background Components -->
-<app-nav-auth></app-nav-auth>
-<app-hero-section></app-hero-section>
-
-<div class="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75" style="z-index: 1055;"></div>
-
-<!-- Bootstrap Modal (Vertically Centered) -->
-<div class="modal d-block" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-transparent border-0">
-
-            <!-- Custom Login Card -->
-            <div class="registration-container w-100">
-                <div class="registration-form p-4 rounded-4 text-white">
-                    <h2 class="text-center mb-4">Welcome Back!</h2>
-
-                    <p class="text-center px-3 mt-3 mb-4">
-                        Log in now to explore all the features and benefits of our platform and see what’s new.
-                    </p>
-                    <form class="text-white">
-                        <div class="form-floating mb-3">
-                            <input type="email" class="form-control bg-black opacity-25 border-0 rounded-4  " id="email"
-                                placeholder="Email">
-                            <label for="email" class="">
-                                <i class="fa-solid fa-envelope me-1" style="color: #ffffff;"></i>
-                                Email</label>
-                        </div>
-
-                        <!-- Password input -->
-                        <div class="form-floating mb-3 position-relative">
-                            <input
-                              type="password"
-                              class="form-control bg-black opacity-25 border-0 rounded-4 ps-5 pe-5 text-white"
-                              id="password"
-                              placeholder="Password"
-                            />
-                          
-                            <!-- Eye icon on the right (still positioned absolutely) -->
-                            <i class="fa-solid fa-eye-slash position-absolute end-0 top-50 translate-middle-y pe-3 text-white"
-                               style="cursor: pointer;"></i>
-                          
-                            <!-- Label with icon inside (no absolute positioning) -->
-                            <label for="password" class="d-flex align-items-center gap-1 ps-3">
-                              <i class="fa-solid fa-lock"></i> Password
-                            </label>
-                          </div>
-                          
-
-                        <!-- CHECK BOX -->
-                        <div class="form-check mb-4 d-flex justify-content-between">
-                            <div class="d-flex align-content-center justify-content-center">
-                                <input class="form-check-input shadow-sm me-2 d-block" type="checkbox" id="terms">
-                                <label class="form-check-label text-white small d-block" for="terms">
-                                    Remember Me
+<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-transparent p-4 rounded-4">
+            <div class="login-container position-fixed top-50 start-50 translate-middle w-100 px-3"
+                style="max-width: 500px;">
+                <div class="login-form p-4 rounded-4 text-white shadow-lg backdrop-blur w-100"
+                    style="max-width: 500px;">
+                    @if (!showForgotPassword && !isResettingPassword) {
+                    <div>
+                        <h2 class="text-center mb-3">Welcome Back!</h2>
+                        <p class="text-center mb-4">Log in now to explore all the features and benefits of our platform.
+                        </p>
+                        <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="text-white">
+                            <div class="form-floating mb-3">
+                                <input type="email" class="form-control bg-black opacity-25 border-0 rounded-4"
+                                    id="loginEmail" placeholder="Email" formControlName="email"
+                                    aria-label="Email address">
+                                <label for="loginEmail" class="d-flex align-items-center gap-1 ps-3">
+                                    <i class="fa-solid fa-envelope"></i> Email
                                 </label>
                             </div>
-    
-                            <a href="#" class=" text-white text-decoration-underline d-block"> Forget Your Password?</a>
+                            <div class="form-floating mb-3 position-relative">
+                                <input type="password" class="form-control bg-black opacity-25 border-0 rounded-4 px-5"
+                                    id="loginPassword" placeholder="Password" formControlName="password"
+                                    aria-label="Password">
+                                <label for="loginPassword">
+                                    <i class="fa-solid fa-lock me-1" style="color: #ffffff;"></i> Password
+                                </label>
+                            </div>
+                            <div class="form-check mb-4 d-flex justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <input class="form-check-input shadow-sm me-2" type="checkbox" id="rememberMe"
+                                        formControlName="rememberMe" aria-label="Remember me">
+                                    <label class="form-check-label text-white small" for="rememberMe">Remember
+                                        Me</label>
+                                </div>
+                                <!-- <a href="#" class="text-white text-decoration-underline" (click)="onForgotPassword()" aria-label="Forgot your password">Forgot Your Password?</a> -->
+                                <button type="button" class="btn btn-link text-white text-decoration-underline p-0"
+                                    (click)="onForgotPassword()" aria-label="Forgot your password">Forgot Your
+                                    Password?</button>
+                            </div>
+                            @if (errorMessage) {
+                            <div class="alert alert-danger" role="alert">{{ errorMessage }}</div>
+                            }
+                            <button type="submit" class="btn btn-primary w-100 py-2 rounded-4 fw-bold shadow mb-3"
+                                [disabled]="isLoading" aria-label="Login">
+                                @if (isLoading) {
+                                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span> Logging
+                                in...
+                                } @else {
+                                Login
+                                }
+                            </button>
+                        </form>
+                        <p class="text-white text-center">
+                            Don't have an account?
+                            <a href="#" class="text-primary text-decoration-underline fw-bold" data-bs-toggle="modal"
+                                data-bs-target="#registerModal" data-bs-dismiss="modal" aria-label="Sign up">Sign Up</a>
+                        </p>
+                    </div>
+                    }
+                    @if (showForgotPassword && !isResettingPassword) {
+                    <div class="forgot-password-form">
+                        <h2 class="text-center mb-3">Reset Password</h2>
+                        <p class="text-center mb-4">Enter your email to receive a verification code</p>
+                        <div class="form-floating mb-3 position-relative">
+                            <input type="email" class="form-control" [(ngModel)]="forgotPasswordEmail"
+                                [disabled]="forgotPasswordLoading" placeholder="Email Address"
+                                aria-label="Email address for password reset" (input)="validateEmail()">
+                            <label>Email Address</label>
+                            @if (isEmailValid && forgotPasswordEmail) {
+                            <i class="fa-solid fa-check text-success position-absolute end-0 top-50 translate-middle-y me-3"
+                                aria-hidden="true"></i>
+                            } @else if (forgotPasswordEmail) {
+                            <i class="fa-solid fa-times text-danger position-absolute end-0 top-50 translate-middle-y me-3"
+                                aria-hidden="true"></i>
+                            }
                         </div>
-    
-                        <!-- Submit Button -->
-                        <button class="btn btn-primary w-100 my-3 rounded-4">Login</button>
-    
-                        <!-- Google Sign-in -->
-                        <button type="button" class="btn btn-outline-secondary w-100 py-2 mt-0 rounded-4">
-                            <img src="./../../../assets/Images/google logo.svg" alt="Google" width="20" class="me-2">
-                            Continue with Google
-                        </button>
-                    </form>
-
+                        @if (errorMessage) {
+                        <div class="alert alert-danger" role="alert">{{ errorMessage }}</div>
+                        }
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-outline-secondary" (click)="showForgotPassword = false"
+                                [disabled]="forgotPasswordLoading" aria-label="Back to login">Back to Login</button>
+                            <button class="btn btn-primary" (click)="submitForgotPassword()"
+                                [disabled]="forgotPasswordLoading || !isEmailValid" aria-label="Send OTP">
+                                @if (forgotPasswordLoading) {
+                                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                                }
+                                Send OTP
+                            </button>
+                        </div>
+                    </div>
+                    }
+                    @if (isResettingPassword) {
+                    <div class="reset-password-form">
+                        <h2 class="text-center mb-3">Create New Password</h2>
+                        <div class="form-floating mb-3">
+                            <input type="email" class="form-control bg-light opacity-50"
+                                [(ngModel)]="resetPasswordEmail" [disabled]="true" placeholder="Email"
+                                aria-label="Email address (read-only)" title="This email cannot be edited">
+                            <label>Email</label>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-floating">
+                                <input type="password" class="form-control" [(ngModel)]="newPassword"
+                                    placeholder="New Password" aria-label="New password"
+                                    (input)="updatePasswordStrength()">
+                                <label>New Password</label>
+                            </div>
+                            <div class="password-requirements mt-2">
+                                @for (req of passwordRequirements; track req.key) {
+                                <div class="form-check small">
+                                    <input class="form-check-input" type="checkbox"
+                                        [checked]="passwordStrength[req.key]" disabled [attr.aria-label]="req.text">
+                                    <label class="form-check-label">{{ req.text }}</label>
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" [(ngModel)]="confirmPassword"
+                                placeholder="Confirm Password" aria-label="Confirm password">
+                            <label>Confirm Password</label>
+                        </div>
+                        @if (errorMessage) {
+                        <div class="alert alert-danger" role="alert">{{ errorMessage }}</div>
+                        }
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-outline-secondary" (click)="cancelResetPassword()"
+                                aria-label="Cancel password reset">Cancel</button>
+                            <button class="btn btn-primary" (click)="submitNewPassword()"
+                                [disabled]="isLoading || !newPassword || !confirmPassword || !passwordMeetsRequirements()"
+                                aria-label="Reset password">
+                                @if (isLoading) {
+                                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                                }
+                                Reset Password
+                            </button>
+                        </div>
+                    </div>
+                    }
                 </div>
             </div>
-
         </div>
     </div>
 </div>

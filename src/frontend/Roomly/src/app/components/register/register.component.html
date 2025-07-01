@@ -1,118 +1,273 @@
-<div class="overlay position-fixed top-0 start-0 end-0 bottom-0 w-100 h-100 bg-dark bg-opacity-75"></div>
-
-
-<!-- Background Components -->
-<app-nav-auth></app-nav-auth>
-<app-hero-section></app-hero-section>
-
-<!-- Registration Form -->
-<!-- <div class="registration-container d-flex justify-content-center align-items-center min-vh-100 px-3"> -->
-<div class="registration-container position-fixed top-50 start-50 translate-middle w-100 px-3 "
-    style="max-width: 500px;">
-
-    <div class="registration-form  rounded-4 p-4 shadow-lg backdrop-blur w-100" style="max-width: 500px;">
-        <!-- Header -->
-        <div class="text-center mb-4">
+<div class="modal fade" id="registerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-transparent p-4 rounded-4">
+      <div class="registration-container position-fixed top-50 start-50 translate-middle w-100 px-3"
+        style="max-width: 500px;">
+        <div class="registration-form rounded-4 p-4 shadow-lg backdrop-blur w-100" style="max-width: 500px;">
+          <!-- Header -->
+          <div class="text-center mb-4">
             <h2 class="text-white fw-bold mb-2">Create a Roomly account</h2>
             <p class="text-white mb-0">
-                Already have an account? <a href="#" class="text-primary text-decoration-underline fw-bold">Log In</a>
+              Already have an account?
+              <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal"
+                class="text-primary text-decoration-underline fw-bold">Log In</a>
             </p>
-        </div>
+          </div>
 
-        <!-- Form -->
-        <form class="text-white">
-            <div class="row g-3 mb-3 ">
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <input type="text" class="form-control bg-black opacity-25 border-0 rounded-4 " id="firstName"
-                            placeholder="First Name">
-                        <label for="firstName" class="">
-                            <i class="fa-solid fa-user me-1" style="color: #ffffff;"></i>
-                            First Name</label>
-                    </div>
+          <!-- Success Message (shown temporarily) -->
+          @if (showSuccess) {
+          <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
+            {{ successMessage }}
+            <div class="progress mt-2">
+              <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+            </div>
+          </div>
+          }
+
+          <!-- Error Message -->
+          @if (errorMessage && !showSuccess) {
+          <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
+            {{ errorMessage }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          }
+
+          <!-- Form -->
+          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="text-white">
+            <!-- Name -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="text" class="form-control bg-black opacity-25 border-0 rounded-4" id="registerFirstName"
+                    placeholder="First Name" formControlName="firstName" [ngClass]="{
+                      'is-invalid': registerForm.get('firstName')?.invalid &&
+                      (registerForm.get('firstName')?.dirty || registerForm.get('firstName')?.touched)
+                    }" />
+                  <label for="registerFirstName">
+                    <i class="fa-solid fa-user me-1" style="color: #ffffff;"></i>
+                    First Name
+                  </label>
+                  @if (registerForm.get('firstName')?.invalid &&
+                  (registerForm.get('firstName')?.dirty || registerForm.get('firstName')?.touched)) {
+                  <div class="invalid-feedback d-block">
+                    @if (registerForm.get('firstName')?.errors?.['required']) {
+                    <div>First name is required</div>
+                    }
+                    @if (registerForm.get('firstName')?.errors?.['minlength']) {
+                    <div>Minimum 2 characters required</div>
+                    }
+                  </div>
+                  }
                 </div>
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <input type="text" class="form-control bg-black opacity-25 border-0 rounded-4 " id="lastName"
-                            placeholder="Last Name">
-                        <label for="lastName" class="">
-                            <i class="fa-solid fa-user me-1" style="color: #ffffff;"></i>
-                            Last Name</label>
-                    </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="text" class="form-control bg-black opacity-25 border-0 rounded-4" id="registerLastName"
+                    placeholder="Last Name" formControlName="lastName" [ngClass]="{
+                      'is-invalid': registerForm.get('lastName')?.invalid &&
+                      (registerForm.get('lastName')?.dirty || registerForm.get('lastName')?.touched)
+                    }" />
+                  <label for="registerLastName">
+                    <i class="fa-solid fa-user me-1" style="color: #ffffff;"></i>
+                    Last Name
+                  </label>
+                  @if (registerForm.get('lastName')?.invalid &&
+                  (registerForm.get('lastName')?.dirty || registerForm.get('lastName')?.touched)) {
+                  <div class="invalid-feedback d-block">
+                    @if (registerForm.get('lastName')?.errors?.['required']) {
+                    <div>Last name is required</div>
+                    }
+                    @if (registerForm.get('lastName')?.errors?.['minlength']) {
+                    <div>Minimum 2 characters required</div>
+                    }
+                  </div>
+                  }
                 </div>
+              </div>
             </div>
 
+            <!-- Email -->
             <div class="form-floating mb-3">
-                <input type="email" class="form-control bg-black opacity-25 border-0 rounded-4  " id="email"
-                    placeholder="Email">
-                <label for="email" class="">
-                    <i class="fa-solid fa-envelope me-1" style="color: #ffffff;"></i>
-                    Email</label>
+              <input type="email" class="form-control bg-black opacity-25 border-0 rounded-4" id="registerEmail"
+                placeholder="Email" formControlName="email" [ngClass]="{
+                  'is-invalid': registerForm.get('email')?.invalid &&
+                  (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)
+                }" />
+              <label for="registerEmail">
+                <i class="fa-solid fa-envelope me-1" style="color: #ffffff;"></i>
+                Email
+              </label>
+              @if (registerForm.get('email')?.invalid &&
+              (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)) {
+              <div class="invalid-feedback d-block">
+                @if (registerForm.get('email')?.errors?.['required']) {
+                <div>Email is required</div>
+                }
+                @if (registerForm.get('email')?.errors?.['email']) {
+                <div>Please enter a valid email</div>
+                }
+              </div>
+              }
             </div>
 
+            <!-- Phone -->
             <div class="form-floating mb-3">
-                <input type="tel" class="form-control bg-black opacity-25 border-0 rounded-4 " id="mobile"
-                    placeholder="Mobile number">
-                <label for="mobile" class="">Mobile number</label>
+              <input type="tel" class="form-control bg-black opacity-25 border-0 rounded-4" id="registerPhone"
+                placeholder="Mobile number" formControlName="phone" [ngClass]="{
+                  'is-invalid': registerForm.get('phone')?.invalid &&
+                  (registerForm.get('phone')?.dirty || registerForm.get('phone')?.touched)
+                }" />
+              <label for="registerPhone">Mobile number</label>
+              @if (registerForm.get('phone')?.invalid &&
+              (registerForm.get('phone')?.dirty || registerForm.get('phone')?.touched)) {
+              <div class="invalid-feedback d-block">
+                @if (registerForm.get('phone')?.errors?.['required']) {
+                <div>Phone number is required</div>
+                }
+                @if (registerForm.get('phone')?.errors?.['pattern']) {
+                <div>10-15 digits required</div>
+                }
+              </div>
+              }
             </div>
-            <!-- 
-            <div class="form-floating mb-3">
-                <input type="password" class="form-control bg-black opacity-25 border-0 rounded-4 " id="password"
-                    placeholder="Password">
-                    <div class="label-container d-flex justify-content-between ">
-                        <label for="password" class="d-block">
-                            <i class="fa-solid fa-lock me-1" style="color: #ffffff;"></i>
-                            Password</label>
-        
-                        <i class="fa-solid fa-eye-slash d-block" style="color: #ffffff;"></i>
-                    </div>
-            </div> -->
+
+            <!-- Password -->
+            <!-- Password Field -->
             <div class="form-floating mb-3 position-relative">
-                <input type="password" class="form-control bg-black opacity-25 border-0 rounded-4 ps-5 pe-5 text-white"
-                    id="password" placeholder="Password" />
+              <input type="password" class="form-control bg-black opacity-25 border-0 rounded-4 pe-5"
+                id="registerPassword" placeholder="Password" formControlName="password" [ngClass]="{
+      'is-invalid': registerForm.get('password')?.invalid &&
+      (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)
+    }" aria-describedby="passwordHelp" (input)="onPasswordInput()" (focus)="showRequirements = true"
+                (blur)="showRequirements = !!registerForm.get('password')?.value" />
+              <label for="registerPassword">
+                <i class="fa-solid fa-lock me-1 text-white"></i>
+                Password
+              </label>
+              <i class="fa-solid fa-eye-slash position-absolute end-0 top-50 translate-middle-y pe-3 text-white"
+                style="cursor: pointer; z-index: 10;" (click)="togglePasswordVisibility('registerPassword')"
+                aria-label="Toggle password visibility"></i>
 
-                <!-- Left icon and label inside input -->
-                <label for="password" class="position-absolute start-0 top-50 translate-middle-y ps-3 text-white">
-                    <i class="fa-solid fa-lock me-1"></i> Password
-                </label>
-
-                <!-- Right eye icon inside input -->
-                <i class="fa-solid fa-eye-slash position-absolute end-0 top-50 translate-middle-y pe-3 text-white"
-                    style="cursor: pointer;"></i>
+              <!-- Password Requirements List - Only shows when focused or has value -->
+              <div id="passwordHelp" class="mt-2" *ngIf="showRequirements">
+                <ul class="list-unstyled mb-0 ps-3 small">
+                  <li class="d-flex align-items-center mb-1">
+                    <i class="fas fa-fw me-2"
+                      [class.fa-check-circle]="checkPasswordRequirement(registerForm.get('password')?.value, 'length')"
+                      [class.fa-circle]="!checkPasswordRequirement(registerForm.get('password')?.value, 'length')"
+                      [class.text-success]="checkPasswordRequirement(registerForm.get('password')?.value, 'length')"
+                      [class.text-muted]="!checkPasswordRequirement(registerForm.get('password')?.value, 'length')"></i>
+                    <span
+                      [class.text-success]="checkPasswordRequirement(registerForm.get('password')?.value, 'length')">
+                      At least 10 characters
+                    </span>
+                  </li>
+                  <li class="d-flex align-items-center mb-1">
+                    <i class="fas fa-fw me-2"
+                      [class.fa-check-circle]="checkPasswordRequirement(registerForm.get('password')?.value, 'uppercase')"
+                      [class.fa-circle]="!checkPasswordRequirement(registerForm.get('password')?.value, 'uppercase')"
+                      [class.text-success]="checkPasswordRequirement(registerForm.get('password')?.value, 'uppercase')"
+                      [class.text-muted]="!checkPasswordRequirement(registerForm.get('password')?.value, 'uppercase')"></i>
+                    <span
+                      [class.text-success]="checkPasswordRequirement(registerForm.get('password')?.value, 'uppercase')">
+                      1 uppercase letter (A-Z)
+                    </span>
+                  </li>
+                  <li class="d-flex align-items-center mb-1">
+                    <i class="fas fa-fw me-2"
+                      [class.fa-check-circle]="checkPasswordRequirement(registerForm.get('password')?.value, 'lowercase')"
+                      [class.fa-circle]="!checkPasswordRequirement(registerForm.get('password')?.value, 'lowercase')"
+                      [class.text-success]="checkPasswordRequirement(registerForm.get('password')?.value, 'lowercase')"
+                      [class.text-muted]="!checkPasswordRequirement(registerForm.get('password')?.value, 'lowercase')"></i>
+                    <span
+                      [class.text-success]="checkPasswordRequirement(registerForm.get('password')?.value, 'lowercase')">
+                      1 lowercase letter (a-z)
+                    </span>
+                  </li>
+                  <li class="d-flex align-items-center mb-1">
+                    <i class="fas fa-fw me-2"
+                      [class.fa-check-circle]="checkPasswordRequirement(registerForm.get('password')?.value, 'number')"
+                      [class.fa-circle]="!checkPasswordRequirement(registerForm.get('password')?.value, 'number')"
+                      [class.text-success]="checkPasswordRequirement(registerForm.get('password')?.value, 'number')"
+                      [class.text-muted]="!checkPasswordRequirement(registerForm.get('password')?.value, 'number')"></i>
+                    <span
+                      [class.text-success]="checkPasswordRequirement(registerForm.get('password')?.value, 'number')">
+                      1 number (0-9)
+                    </span>
+                  </li>
+                  <li class="d-flex align-items-center">
+                    <i class="fas fa-fw me-2"
+                      [class.fa-check-circle]="checkPasswordRequirement(registerForm.get('password')?.value, 'special')"
+                      [class.fa-circle]="!checkPasswordRequirement(registerForm.get('password')?.value, 'special')"
+                      [class.text-success]="checkPasswordRequirement(registerForm.get('password')?.value, 'special')"
+                      [class.text-muted]="!checkPasswordRequirement(registerForm.get('password')?.value, 'special')"></i>
+                    <span
+                      [class.text-success]="checkPasswordRequirement(registerForm.get('password')?.value, 'special')">
+                      1 special character (&#64;$!%*?&)
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <!-- Confirm Password -->
+            <div class="form-floating mb-4 position-relative">
+              <input type="password" class="form-control bg-black opacity-25 border-0 rounded-4 px-5"
+                id="registerConfirmPassword" placeholder="Confirm Password" formControlName="confirmPassword" [ngClass]="{
+                  'is-invalid': (registerForm.get('confirmPassword')?.invalid || registerForm.errors?.['mismatch']) &&
+                  (registerForm.get('confirmPassword')?.dirty || registerForm.get('confirmPassword')?.touched)
+                }" />
+              <label for="registerConfirmPassword">
+                <i class="fa-solid fa-lock me-2"></i>
+                Confirm Password
+              </label>
+              <i class="fa-solid fa-eye position-absolute end-0 top-50 translate-middle-y pe-3 text-white"
+                style="cursor: pointer;" (click)="togglePasswordVisibility('registerConfirmPassword')"></i>
+              @if ((registerForm.get('confirmPassword')?.invalid || registerForm.errors?.['mismatch']) &&
+              (registerForm.get('confirmPassword')?.dirty || registerForm.get('confirmPassword')?.touched)) {
+              <div class="invalid-feedback d-block">
+                @if (registerForm.get('confirmPassword')?.errors?.['required']) {
+                <div>Please confirm your password</div>
+                }
+                @if (registerForm.errors?.['mismatch']) {
+                <div>Passwords do not match</div>
+                }
+              </div>
+              }
             </div>
 
-
-            <div class="form-floating mb-4">
-                <input type="password" class="form-control bg-black opacity-25 border-0 rounded-4 " id="confirmPassword"
-                    placeholder="Confirm Password">
-                <label for="password" class="position-absolute start-0 top-50 translate-middle-y ps-3 text-white">
-                    <i class="fa-solid fa-lock me-2"></i>Confirm Password</label>
-
-                <i class="fa-solid fa-eye position-absolute end-0 top-50 translate-middle-y pe-3 text-white"
-                    style="cursor: pointer;"></i>
+            <!-- Terms -->
+            <div class="form-check mb-4">
+              <input class="form-check-input shadow-sm me-2" type="checkbox" id="registerTerms"
+                formControlName="terms" />
+              <label class="form-check-label text-white small" for="registerTerms">
+                I agree to Roomly's
+                <a href="#" class="text-white text-decoration-underline">Terms of Service</a>
+                &amp;
+                <a href="#" class="text-white text-decoration-underline">Privacy Policy</a>
+              </label>
+              @if (registerForm.get('terms')?.invalid && registerForm.get('terms')?.touched) {
+              <div class="text-danger small">You must accept the terms</div>
+              }
             </div>
 
-            <!-- Terms Checkbox -->
-            <div class="form-check mb-4 ">
-                <input class="form-check-input shadow-sm me-2" type="checkbox" id="terms">
-                <label class="form-check-label text-white small" for="terms">
-                    I agree to Roomly's <a href="#" class=" text-white text-decoration-underline">Terms of Service</a>
-                    &
-                    <a href="#" class=" text-white text-decoration-underline">Privacy Policy</a>
-                </label>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary w-100 py-2 rounded-4 fw-bold shadow mb-3">Sign Up</button>
-
-            <div class="or-divider">
-            </div>
-
-            <!-- Google Sign-in -->
-            <button type="button" class="btn btn-outline-secondary w-100 py-2 mt-0">
-                <img src="./../../../assets/Images/google logo.svg" alt="Google" width="20" class="me-2">
-                Continue with Google
+            <!-- Submit -->
+            <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 fw-bold shadow mb-3"
+              [disabled]="isLoading || showSuccess">
+              @if (isLoading) {
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Loading...
+              }
+              @if (!isLoading && !showSuccess) {
+              Sign Up
+              }
+              @if (showSuccess) {
+              <i class="fas fa-check-circle me-2"></i> Success!
+              }
             </button>
-        </form>
+          </form>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
