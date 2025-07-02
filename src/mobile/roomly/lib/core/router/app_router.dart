@@ -14,6 +14,11 @@ import 'package:roomly/features/BookingsStatus/presentation/screens/Activity.dar
 import 'package:roomly/features/GlobalWidgets/bot_layout.dart';
 import 'package:roomly/features/account/presentation/account_screen.dart';
 import 'package:roomly/features/auth/presentation/screens/OTP_Screen.dart';
+import 'package:roomly/features/chatbot/data/data_sources/chatbot_remote_data_source_impl.dart';
+import 'package:roomly/features/chatbot/data/repositories/chatbot_repository_impl.dart';
+import 'package:roomly/features/chatbot/domain/usecases/send_message_usecase.dart';
+import 'package:roomly/features/chatbot/presentation/cubit/chatbot_cubit.dart';
+import 'package:roomly/features/chatbot/presentation/screens/chatbot_screen.dart';
 import 'package:roomly/features/favorite/presentation/cubit/favorite_cubit.dart';
 import 'package:roomly/features/help/presentation/screens/about_app_screen.dart';
 import 'package:roomly/features/help/presentation/screens/help_center_screen.dart';
@@ -87,6 +92,8 @@ import '../../features/room_management/presentation/screens/send_request_screen.
 import '../service_locator/service_locator.dart';
 import '../../features/Search/data/data_sources/recommendation_remote_data_source.dart';
 import '../../features/Search/domain/usecases/get_recommendations_usecase.dart';
+import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart' as room_di;
+
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/login',
@@ -429,64 +436,131 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: '/rooms', builder: (context, state) => const RoomListScreen()),
 
+    // GoRoute(
+    //   path: '/room/:id',
+    //   builder: (context, state) {
+    //     final String roomId = state.pathParameters['id'] ?? '';
+    //     final extras = state.extra as Map<String, dynamic>?;
+
+    //     final WorkspaceDetailsCubit? workspaceCubit = extras?['workspaceCubit'];
+    //     final String? workspaceId = extras?['workspaceId'];
+
+    //     RoomDetailsCubit createRoomDetailsCubitSafely() {
+    //       if (!sl.isRegistered<RoomDetailsCubit>()) {
+    //         // fallback manual creation (if needed) or show an error screen
+    //         return RoomDetailsCubit(
+    //           getRoomDetailsUseCase: sl(),
+    //           getRoomImagesUseCase: sl(),
+    //           getRoomOffersUseCase: sl(),
+    //           getFavoriteRoomsUseCase: sl(),
+    //           addFavoriteRoomUseCase: sl(),
+    //           removeFavoriteRoomUseCase: sl(),
+    //         );
+    //       }
+    //       return sl<RoomDetailsCubit>();
+    //     }
+
+    //     // ✅ Case 1: workspaceCubit is passed
+    //     if (workspaceCubit != null) {
+    //       return MultiBlocProvider(
+    //         providers: [
+    //           BlocProvider.value(value: workspaceCubit),
+    //           BlocProvider<RoomDetailsCubit>(
+    //             create: (_) => createRoomDetailsCubitSafely(),
+    //           ),
+    //         ],
+    //         child: RoomDetailsScreen(roomId: roomId),
+    //       );
+    //     }
+
+    //     // ✅ Case 2: workspaceId is passed
+    //     if (workspaceId != null) {
+    //       return MultiBlocProvider(
+    //         providers: [
+    //           BlocProvider<WorkspaceDetailsCubit>(
+    //             create: (_) => _createWorkspaceCubit(workspaceId),
+    //           ),
+    //           BlocProvider<RoomDetailsCubit>(
+    //             create: (_) => createRoomDetailsCubitSafely(),
+    //           ),
+    //         ],
+    //         child: RoomDetailsScreen(
+    //           roomId: roomId,
+    //           workspaceId: workspaceId,
+    //         ),
+    //       );
+    //     }
+
+    //     // ❗ Fallback (neither workspaceCubit nor workspaceId was passed)
+    //     return BlocProvider<RoomDetailsCubit>(
+    //       create: (_) => createRoomDetailsCubitSafely(),
+    //       child: RoomDetailsScreen(roomId: roomId),
+    //     );
+    //   },
+    // ),
+
     GoRoute(
       path: '/room/:id',
       builder: (context, state) {
         final String roomId = state.pathParameters['id'] ?? '';
+
         final extras = state.extra as Map<String, dynamic>?;
 
         final WorkspaceDetailsCubit? workspaceCubit = extras?['workspaceCubit'];
         final String? workspaceId = extras?['workspaceId'];
 
-        RoomDetailsCubit createRoomDetailsCubitSafely() {
-          if (!sl.isRegistered<RoomDetailsCubit>()) {
-            // fallback manual creation (if needed) or show an error screen
-            return RoomDetailsCubit(
-              getRoomDetailsUseCase: sl(),
-              getRoomImagesUseCase: sl(),
-              getRoomOffersUseCase: sl(),
-              getFavoriteRoomsUseCase: sl(),
-              addFavoriteRoomUseCase: sl(),
-              removeFavoriteRoomUseCase: sl(),
-            );
-          }
-          return sl<RoomDetailsCubit>();
-        }
-
-        // ✅ Case 1: workspaceCubit is passed
+        // Case 1: WorkspaceDetailsCubit is passed
         if (workspaceCubit != null) {
           return MultiBlocProvider(
             providers: [
               BlocProvider.value(value: workspaceCubit),
               BlocProvider<RoomDetailsCubit>(
-                create: (_) => createRoomDetailsCubitSafely(),
+                create: (_) => room_di.sl<RoomDetailsCubit>(),
               ),
             ],
             child: RoomDetailsScreen(roomId: roomId),
           );
         }
 
-        // ✅ Case 2: workspaceId is passed
+        // Case 2: Only workspaceId is passed
         if (workspaceId != null) {
           return MultiBlocProvider(
             providers: [
               BlocProvider<WorkspaceDetailsCubit>(
-                create: (_) => _createWorkspaceCubit(workspaceId),
+                create: (_) {
+                  // Manual creation logic
+                  final client = http.Client();
+                  final remoteDataSource = WorkspaceRemoteDataSourceImpl(client: client);
+                  final repository = WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
+                  final getWorkspaceDetailsUseCase = GetWorkspaceDetailsUseCase(repository: repository);
+                  final getWorkspaceReviewsUseCase = GetWorkspaceReviewsUseCase(repository);
+                  final getRoomDetailsUseCase = GetRoomDetailsUseCase(repository: repository);
+                  final getWorkspaceSchedulesUseCase = GetWorkspaceSchedulesUseCase(repository);
+
+                  final cubit = WorkspaceDetailsCubit(
+                    getWorkspaceDetailsUseCase: getWorkspaceDetailsUseCase,
+                    getRoomDetailsUseCase: getRoomDetailsUseCase,
+                    getWorkspaceReviewsUseCase: getWorkspaceReviewsUseCase,
+                    getWorkspaceSchedulesUseCase: getWorkspaceSchedulesUseCase,
+                  );
+
+                  // Trigger the fetch
+                  cubit.getWorkspaceDetails(workspaceId);
+
+                  return cubit;
+                },
               ),
               BlocProvider<RoomDetailsCubit>(
-                create: (_) => createRoomDetailsCubitSafely(),
+                create: (_) => room_di.sl<RoomDetailsCubit>(),
               ),
             ],
-            child: RoomDetailsScreen(
-              roomId: roomId,
-              workspaceId: workspaceId,
-            ),
+            child: RoomDetailsScreen(roomId: roomId),
           );
         }
 
-        // ❗ Fallback (neither workspaceCubit nor workspaceId was passed)
+        // Fallback if workspaceCubit or workspaceId is null
         return BlocProvider<RoomDetailsCubit>(
-          create: (_) => createRoomDetailsCubitSafely(),
+          create: (_) => room_di.sl<RoomDetailsCubit>(),
           child: RoomDetailsScreen(roomId: roomId),
         );
       },
@@ -578,6 +652,22 @@ final GoRouter appRouter = GoRouter(
         final request = state.extra as Request;
         return RequestDetailScreen(request: request);
       },
+    ),
+
+    // Chatbot route
+    GoRoute(
+      path: '/chatbot',
+      builder: (context, state) => BlocProvider(
+        create: (context) {
+          final client = http.Client();
+          final remoteDataSource = ChatbotRemoteDataSourceImpl(client: client);
+          final repository = ChatbotRepositoryImpl(remoteDataSource: remoteDataSource);
+          final sendMessageUseCase = SendMessageUseCase(repository: repository);
+          
+          return ChatbotCubit(sendMessageUseCase: sendMessageUseCase);
+        },
+        child: const ChatbotScreen(),
+      ),
     ),
   ],
 );

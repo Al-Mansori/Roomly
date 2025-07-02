@@ -12,7 +12,7 @@ class RoomCardWidget extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         // Navigate to RoomDetailsScreen when a room card is tapped
-        context.go('/room/${room.id}');
+        context.push('/room/${room.id}');
       },
       child: Container(
         decoration: BoxDecoration(
