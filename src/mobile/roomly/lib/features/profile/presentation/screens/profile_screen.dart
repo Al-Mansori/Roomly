@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:roomly/features/GlobalWidgets/app_session.dart';
+import 'package:roomly/features/auth/data/models/user_model.dart';
 import 'package:roomly/features/auth/domain/entities/user_entity.dart';
 import 'package:roomly/features/profile/presentation/widgets/custom_text_field.dart';
 import 'package:roomly/features/profile/presentation/widgets/profile_action_button.dart';
@@ -26,10 +28,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   bool _isEditing = false;
   UserEntity? _currentUser;
+  final userData = AppSession().currentUser;
+  UserModel? userModel;
 
   @override
   void initState() {
     super.initState();
+    userModel = UserModel.fromEntity(userData!);
+    print("[ProfileScreen] initState called");
+    print("[ProfileScreen] Loading Current User Data");
+    print("[ProfileScreen] Current User " + _currentUser.toString());
     context.read<ProfileCubit>().loadUser();
   }
 
@@ -67,7 +75,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
         email: _emailController.text.trim(),
-        password: _currentUser!.password, // Keep original password
+        password: userModel?.password, // Use the original password
+        // password: _currentUser!.password, // Keep original password
         phone: _phoneController.text.trim(),
         address: _locationController.text.trim(),
         isStaff: _currentUser!.isStaff,

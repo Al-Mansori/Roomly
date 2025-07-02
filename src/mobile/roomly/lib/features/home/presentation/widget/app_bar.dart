@@ -89,7 +89,8 @@ class CustomAppBar extends StatelessWidget {
               width: 45,
               height: 45,
               child: IconButton(
-                onPressed: () => print("Profile pressed"),
+                onPressed: () => context.push('/profile'),
+                // onPressed: () => print("Profile pressed"),
                 icon: SvgPicture.asset(
                   'assets/icons/user-regular (1).svg',
                   width: 20,

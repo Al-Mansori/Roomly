@@ -23,6 +23,10 @@ class ProfileCubit extends Cubit<ProfileState> {
     emit(ProfileLoading());
     
     final result = await getCachedUser();
+
+    print("[ProfileCubit] loadUser called");
+    print("[ProfileCubit] Result: ${result.fold((failure) => 'Failure: $failure', (user) => 'User: ${user.toJson()}')}');");
+
     
     result.fold(
       (failure) => emit(ProfileError(_mapFailureToMessage(failure))),
