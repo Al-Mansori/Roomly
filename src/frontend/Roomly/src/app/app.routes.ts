@@ -76,9 +76,15 @@ export const routes: Routes = [
       {
         path: 'my-workspaces', loadComponent: () => import('./components/my-workspaces/my-workspaces.component').then((m) => m.MyWorkspacesComponent)
       },
-      {
-        path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then((m) => m.RoomsFeesComponent)
-      },
+      // {
+      //   path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then((m) => m.RoomsFeesComponent)
+      // },
+      // ✅ Offers List for a workspace
+      { path: 'offers/:workspaceId', loadComponent: () => import('./components/offers/all-offers-list/all-offers-list.component').then(m => m.AllOffersListComponent) },
+
+      // ✅ Recommended Fees
+      { path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then(m => m.RoomsFeesComponent) },
+
       {
         path: 'support', loadComponent: () => import('./components/support/support.component').then((m) => m.SupportComponent)
 
@@ -87,7 +93,10 @@ export const routes: Routes = [
         path: 'my-plans', loadComponent: () => import('./components/my-plans/my-plans.component').then((m) => m.MyPlansComponent)
 
       },
-            {
+      {
+        path: 'users-list', loadComponent: () => import('./components/users-list/users-list.component').then((m) => m.UsersListComponent)
+      },
+      {
         path: 'bookings',
         loadComponent: () => import('./components/bookings/bookings-list/bookings-list.component').then(m => m.BookingsListComponent),
         children: [

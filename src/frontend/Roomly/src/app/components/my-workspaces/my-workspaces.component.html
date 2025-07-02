@@ -1,144 +1,215 @@
-<div class="my-workspaces bg-light vh-100">
-    <div class="container-fluid ">
-        <div class="row ">
+<div class="my-workspaces bg-light">
+    <div class="container-fluid">
+        <div class="row">
             <!-- Sidebar -->
-            <div class="col-12 col-md-2 ">
-                <app-side-navbar class=""></app-side-navbar>
+            <div class="col-12 col-md-2">
+                <app-side-navbar></app-side-navbar>
             </div>
 
             <!-- Main Content -->
-            <div class="col-12 col-md-9  d-flex mx-auto flex-column px-4 py-3">
+            <div class="col-12 col-md-9 d-flex mx-auto flex-column px-4 py-3">
                 <!-- Breadcrumb -->
                 <div class="mb-3">
                     <span class="text-secondary">Pages / </span>
                     <span class="text-dark fw-bold">My Workspaces</span>
                 </div>
 
-                <!-- Workspace Content (Split View) -->
-                <div class="row flex-grow-1 overflow-hidden">
-                    <!-- Left: Workspace List (Scrollable) -->
-                    <div class="col-lg-6 pe-3">
-                        <div class="bg-white  shadow-sm rounded-3 p-3 d-flex flex-column">
-                            <!-- Controls -->
-                            <div class="d-flex flex-wrap gap-2 mb-3">
-                                <div class="input-group w-100">
-                                    <input type="text" class="form-control" placeholder="Search" />
-                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                </div>
-                                <button class="btn btn-outline-dark">
-                                    <i class="fa-solid fa-sort" style="color: #000000;"></i>
-                                    Sort</button>
-                                <button class="btn btn-outline-dark">
-                                    <i class="fa-solid fa-filter" style="color: #000000;"></i>
-                                    Filter</button>
-                            </div>
-
-                            <!-- Scrollable List -->
-                            <div class="overflow-auto flex-grow-1 pe-1">
-                                @for (workspace of workspaces(); track workspace.id) {
-                                <!-- <div class="card mb-3 shadow-sm" (click)="selectWorkspace(workspace)">
-                                    <div class="row g-0">
-                                        <div class="col-4 p-2">
-                                            <img [src]="workspace.image" class="img-fluid rounded" alt="Workspace Image"
-                                                style="height: 100px; object-fit: cover;" />
-                                        </div>
-                                        <div class="col-8">
-                                            <div class="card-body">
-                                                <h6 class="card-title mb-1">{{ workspace.name }}</h6>
-                                                <p class="card-text text-muted mb-2">
-                                                    <i class="fas fa-map-marker-alt me-1"></i> {{ workspace.location }}
-                                                </p>
-                                                <a href="#" class="text-primary text-decoration-underline small">
-                                                    See more <i class="fas fa-arrow-right"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div> -->
-                                <div class="card mb-3 shadow-sm" (click)="selectWorkspace(workspace)"
-                                    style="min-height: 130px;">
-                                    <div class="row g-0">
-                                        <div class="col-4 p-2 d-flex align-items-center">
-                                            <img [src]="workspace.image" class="img-fluid rounded"
-                                                style="height: 110px; object-fit: cover; width: 100%;" />
-                                        </div>
-                                        <div class="col-8">
-                                            <div class="card-body">
-                                                <h6 class="card-title mb-1">{{ workspace.name }}</h6>
-                                                <p class="card-text text-muted mb-2">
-                                                    <i class="fas fa-map-marker-alt me-1"></i> {{ workspace.location }}
-                                                </p>
-                                                <a href="#" class="text-primary text-decoration-underline small">
-                                                    See more <i class="fas fa-arrow-right"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                }
-                            </div>
-
-                            <!-- Add Button -->
-                            <button class="btn btn-primary mt-3 w-100">
-                                <i class="fas fa-plus me-2"></i> Add Workspace
-                            </button>
+                <!-- Loading/Error State -->
+                @if (isLoading()) {
+                    <div class="text-center my-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
                         </div>
                     </div>
-
-                    <!-- Right: Workspace Details -->
-                    <div class="col-lg-6  ps-3">
-                        <div class="card shadow-sm  d-flex flex-column p-3">
-                            <img [src]="selectedWorkspace().image" class="rounded mb-3" alt="Main Workspace Image"
-                                style="height: 180px; object-fit: cover;" />
-                            <div class="d-flex justify-content-between">
-                                <h5 class="fw-bold">{{ selectedWorkspace().name }}</h5>
-                                <p class="text-muted mb-1">
-                                    <i class="fas fa-star text-warning"></i>
-                                    {{ selectedWorkspace().rating }} ({{ selectedWorkspace().reviews }} reviews)
-                                    <a href="#" class="text-decoration-underline ms-1">View all</a>
-                                </p>
-                            </div>
-                            <p class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{
-                                selectedWorkspace().location }}</p>
-                            <p class="text-muted small">Created at: {{ selectedWorkspace().createdAt }}</p>
-
-
-                            <p class="fw-bold mt-3">Rooms</p>
-                            <div class="row g-3 mb-4">
-                                @for (room of selectedWorkspace().rooms; track room.id) {
-                                <div class="col-6">
-                                    <div class="card shadow-sm p-2">
-                                        <img [src]="room.image" class="img-fluid rounded mb-2"
-                                            style="height: 150px; object-fit: cover;" alt="Room Image" />
-                                        <p class="card-text text-center mb-0">{{ room.name }}</p>
+                } @else if (error()) {
+                    <div class="alert alert-danger" role="alert">
+                        {{ error() }}
+                    </div>
+                } @else {
+                    <!-- Workspace Content (Split View) -->
+                    <div class="row flex-grow-1 overflow-hidden">
+                        <!-- Left: Workspace List (Scrollable) -->
+                        <div class="col-lg-6 pe-3">
+                            <div class="bg-white shadow-sm rounded-3 p-3 d-flex flex-column">
+                                <!-- Controls -->
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <div class="input-group w-100">
+                                        <input type="text" class="form-control" placeholder="Search" />
+                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
                                     </div>
+                                    <button class="btn btn-outline-dark">
+                                        <i class="fa-solid fa-sort" style="color: #000000;"></i>
+                                        Sort
+                                    </button>
+                                    <button class="btn btn-outline-dark">
+                                        <i class="fa-solid fa-filter" style="color: #000000;"></i>
+                                        Filter
+                                    </button>
                                 </div>
-                                }
-                            </div>
-                            <!-- Swiper Implementation -->
-                            <!-- <div class="mb-4">
-                                <swiper-container [config]="swiperConfig" init="false">
-                                    @for (room of selectedWorkspace().rooms; track room.id) {
-                                    <swiper-slide>
-                                        <div class="card shadow-sm p-2 ">
-                                            <img [src]="room.image" class="img-fluid rounded mb-2"
-                                                style="height: 150px; object-fit: cover;" alt="Room Image" />
-                                            <p class="card-text text-center mb-0">{{ room.name }}</p>
+
+                                <!-- Scrollable List -->
+                                <div class="overflow-auto flex-grow-1 pe-1">
+                                    @if (workspaces().length > 0) {
+                                        @for (workspace of workspaces(); track workspace.id) {
+                                        <div class="card mb-3 shadow-sm" (click)="selectWorkspace(workspace)"
+                                            style="min-height: 130px;">
+                                            <div class="row g-0">
+                                                <div class="col-4 p-2 d-flex align-items-center position-relative">
+                                                    <img [src]="workspace.workspaceImages?.[0] || './../assets/Images/workspace01.jpg'"
+                                                        class="img-fluid rounded" style="height: 110px; object-fit: cover; width: 100%;" />
+                                                    <!-- <div class="position-absolute top-0 end-0 p-2 d-flex gap-2">
+                                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                                            data-bs-target="#addOfferModal">
+                                                            + Add Offer
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-dark"
+                                                            (click)="goToOffers(workspace.id); $event.stopPropagation()">
+                                                            Show Offers
+                                                        </button>
+                                                    </div> -->
+                                                </div>
+                                                <div class="col-8">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title mb-1">{{ workspace.name }}</h6>
+                                                        <p class="card-text text-muted mb-2">
+                                                            <i class="fas fa-map-marker-alt me-1"></i> {{ workspace.address }}
+                                                        </p>
+                                                        <a href="#" class="text-primary text-decoration-underline small">
+                                                            See more <i class="fas fa-arrow-right"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </swiper-slide>
+                                        }
+                                    } @else {
+                                        <p class="text-muted text-center">No workspaces available</p>
                                     }
-                                </swiper-container>
-                            </div> -->
+                                </div>
 
-                            <!-- Action Buttons -->
-                            <div class="mt-auto d-flex justify-content-between">
-                                <button class="btn btn-outline-primary">Edit Workspace</button>
-                                <button class="btn btn-danger">Delete Workspace</button>
+                                <!-- Add Button -->
+                                <button class="btn btn-primary mt-3 w-100">
+                                    <i class="fas fa-plus me-2"></i> Add Workspace
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Right: Workspace Details -->
+                        <div class="col-lg-6 ps-3">
+                            <div class="card shadow-sm d-flex flex-column p-3 position-relative">
+                                @if (selectedWorkspace(); as workspace) {
+                                    <!-- Image with Buttons Overlay -->
+                                    <div class="position-relative mb-3">
+                                        <img [src]="workspace.workspaceImages?.[0] || './../assets/Images/workspace01.jpg'"
+                                            class="rounded w-100" style="height: 180px; object-fit: cover;" />
+                                        <div class="position-absolute top-0 end-0 p-2 d-flex gap-2">
+                                            <button class="btn btn-sm rounded-4 bg-light" data-bs-toggle="modal"
+                                                data-bs-target="#addOfferModal">
+                                                + Add Offer
+                                            </button>
+                                            <button class="btn btn-sm  rounded-4 bg-light"
+                                                (click)="goToOffers(workspace.id)">
+                                                Show Offers
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Workspace Details -->
+                                    <div class="d-flex justify-content-between">
+                                        <h5 class="fw-bold">{{ workspace.name }}</h5>
+                                        <p class="text-muted mb-1">
+                                            <i class="fas fa-star text-warning"></i>
+                                            {{ workspace.avgRating }} ({{ workspace.reviews?.length || 0 }} reviews)
+                                            <a href="#" class="text-decoration-underline ms-1">View all</a>
+                                        </p>
+                                    </div>
+                                    <p class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{ workspace.address }}</p>
+                                    <p class="text-muted small">Created at: {{ workspace.creationDate }}</p>
+
+                                    <!-- Rooms -->
+                                    <p class="fw-bold mt-3">Rooms</p>
+                                    <div class="row g-3 mb-4">
+                                        @if (selectedWorkspaceRooms().length > 0) {
+                                            @for (room of selectedWorkspaceRooms(); track room.id) {
+                                            <div class="col-6">
+                                                <div class="card shadow-sm p-2">
+                                                    <img [src]="room.roomImages?.[0] || './../assets/Images/room01.png'"
+                                                        class="img-fluid rounded mb-2" style="height: 150px; object-fit: cover;" />
+                                                    <p class="card-text text-center mb-0">{{ room.name }}</p>
+                                                </div>
+                                            </div>
+                                            }
+                                        } @else {
+                                            <p class="text-muted text-center">No rooms available</p>
+                                        }
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div class="mt-auto d-flex flex-column gap-3 justify-content-between">
+                                        <button class="btn btn-outline-primary">Edit Workspace</button>
+                                        <button class="btn btn-outline-secondary"
+                                            (click)="goToRecommendedFees(workspace.id)">
+                                            Show Recommended Fees
+                                        </button>
+                                        <button class="btn btn-danger">Delete Workspace</button>
+                                    </div>
+                                } @else {
+                                    <div class="text-center my-5">
+                                        <p class="text-muted">No workspace selected</p>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Offer Modal -->
+    <div class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addOfferModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 rounded-3 shadow-sm">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="modal-title fw-semibold" id="addOfferModalLabel">Add Offer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <form [formGroup]="offerForm" (ngSubmit)="onAddOffer()">
+                    <div class="mb-3">
+                        <label for="offerTitle" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="offerTitle" formControlName="title" placeholder="Enter offer title" />
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-6">
+                            <label for="dateFrom" class="form-label">Date From</label>
+                            <input type="date" class="form-control" id="dateFrom" formControlName="dateFrom" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="dateTo" class="form-label">Date To</label>
+                            <input type="date" class="form-control" id="dateTo" formControlName="dateTo" />
+                        </div>
+                    </div>
+                    <div class="row g-2 mb-3 align-items-end">
+                        <div class="col-md-5">
+                            <label for="timeFrom" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="timeFrom" formControlName="timeFrom" />
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <i class="fas fa-arrow-right mt-4 d-block"></i>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label invisible">Time To</label>
+                            <input type="time" class="form-control" id="timeTo" formControlName="timeTo" />
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="percentage" class="form-label">Offer Percentage</label>
+                        <input type="text" class="form-control" id="percentage" formControlName="percentage" placeholder="e.g. 70" />
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-outline-primary px-5" [disabled]="offerForm.invalid">Save</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

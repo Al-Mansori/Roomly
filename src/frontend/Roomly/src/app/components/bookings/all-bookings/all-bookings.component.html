@@ -1,71 +1,64 @@
-<!-- Booking Cards -->
 <div class="row">
-    @for (booking of filteredBookings; track booking.id) {
+  @for (booking of reservations; track booking.id) {
     <div class="col-12 mb-4">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <!-- Card Header -->
-                <div class="d-flex justify-content-between flex-wrap mb-3">
-                    <h5 class="card-title mb-0 fs-6">
-                        {{ booking.room }} <small class="text-muted fs-6">{{ booking.branch }}</small>
-                    </h5>
-                    <span class="text-muted fs-6">BookID: {{ booking.id }}</span>
-                </div>
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <!-- Header -->
+          <div class="d-flex justify-content-between flex-wrap mb-3">
+            <h5 class="card-title mb-0 fs-6">
+              Reservation ID: <span class="text-primary">{{ booking.id }}</span>
+            </h5>
+            <span class="text-muted fs-6">Access Code: {{ booking.accessCode }}</span>
+          </div>
 
-                <!-- Card Content -->
-                <div class="row g-3">
-                    <!-- Booking Image -->
-                    <div class="col-12 col-md-5">
-                        <img src="./../assets/Images/workspace01.jpg" class="img-fluid rounded-3 w-100"
-                            style="height: 150px; object-fit: cover;" alt="Room image">
-                    </div>
-
-                    <!-- Booking Details -->
-                    <div class="col-12 col-md-7">
-                        <h6 class="fw-bold mt-2 mb-3 fs-6">Booking Details</h6>
-                        <div class="mb-2">
-                            <small class="text-muted">From:</small>
-                            <div class="fs-6">{{ booking.startDate | date:'EEE, dd MMM y hh:mm a' |
-                                lowercase }}</div>
-                        </div>
-                        <div class="mb-2">
-                            <small class="text-muted">To:</small>
-                            <div class="fs-6">{{ booking.endDate | date:'EEE, dd MMM y hh:mm a' |
-                                lowercase }}</div>
-                        </div>
-                        <div class="mb-2">
-                            <small class="text-muted">Seats:</small>
-                            <div class="fs-6">{{ booking.seats }}</div>
-                        </div>
-                        <div class="mb-3">
-                            <small class="text-muted">Payment:</small>
-                            <div class="fs-6">{{ booking.paymentMethod }}: {{ booking.price |
-                                number:'1.2-2' }} EGP</div>
-                        </div>
-
-                        <!-- Status Buttons -->
-                        @if (booking.status === 'upcoming') {
-                        <div class="d-grid">
-                            <button class="btn btn-primary btn-sm shadow-sm py-2">
-                                Check in (starts in {{ booking.timeRemaining }})
-                            </button>
-                        </div>
-                        }
-                        @if (booking.status === 'ongoing') {
-                        <div class="d-grid">
-                            <button class="btn btn-danger btn-sm shadow-sm py-2">
-                                Check out (ends in {{ booking.timeRemaining }})
-                            </button>
-                        </div>
-                        }
-                    </div>
-                </div>
+          <!-- Details -->
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <div class="mb-2">
+                <small class="text-muted">Reservation Date:</small>
+                <div class="fs-6">{{ booking.reservationDate | date: 'mediumDate' }}</div>
+              </div>
+              <div class="mb-2">
+                <small class="text-muted">Start Time:</small>
+                <div class="fs-6">{{ booking.startTime | date: 'short' }}</div>
+              </div>
+              <div class="mb-2">
+                <small class="text-muted">End Time:</small>
+                <div class="fs-6">{{ booking.endTime | date: 'short' }}</div>
+              </div>
             </div>
+            <div class="col-12 col-md-6">
+              <div class="mb-2">
+                <small class="text-muted">Amenities Count:</small>
+                <div class="fs-6">{{ booking.amenitiesCount }}</div>
+              </div>
+              <div class="mb-2">
+                <small class="text-muted">Total Cost:</small>
+                <div class="fs-6">{{ booking.totalCost | number: '1.2-2' }} EGP</div>
+              </div>
+              <div class="mb-2">
+                <small class="text-muted">Payment:</small>
+                <div class="fs-6">{{ booking.payment || 'N/A' }}</div>
+              </div>
+              <div class="mt-2">
+                <span class="badge"
+                      [ngClass]="{
+                        'bg-success': booking.status === 'COMPLETED',
+                        'bg-secondary': booking.status === 'CANCELLED',
+                        'bg-info': booking.status === 'ONGOING',
+                        'bg-warning text-dark': booking.status === 'UPCOMING'
+                      }">
+                  {{ booking.status | titlecase }}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-    } @empty {
+  } @empty {
     <div class="col-12 text-center py-5">
-        <p class="text-muted">No bookings found</p>
+      <p class="text-muted">No bookings available</p>
     </div>
-    }
+  }
 </div>
