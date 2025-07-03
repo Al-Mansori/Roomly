@@ -20,6 +20,7 @@ class Room {
   final List<String>? amenities;
   final List<RoomImage>? roomImages;
   final List<dynamic>? offers;
+  final String workspaceId;
 
   Room({
     required this.id,
@@ -33,6 +34,7 @@ class Room {
     this.amenities,
     this.roomImages,
     this.offers,
+    required this.workspaceId,
   });
 }
 

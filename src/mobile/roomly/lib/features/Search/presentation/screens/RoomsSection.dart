@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 
 class RoomResultCard extends StatefulWidget {
   final String imageUrl;
+  final String roomId;
+  final String workspaceId;
   final String title;
   final String workspaceName;
   final String details;
@@ -11,6 +13,8 @@ class RoomResultCard extends StatefulWidget {
   const RoomResultCard({
     super.key,
     required this.imageUrl,
+    required this.roomId,
+    required this.workspaceId,
     required this.title,
     required this.workspaceName,
     required this.details,
@@ -35,7 +39,8 @@ class _RoomResultCardState extends State<RoomResultCard> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     void _navigateToRoom() {
-      context.push('/room/${widget.title}');
+      context.push('/room/${widget.roomId}',
+          extra: {'workspaceId': widget.workspaceId});
     }
 
     return Column(

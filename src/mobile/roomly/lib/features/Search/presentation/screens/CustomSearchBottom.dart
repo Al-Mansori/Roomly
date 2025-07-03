@@ -267,8 +267,10 @@ class _CustomSearchBottomSheetState extends State<CustomSearchBottomSheet> {
                   imageUrl: room.roomImages?.isNotEmpty == true
                       ? room.roomImages!.first.imageUrl
                       : "https://i.pinimg.com/736x/94/1e/89/941e8944db3e73b4248cefbcd9b45241.jpg",
+                  roomId: room.id,
+                  workspaceId: room.workspaceId,
                   title: room.name,
-                  workspaceName: "", //"in ${room.type} workspace"
+                  workspaceName: "", //"in \\${room.type} workspace"
                   details:
                       "${room.capacity} Seats . ${room.pricePerHour.toStringAsFixed(0)} EGP/Hour",
                   price: "${room.pricePerHour.toStringAsFixed(2)} EGP/Hour",
@@ -345,8 +347,10 @@ class _CustomSearchBottomSheetState extends State<CustomSearchBottomSheet> {
                   imageUrl: room.roomImages?.isNotEmpty == true
                       ? room.roomImages!.first.imageUrl
                       : "https://i.pinimg.com/736x/94/1e/89/941e8944db3e73b4248cefbcd9b45241.jpg",
+                  roomId: room.id,
+                  workspaceId: room.workspaceId,
                   title: room.name,
-                  workspaceName: "", //in ${room.type} workspace
+                  workspaceName: "", //in \\${room.type} workspace
                   details:
                       "${room.capacity} Seats . ${room.pricePerHour.toStringAsFixed(0)} EGP/Hour",
                   price: "${room.pricePerHour.toStringAsFixed(2)} EGP/Hour",

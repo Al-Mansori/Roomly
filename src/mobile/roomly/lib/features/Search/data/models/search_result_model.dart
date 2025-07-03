@@ -42,6 +42,7 @@ class RoomModel extends Room {
     super.amenities,
     super.roomImages,
     super.offers,
+    required super.workspaceId,
   });
 
   factory RoomModel.fromJson(Map<String, dynamic> json) {
@@ -63,6 +64,7 @@ class RoomModel extends Room {
               .toList()
           : null,
       offers: json['offers'],
+      workspaceId: json['workspaceId'] ?? '',
     );
   }
 
@@ -81,6 +83,7 @@ class RoomModel extends Room {
           ?.map((image) => (image as RoomImageModel).toJson())
           .toList(),
       'offers': offers,
+      'workspaceId': workspaceId,
     };
   }
 }
