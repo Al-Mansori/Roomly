@@ -1,0 +1,103 @@
+<!-- Post Preview Card -->
+<div class="card h-100">
+  <div class="card-header bg-white">
+    <h6 class="form-label fw-semibold mb-0">Post Preview</h6>
+  </div>
+  <div class="card-body p-3">
+    
+    <!-- Image Carousel -->
+    <div *ngIf="images.length > 0" class="mb-3 main-image">
+      <div id="workspaceCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner rounded" style="height: 200px; overflow: hidden;">
+          <div *ngFor="let img of images; let i = index" 
+               class="carousel-item" 
+               [class.active]="i === 0">
+            <img [src]="img" class="d-block w-100 h-100" style="object-fit: cover;" alt="Workspace image">
+          </div>
+        </div>
+        
+        <!-- Carousel Indicators -->
+        <div *ngIf="images.length > 1" class="carousel-indicators">
+          <button *ngFor="let img of images; let i = index" 
+                  type="button" 
+                  data-bs-target="#workspaceCarousel" 
+                  [attr.data-bs-slide-to]="i"
+                  [class.active]="i === 0">
+          </button>
+        </div>
+        
+        <!-- Carousel Controls -->
+        <button *ngIf="images.length > 1" class="carousel-control-prev nav-btn" type="button" data-bs-target="#workspaceCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button *ngIf="images.length > 1" class="carousel-control-next nav-btn" type="button" data-bs-target="#workspaceCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Placeholder for no images -->
+    <div *ngIf="images.length === 0" class="mb-3 upload-area">
+      <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 200px;">
+        <div class="text-center text-muted">
+          <i class="bi bi-image" style="font-size: 2rem;"></i>
+          <p class="mb-0 mt-2">No images uploaded</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Workspace Details -->
+    <div class="mb-3">
+      <h6 class="workspace-title">
+        {{ workspaceName || 'Workspace Name' }}
+      </h6>
+      <p class="workspace-description mb-0" [class.text-muted]="!description">
+        {{ description || 'Workspace description will appear here...' }}
+      </p>
+      <p *ngIf="phone" class="workspace-description mb-0">
+        <i class="bi bi-telephone"></i> {{ phone }}
+      </p>
+    </div>
+    
+    <!-- Location Section -->
+    <div *ngIf="markerPosition" class="mb-3 location-section">
+      <h6 class="location-title">
+        <i class="bi bi-geo-alt"></i> Location
+      </h6>
+      <div class="ratio ratio-16x9 mb-2 map-preview">
+        <img [src]="getStaticMapImage()" 
+             alt="Location Map" 
+             class="rounded border" 
+             style="object-fit: cover;"
+             onerror="this.style.display='none'">
+      </div>
+      <small class="address-text">
+        <i class="bi bi-geo-alt"></i> 
+        {{ town }}, {{ city }}, {{ country }} {{ address ? ', ' + address : '' }}
+      </small>
+    </div>
+    
+    <!-- Location Placeholder -->
+    <div *ngIf="!markerPosition" class="mb-3 location-section">
+      <h6 class="location-title">
+        <i class="bi bi-geo-alt"></i> Location
+      </h6>
+      <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 150px;">
+        <div class="text-center text-muted">
+          <i class="bi bi-geo-alt" style="font-size: 1.5rem;"></i>
+          <p class="mb-0 mt-2 small">No location selected</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Preview Footer -->
+    <div class="preview-footer">
+      <small class="text-muted">
+        <i class="bi bi-eye"></i>
+        This is how your workspace will appear to visitors
+      </small>
+    </div>
+  </div>
+</div>

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddWorkspaceComponent } from './add-workspace.component';
+import { UploadImageComponent } from './upload-image.component';
 
-describe('AddWorkspaceComponent', () => {
-  let component: AddWorkspaceComponent;
-  let fixture: ComponentFixture<AddWorkspaceComponent>;
+describe('UploadImageComponent', () => {
+  let component: UploadImageComponent;
+  let fixture: ComponentFixture<UploadImageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AddWorkspaceComponent]
+      imports: [UploadImageComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(AddWorkspaceComponent);
+    fixture = TestBed.createComponent(UploadImageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

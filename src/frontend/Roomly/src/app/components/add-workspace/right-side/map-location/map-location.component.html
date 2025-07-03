@@ -1,0 +1,54 @@
+<div class="map-container" *ngIf="mapInitialized">
+  <div leaflet 
+       [leafletOptions]="options"
+       [leafletLayers]="layers"
+       (leafletMapClick)="onMapClick($event)">
+  </div>
+</div>
+
+<div *ngIf="!mapInitialized" class="map-placeholder">
+  <p>Loading map...</p>
+</div>
+
+<!-- باقي كود القالب كما هو -->
+<div class="position-relative mt-2">
+  <input 
+    *ngIf="!isEditing" 
+    class="form-control" 
+    [value]="selectedAddress" 
+    readonly>
+  <input 
+    *ngIf="isEditing" 
+    class="form-control search-box" 
+    [formControl]="locationControl" 
+    (input)="search($event)" 
+    placeholder="Search location">
+  
+  <div class="position-absolute top-0 end-0 m-2 d-flex gap-2">
+    <button class="btn btn-light btn-sm border shadow-sm" 
+            (click)="startEditing()"
+            title="Edit location"
+            *ngIf="!isEditing">
+      <i class="bi bi-pencil"></i>
+    </button>
+    <button class="btn btn-light btn-sm border shadow-sm" 
+            (click)="removeLocation()"
+            title="Remove location">
+      <i class="bi bi-trash"></i>
+    </button>
+    <button class="btn btn-light btn-sm border shadow-sm" 
+            (click)="saveChanges()"
+            title="Save changes"
+            *ngIf="isEditing">
+      <i class="bi bi-check"></i>
+    </button>
+  </div>
+</div>
+
+<div class="location-coordinates mt-2" *ngIf="marker">
+  <small>
+    Coordinates: 
+    <span class="fw-semibold">{{ marker.getLatLng().lat | number:'1.4-4' }}</span>, 
+    <span class="fw-semibold">{{ marker.getLatLng().lng | number:'1.4-4' }}</span>
+  </small>
+</div>

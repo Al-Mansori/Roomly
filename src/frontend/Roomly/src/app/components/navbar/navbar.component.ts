@@ -1,14 +1,26 @@
+import { Router, RouterModule } from '@angular/router'; 
 import { Component, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.scss'
+  styleUrls: ['./navbar.component.scss'],
+  imports: [RouterModule] 
 })
 export class NavbarComponent {
+  constructor(private router: Router) {}
 
+  isMenuOpen = false;
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    this.router.navigate(['/login']);
+  }
   @ViewChild('navEl', { static: true }) navEl!: ElementRef;
   private height = 0;
 

@@ -1,124 +1,76 @@
-<div class="add-workspace bg-light">
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-12 col-md-1">
-                <app-side-steps-indicator [steps]="steps"></app-side-steps-indicator>
-            </div>
+<div class="add-workspace min-vh-100 bg-light">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-12 col-md-2 mb-4 mb-md-0 pt-4 ps-3">
+      <app-side-steps-indicator [steps]="steps"></app-side-steps-indicator>
+    </div>
 
-            <!-- Main Content -->
-            <div class="col-12 col-md-10  d-flex mx-auto flex-column px-4 py-3">
-                <div class="row g-5">
+    <!-- Main Content -->
+    <div class="col-12 col-md-10 d-flex pt-4 flex-column gap-4">
+      <div class="container-fluid">
+        <div class="row g-4">
 
-                    <!-- Left: Workspace Details -->
-                    <div class="card col-lg-7">
-                        <h6 class="fw-semibold my-3">Details</h6>
-                        <!-- Workspace Details Card -->
-                        <div class=" p-3 d-flex flex-row gap-4">
-                            <!-- Image inputs (left side) -->
-                            <div class="flex-shrink-0" style="width: 45%;">
-                                <label class="form-label">Workspace Cover Image</label>
-                                <div class="position-relative mb-3">
-                                    <img src="./../assets/Images/workspace cover.jpg"
-                                        class="img-fluid rounded shadow w-100" />
-                                    <div class="position-absolute top-0 end-0 m-2 d-flex gap-2">
-                                        <button class="btn btn-light btn-sm border">Edit</button>
-                                        <button class="btn btn-light btn-sm border">Remove</button>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <img src="./../assets/Images/add image.png"
-                                        class="img-fluid rounded border border-secondary-subtle w-100" />
-                                </div>
-                            </div>
+          <!-- Left: Workspace Details + Form -->
+          <div class="col-lg-8">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="fw-semibold mb-4">Details</h6>
+                <div class="d-flex flex-column flex-md-row gap-4">
+                  <!-- Image Section -->
+                  <app-left-side (imagesChange)="updateImages($event)"></app-left-side>
 
-                            <!-- Text inputs (right side) -->
-                            <div class="flex-grow-1">
-                                <div class="mb-3">
-                                    <label class="form-label">Workspace Name</label>
-                                    <input type="text" class="form-control" />
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Phone</label>
-                                    <input type="text" class="form-control" />
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Description <span class="float-end">110/110</span></label>
-                                    <textarea class="form-control" rows="3"></textarea>
-                                </div>
-                                <!-- Map Preview -->
-                                <!-- <div class="mb-3">
-                                    <label class="form-label">Selected Location on Map</label>
-                                    <div class="rounded border border-secondary-subtle" style="height: 300px;">
-                                        <div leaflet [leafletOptions]="mapOptions" [leafletCenter]="mapCenter"
-                                            [leafletZoom]="mapZoom" (leafletClick)="onMapClick($event)"
-                                            style="height: 100%; width: 100%; border-radius: 0.5rem;"></div>
-                                    </div>
-                                </div> -->
-
-
-
-                                <!-- <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="Search address, Zip, City" />
-                                </div> -->
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-end-0">
-                                        <i class="fas fa-map-marker-alt text-muted"></i>
-                                    </span>
-                                    <input type="text" class="form-control border-start-0"
-                                        placeholder="Search address, Zip, City" />
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <!-- Right Column -->
-                    <div class="col-lg-5 d-flex flex-column gap-4">
-
-                        <!-- Post Overview -->
-                        <div class="card p-3">
-                            <h6 class="fw-semibold mb-3">Post Overview</h6>
-                            <img src="./../assets/Images/workspace cover.jpg" class="img-fluid rounded mb-3"
-                                style="height: 200px; object-fit: cover;" />
-                            <h6 class="fw-bold">Maadi WorkSpace</h6>
-                            <p class="small">2 rooms - business, gaming, studying workspace<br>can be customized</p>
-                            <p class="fw-light">$15,000 for day</p>
-                        </div>
-
-                        <!-- Workspace Plan -->
-                        <div class="card p-3">
-                            <h6 class="fw-semibold mb-3">Workspace Plan</h6>
-                            <div class="mb-3">
-                                <label class="form-label">Day Price</label>
-                                <input type="text" class="form-control" />
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Month Price</label>
-                                <input type="text" class="form-control" />
-                            </div>
-                            <div class="form-check mb-3">
-                                <input class="form-check-input" type="checkbox" id="priceDiscussed">
-                                <label class="form-check-label" for="priceDiscussed">
-                                    Price can be discussed?
-                                </label>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Status</label>
-                                <div class="form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch" id="workspaceStatus"
-                                        checked>
-                                    <label class="form-check-label" for="workspaceStatus">Active</label>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary w-100">Done</button>
-                        </div>
-
-                    </div>
+                  <!-- Form Section -->
+                  <app-right-side
+                    [form]="workspaceForm"
+                    (formChange)="onFormChange($event)"
+                    (locationChange)="updateLocation($event.marker, $event.address)">
+                  </app-right-side>
                 </div>
+              </div>
             </div>
+          </div>
+
+          <!-- Right: Post Preview -->
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="fw-semibold mb-3">Post Overview</h6>
+                <app-post-preview 
+                  [images]="images" 
+                  [workspaceName]="workspaceForm.get('name')?.value" 
+                  [phone]="workspaceForm.get('phone')?.value" 
+                  [description]="workspaceForm.get('description')?.value" 
+                  [markerPosition]="markerPosition" 
+                  [address]="selectedAddress"
+                  [town]="workspaceForm.get('town')?.value"
+                  [city]="workspaceForm.get('city')?.value"
+                  [country]="workspaceForm.get('country')?.value">
+                </app-post-preview>
+              </div>
+            </div>
+            <div class="py-3"></div>
+            <div class="card">
+              <div class="card-body">
+                <h6 class="fw-semibold mb-3">Workspace Plan</h6>
+                <app-workspace-plan 
+                  (planDataChanged)="updateWorkspacePlan($event)">
+                </app-workspace-plan>
+              </div>
+
+            </div>
+          </div>
 
         </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="px-4 py-3 border-top bg-light mt-4">
+<button class="btn btn-primary w-100 cursor-pointer" 
+        [disabled]="isSubmitDisabled()"
+        (click)="onSubmit()">
+  Submit Workspace
+</button>
+  </div>
 </div>
