@@ -76,6 +76,15 @@ export class RoomService {
   //     })
   //   );
   // }
-
+  
+  deleteRoom(roomId: string): Observable<any> {
+    const url = `/api/staff/rooms/${roomId}`;
+    return this.http.delete(url).pipe(
+      catchError(error => {
+        console.error('Error deleting room:', error);
+        return throwError(() => new Error('Failed to delete room'));
+      })
+    );
+  }
   
 }

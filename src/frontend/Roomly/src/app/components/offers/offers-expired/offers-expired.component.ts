@@ -1,5 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
+import { OfferService } from '../../../core/services/offer/offer.service';
+import { IOffer } from '../../../interfaces/iworkspace';
+import { Subscription } from 'rxjs';
+import { AllOffersListComponent } from '../all-offers-list/all-offers-list.component';
 
 @Component({
   selector: 'app-offers-expired',
@@ -10,12 +14,32 @@ import { Component, signal } from '@angular/core';
 })
 export class OffersExpiredComponent {
 
-    allOffers = [
-    { id: 1, title: 'Spring Sale', dateFrom: 'May 1, 2024', dateTo: 'May 3, 2024', startTime: '8:00 AM', endTime: '11:59 PM', status: 'expired' },
-    { id: 2, title: 'Eid Deal', dateFrom: 'June 5, 2024', dateTo: 'June 10, 2024', startTime: '9:00 AM', endTime: '10:00 PM', status: 'present' },
-    { id: 3, title: 'Back to School', dateFrom: 'August 15, 2024', dateTo: 'August 20, 2024', startTime: '10:00 AM', endTime: '9:00 PM', status: 'expired' }
-  ];
+ offers: IOffer[] = [];
+  private now = new Date();
+  private subscription = new Subscription();
 
-  offers = signal(this.allOffers.filter(o => o.status === 'expired'));
+  constructor(
+    private offerService: OfferService,
+    private allOffersListComponent: AllOffersListComponent // Access parent data
+  ) {}
 
+  ngOnInit(): void {
+    this.subscription.add(
+      this.allOffersListComponent.offers$.subscribe({
+        next: (data: IOffer[]) => {
+          this.offers = data.filter(offer => {
+            const validTo = new Date(offer.validTo);
+            return this.now > validTo;
+          });
+        },
+        error: (err) => {
+          console.error('Error loading offers:', err);
+        }
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
 }

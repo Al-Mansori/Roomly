@@ -10,6 +10,7 @@ import { AuthStateService } from '../../core/services/auth-state/auth-state.serv
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClientJsonpModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-my-workspaces',
@@ -272,6 +273,89 @@ export class MyWorkspacesComponent {
       return 'You do not have permission to create offers';
     }
     return error.message || 'Failed to create offer. Please try again.';
+  }
+  // Workspace Actions
+  confirmRemoveWorkspace(workspaceId: string): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will permanently delete the workspace!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.removeWorkspace(workspaceId);
+      }
+    });
+  }
+  removeWorkspace(workspaceId: string): void {
+    // Placeholder for API call (e.g., workspaceService.deleteWorkspace(workspaceId))
+    this.workspaceService.deleteWorkspace(workspaceId).subscribe({
+      next: () => {
+        this.workspaces.set(this.workspaces().filter(w => w.id !== workspaceId));
+        this.selectedWorkspace.set(null);
+        this.selectedWorkspaceRooms.set([]);
+        Swal.fire('Deleted!', 'Workspace has been removed.', 'success');
+      },
+      error: (err) => {
+        this.error.set('Failed to delete workspace. Please try again.');
+        console.error('Error deleting workspace:', err);
+        Swal.fire('Error!', 'Failed to delete workspace.', 'error');
+      }
+    });
+  }
+  editWorkspace(workspaceId: string): void {
+    // Placeholder for navigation or form to edit workspace
+    this.router.navigate(['/edit-workspace', workspaceId]); // Adjust route as needed
+  }
+
+  showFeesRecommendations(workspaceId: string): void {
+    this.goToRecommendedFees(workspaceId); // Reuse existing navigation
+  }
+
+  // Room Actions
+  confirmRemoveRoom(roomId: string): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will permanently delete the room!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.removeRoom(roomId);
+      }
+    });
+  }
+
+  removeRoom(roomId: string): void {
+    // Placeholder for API call (e.g., roomService.deleteRoom(roomId))
+    this.roomService.deleteRoom(roomId).subscribe({
+      next: () => {
+        this.selectedWorkspaceRooms.set(this.selectedWorkspaceRooms().filter(r => r.id !== roomId));
+        this.selectedRoom.set(null);
+        Swal.fire('Deleted!', 'Room has been removed.', 'success');
+      },
+      error: (err) => {
+        this.error.set('Failed to delete room. Please try again.');
+        console.error('Error deleting room:', err);
+        Swal.fire('Error!', 'Failed to delete room.', 'error');
+      }
+    });
+  }
+
+  editRoom(roomId: string): void {
+    // Placeholder for navigation or form to edit room
+    this.router.navigate(['/edit-room', roomId]); // Adjust route as needed
+  }
+
+  showRoomOffers(roomId: string): void {
+    // Navigate to offers list component
+    this.router.navigate(['/offers', roomId]); // Adjust route as needed
   }
 
 }

@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { IOffer } from '../../../interfaces/iworkspace';
-import { Observable } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -38,5 +38,14 @@ export class OfferService {
 
   private generateOfferId(): string {
     return 'off-' + Math.random().toString(36).substring(2, 8);
+  }
+  getOffersByRoom(roomId: string): Observable<IOffer[]> {
+    const url = `/api/staff/offers/room/${roomId}`;
+    return this.http.get<IOffer[]>(url).pipe(
+      catchError(error => {
+        console.error('Error fetching offers:', error);
+        return throwError(() => new Error('Failed to fetch offers'));
+      })
+    );
   }
 }

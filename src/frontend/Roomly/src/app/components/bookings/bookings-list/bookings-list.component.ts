@@ -115,7 +115,39 @@ export class BookingsListComponent {
     this.loadWorkspaces(); // Ensure workspaces are loaded when form opens
   }
 
-  createReservation(): void {
+  // createReservation(): void {
+  //   if (!this.staffId || !this.formData.startTime || !this.formData.endTime || !this.formData.amenitiesCount || !this.selectedWorkspaceId || !this.formData.roomName) {
+  //     console.error('All fields are required');
+  //     return;
+  //   }
+
+  //   const selectedRoom = this.rooms.find(r => r.name === this.formData.roomName);
+  //   if (!selectedRoom) {
+  //     console.error('Invalid room selection');
+  //     return;
+  //   }
+
+  //   this.reservationService.createReservation(
+  //     this.formData.startTime,
+  //     this.formData.endTime,
+  //     this.formData.amenitiesCount,
+  //     this.selectedWorkspaceId,
+  //     selectedRoom.id
+  //   ).subscribe({
+  //     next: (response) => {
+  //       console.log('Reservation created:', response);
+  //       this.showCreateForm = false;
+  //       this.loadReservations(); // Refresh the list
+  //       this.formData = { startTime: '', endTime: '', amenitiesCount: 1, workspaceName: '', roomName: '' }; // Reset form
+  //       Swal.fire('Success!', 'Reservation created successfully!', 'success');
+  //     },
+  //     error: (err) => {
+  //       console.error('Error creating reservation:', err);
+  //       Swal.fire('Error!', 'Failed to create reservation.', 'error');
+  //     }
+  //   });
+  // }
+  async createReservation(): Promise<void> {
     if (!this.staffId || !this.formData.startTime || !this.formData.endTime || !this.formData.amenitiesCount || !this.selectedWorkspaceId || !this.formData.roomName) {
       console.error('All fields are required');
       return;
@@ -127,25 +159,24 @@ export class BookingsListComponent {
       return;
     }
 
-    this.reservationService.createReservation(
+    const result = await this.reservationService.createReservation(
       this.formData.startTime,
       this.formData.endTime,
       this.formData.amenitiesCount,
-      this.selectedWorkspaceId,
+      this.selectedWorkspaceId!,
       selectedRoom.id
-    ).subscribe({
-      next: (response) => {
-        console.log('Reservation created:', response);
-        this.showCreateForm = false;
-        this.loadReservations(); // Refresh the list
-        this.formData = { startTime: '', endTime: '', amenitiesCount: 1, workspaceName: '', roomName: '' }; // Reset form
-        Swal.fire('Success!', 'Reservation created successfully!', 'success');
-      },
-      error: (err) => {
-        console.error('Error creating reservation:', err);
-        Swal.fire('Error!', 'Failed to create reservation.', 'error');
-      }
-    });
+    );
+
+    if (result.success) {
+      console.log('Reservation created:', result.reservation);
+      this.showCreateForm = false;
+      this.loadReservations(); // Refresh the list
+      this.formData = { startTime: '', endTime: '', amenitiesCount: 1, workspaceName: '', roomName: '' }; // Reset form
+      Swal.fire('Success!', 'Reservation created successfully!', 'success');
+    } else {
+      console.error('Error creating reservation:', result.error || 'Failed request');
+      Swal.fire('Error!', 'Failed to create reservation. Please check your input or contact support.', 'error');
+    }
   }
 
   cancelCreate(): void {

@@ -27,4 +27,14 @@ export class WorkspaceService {
       })
     );
   }
+
+  deleteWorkspace(workspaceId: string): Observable<any> {
+    const url = `/api/staff/workspaces/${workspaceId}`;
+    return this.http.delete(url).pipe(
+      catchError(error => {
+        console.error('Error deleting workspace:', error);
+        return throwError(() => new Error('Failed to delete workspace'));
+      })
+    );
+  }
 }

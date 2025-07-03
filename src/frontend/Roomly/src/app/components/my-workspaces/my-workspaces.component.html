@@ -16,155 +16,182 @@
 
                 <!-- Loading/Error State -->
                 @if (isLoading()) {
-                    <div class="text-center my-5">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
+                <div class="text-center my-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
                     </div>
+                </div>
                 } @else if (error()) {
-                    <div class="alert alert-danger" role="alert">
-                        {{ error() }}
-                    </div>
+                <div class="alert alert-danger" role="alert">
+                    {{ error() }}
+                </div>
                 } @else {
-                    <!-- Workspace Content (Split View) -->
-                    <div class="row flex-grow-1 overflow-hidden">
-                        <!-- Left: Workspace List (Scrollable) -->
-                        <div class="col-lg-6 pe-3">
-                            <div class="bg-white shadow-sm rounded-3 p-3 d-flex flex-column">
-                                <!-- Controls -->
-                                <div class="d-flex flex-wrap gap-2 mb-3">
-                                    <div class="input-group w-100">
-                                        <input type="text" class="form-control" placeholder="Search" />
-                                        <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                    </div>
-                                    <button class="btn btn-outline-dark">
-                                        <i class="fa-solid fa-sort" style="color: #000000;"></i>
-                                        Sort
-                                    </button>
-                                    <button class="btn btn-outline-dark">
-                                        <i class="fa-solid fa-filter" style="color: #000000;"></i>
-                                        Filter
-                                    </button>
+                <!-- Workspace Content (Split View) -->
+                <div class="row flex-grow-1 overflow-hidden">
+                    <!-- Left: Workspace List (Scrollable) -->
+                    <div class="col-lg-6 pe-3">
+                        <div class="bg-white shadow-sm rounded-3 p-3 d-flex flex-column">
+                            <!-- Controls -->
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                <div class="input-group w-100">
+                                    <input type="text" class="form-control" placeholder="Search" />
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
                                 </div>
-
-                                <!-- Scrollable List -->
-                                <div class="overflow-auto flex-grow-1 pe-1">
-                                    @if (workspaces().length > 0) {
-                                        @for (workspace of workspaces(); track workspace.id) {
-                                        <div class="card mb-3 shadow-sm" (click)="selectWorkspace(workspace)"
-                                            style="min-height: 130px;">
-                                            <div class="row g-0">
-                                                <div class="col-4 p-2 d-flex align-items-center position-relative">
-                                                    <img [src]="workspace.workspaceImages?.[0] || './../assets/Images/workspace01.jpg'"
-                                                        class="img-fluid rounded" style="height: 110px; object-fit: cover; width: 100%;" />
-                                                </div>
-                                                <div class="col-8">
-                                                    <div class="card-body">
-                                                        <h6 class="card-title mb-1">{{ workspace.name }}</h6>
-                                                        <p class="card-text text-muted mb-2">
-                                                            <i class="fas fa-map-marker-alt me-1"></i> {{ workspace.address }}
-                                                        </p>
-                                                        <a href="#" class="text-primary text-decoration-underline small">
-                                                            See more <i class="fas fa-arrow-right"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        }
-                                    } @else {
-                                        <p class="text-muted text-center">No workspaces available</p>
-                                    }
-                                </div>
-
-                                <!-- Add Button -->
-                                <button class="btn btn-primary mt-3 w-100">
-                                    <i class="fas fa-plus me-2"></i> Add Workspace
+                                <button class="btn btn-outline-dark">
+                                    <i class="fa-solid fa-sort" style="color: #000000;"></i>
+                                    Sort
+                                </button>
+                                <button class="btn btn-outline-dark">
+                                    <i class="fa-solid fa-filter" style="color: #000000;"></i>
+                                    Filter
                                 </button>
                             </div>
-                        </div>
 
-                        <!-- Right: Workspace Details -->
-                        <div class="col-lg-6 ps-3">
-                            <div class="card shadow-sm d-flex flex-column p-3 position-relative">
-                                @if (selectedWorkspace(); as workspace) {
-                                    <!-- Image -->
-                                    <div class="position-relative mb-3">
-                                        <img [src]="workspace.workspaceImages?.[0] || './../assets/Images/workspace01.jpg'"
-                                            class="rounded w-100" style="height: 180px; object-fit: cover;" />
-                                    </div>
-
-                                    <!-- Workspace Details -->
-                                    <div class="d-flex justify-content-between">
-                                        <h5 class="fw-bold">{{ workspace.name }}</h5>
-                                        <p class="text-muted mb-1">
-                                            <i class="fas fa-star text-warning"></i>
-                                            {{ workspace.avgRating }} ({{ workspace.reviews?.length || 0 }} reviews)
-                                            <a href="#" class="text-decoration-underline ms-1">View all</a>
-                                        </p>
-                                    </div>
-                                    <p class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{ workspace.address }}</p>
-                                    <p class="text-muted small">Created at: {{ workspace.creationDate }}</p>
-
-                                    <!-- Rooms -->
-                                    <p class="fw-bold mt-3">Rooms</p>
-                                    <div class="d-flex flex-nowrap overflow-auto rooms-container h-50">
-                                        @if (selectedWorkspaceRooms().length > 0) {
-                                            @for (room of selectedWorkspaceRooms(); track room.id) {
-                                            <div class="me-3" (click)="selectRoom(room)">
-                                                <div class="card h-100" style="width: 150px;">
-                                                    <img [src]="room.roomImages?.[0]?.imageUrl || './../assets/Images/room01.png'"
-                                                        class="card-img-top" alt="{{ room.name }}" style="height: 120px; object-fit: cover;" />
-                                                    <div class="card-body p-2">
-                                                        <p class="card-text text-center text-truncate">{{ room.name }}</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            }
-                                        } @else {
-                                            <p class="text-muted text-center">No rooms available</p>
-                                        }
-                                    </div>
-
-                                    <!-- Expanded Room Details -->
-                                    @if (selectedRoom(); as room) {
-                                        <div class="card mt-3 p-3">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <h5 class="fw-bold">{{ room.name }}</h5>
-                                                <button class="btn btn-close" (click)="deselectRoom()"></button>
-                                            </div>
-                                            <p class="text-muted"><strong>Type:</strong> {{ room.type }}</p>
-                                            <p class="text-muted"><strong>Description:</strong> {{ room.description }}</p>
-                                            <p class="text-muted"><strong>Capacity:</strong> {{ room.capacity }}</p>
-                                            <p class="text-muted"><strong>Available:</strong> {{ room.availableCount }}</p>
-                                            <p class="text-muted"><strong>Price per Hour:</strong> ${{ room.pricePerHour }}</p>
-                                            <p class="text-muted"><strong>Status:</strong> {{ room.status }}</p>
-                                            @if (room.amenities && room.amenities.length > 0) {
-                                                <p class="text-muted"><strong>Amenities:</strong> {{ room.amenities.join(', ') }}</p>
-                                            }
-                                            @if (room.offers && room.offers.length > 0) {
-                                                <div class="mt-2">
-                                                    <p class="fw-bold">Offers:</p>
-                                                    @for (offer of room.offers; track offer.id) {
-                                                        <p class="text-muted small">
-                                                            {{ offer.offerTitle }} ({{ offer.discountPercentage }}% off, {{ offer.validFrom }} - {{ offer.validTo }})
-                                                        </p>
-                                                    }
-                                                </div>
-                                            }
-                                            <button class="btn btn-primary w-100 mt-2" data-bs-toggle="modal" data-bs-target="#addOfferModal">
-                                                Add Offer
-                                            </button>
+                            <!-- Scrollable List -->
+                            <div class="overflow-auto flex-grow-1 pe-1">
+                                @if (workspaces().length > 0) {
+                                @for (workspace of workspaces(); track workspace.id) {
+                                <div class="card mb-3 shadow-sm" (click)="selectWorkspace(workspace)"
+                                    style="min-height: 130px;">
+                                    <div class="row g-0">
+                                        <div class="col-4 p-2 d-flex align-items-center position-relative">
+                                            <img [src]="workspace.workspaceImages?.[0] || './../assets/Images/workspace01.jpg'"
+                                                class="img-fluid rounded"
+                                                style="height: 110px; object-fit: cover; width: 100%;" />
                                         </div>
-                                    }
-                                } @else {
-                                    <div class="text-center my-5">
-                                        <p class="text-muted">No workspace selected</p>
+                                        <div class="col-8">
+                                            <div class="card-body">
+                                                <h6 class="card-title mb-1">{{ workspace.name }}</h6>
+                                                <p class="card-text text-muted mb-2">
+                                                    <i class="fas fa-map-marker-alt me-1"></i> {{ workspace.address }}
+                                                </p>
+                                                <a href="#" class="text-primary text-decoration-underline small">
+                                                    See more <i class="fas fa-arrow-right"></i>
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
+                                </div>
+                                }
+                                } @else {
+                                <p class="text-muted text-center">No workspaces available</p>
                                 }
                             </div>
+
+                            <!-- Add Button -->
+                            <button class="btn btn-primary mt-3 w-100">
+                                <i class="fas fa-plus me-2"></i> Add Workspace
+                            </button>
                         </div>
                     </div>
+
+                    <!-- Right: Workspace Details -->
+                    <div class="col-lg-6 ps-3">
+                        <div class="card shadow-sm d-flex flex-column p-3 position-relative">
+                            @if (selectedWorkspace(); as workspace) {
+                            <!-- Image -->
+                            <div class="position-relative mb-3">
+                                <img [src]="workspace.workspaceImages?.[0] || './../assets/Images/workspace01.jpg'"
+                                    class="rounded w-100" style="height: 180px; object-fit: cover;" />
+                            </div>
+
+                            <!-- Workspace Details -->
+                            <div class="d-flex justify-content-between">
+                                <h5 class="fw-bold">{{ workspace.name }}</h5>
+                                <p class="text-muted mb-1">
+                                    <i class="fas fa-star text-warning"></i>
+                                    {{ workspace.avgRating }} ({{ workspace.reviews?.length || 0 }} reviews)
+                                    <a href="#" class="text-decoration-underline ms-1">View all</a>
+                                </p>
+                            </div>
+                            <p class="text-muted"><i class="fas fa-map-marker-alt me-1"></i>{{ workspace.address }}</p>
+                            <p class="text-muted small">Created at: {{ workspace.creationDate }}</p>
+
+                            <!-- Rooms -->
+                            <p class="fw-bold mt-3">Rooms</p>
+                            <div class="d-flex flex-nowrap overflow-auto rooms-container h-50">
+                                @if (selectedWorkspaceRooms().length > 0) {
+                                @for (room of selectedWorkspaceRooms(); track room.id) {
+                                <div class="me-3" (click)="selectRoom(room)">
+                                    <div class="card h-100" style="width: 150px;">
+                                        <img [src]="room.roomImages?.[0]?.imageUrl || './../assets/Images/room01.png'"
+                                            class="card-img-top" alt="{{ room.name }}"
+                                            style="height: 120px; object-fit: cover;" />
+                                        <div class="card-body p-2">
+                                            <p class="card-text text-center text-truncate">{{ room.name }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                }
+                                } @else {
+                                <p class="text-muted text-center">No rooms available</p>
+                                }
+                            </div>
+                            <div class="mt-3 d-flex gap-2">
+                                <button class="btn btn-danger" (click)="confirmRemoveWorkspace(workspace.id)">
+                                    <i class="fas fa-trash me-1"></i> Remove Workspace
+                                </button>
+                                <button class="btn btn-warning" (click)="editWorkspace(workspace.id)">
+                                    <i class="fas fa-edit me-1"></i> Edit Workspace
+                                </button>
+                                <button class="btn btn-info" (click)="showFeesRecommendations(workspace.id)">
+                                    <i class="fas fa-chart-line me-1"></i> Show Fees Recommendations
+                                </button>
+                            </div>
+
+                            <!-- Expanded Room Details -->
+                            @if (selectedRoom(); as room) {
+                            <div class="card mt-3 p-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="fw-bold">{{ room.name }}</h5>
+                                    <button class="btn btn-close" (click)="deselectRoom()"></button>
+                                </div>
+                                <p class="text-muted"><strong>Type:</strong> {{ room.type }}</p>
+                                <p class="text-muted"><strong>Description:</strong> {{ room.description }}</p>
+                                <p class="text-muted"><strong>Capacity:</strong> {{ room.capacity }}</p>
+                                <p class="text-muted"><strong>Available:</strong> {{ room.availableCount }}</p>
+                                <p class="text-muted"><strong>Price per Hour:</strong> ${{ room.pricePerHour }}</p>
+                                <p class="text-muted"><strong>Status:</strong> {{ room.status }}</p>
+                                @if (room.amenities && room.amenities.length > 0) {
+                                <p class="text-muted"><strong>Amenities:</strong> {{ room.amenities.join(', ') }}</p>
+                                }
+                                @if (room.offers && room.offers.length > 0) {
+                                <div class="mt-2">
+                                    <p class="fw-bold">Offers:</p>
+                                    @for (offer of room.offers; track offer.id) {
+                                    <p class="text-muted small">
+                                        {{ offer.offerTitle }} ({{ offer.discountPercentage }}% off, {{ offer.validFrom
+                                        }} - {{ offer.validTo }})
+                                    </p>
+                                    }
+                                </div>
+                                }
+                                <button class="btn btn-primary w-100 mt-2" data-bs-toggle="modal"
+                                    data-bs-target="#addOfferModal">
+                                    Add Offer
+                                </button>
+                                <!-- Room Actions -->
+                                <div class="mt-3 d-flex gap-2">
+                                    <button class="btn btn-primary" (click)="showRoomOffers(room.id)">
+                                        <i class="fas fa-gift me-1"></i> Show Offers
+                                    </button>
+                                    <button class="btn btn-warning" (click)="editRoom(room.id)">
+                                        <i class="fas fa-edit me-1"></i> Edit Room
+                                    </button>
+                                    <button class="btn btn-danger" (click)="confirmRemoveRoom(room.id)">
+                                        <i class="fas fa-trash me-1"></i> Remove Room
+                                    </button>
+                                </div>
+                            </div>
+                            }
+                            } @else {
+                            <div class="text-center my-5">
+                                <p class="text-muted">No workspace selected</p>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </div>
                 }
             </div>
         </div>
@@ -175,21 +202,25 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 rounded-3 shadow-sm">
                 <div class="d-flex justify-content-between align-items-start mb-3">
-                    <h5 class="modal-title fw-semibold" id="addOfferModalLabel">Add Offer for {{ selectedRoom()?.name || 'Room' }}</h5>
+                    <h5 class="modal-title fw-semibold" id="addOfferModalLabel">Add Offer for {{ selectedRoom()?.name ||
+                        'Room' }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form [formGroup]="offerForm" (ngSubmit)="onAddOffer()">
                     <div class="mb-3">
                         <label for="offerTitle" class="form-label">Offer Title</label>
-                        <input type="text" class="form-control" id="offerTitle" formControlName="offerTitle" placeholder="Enter offer title" />
+                        <input type="text" class="form-control" id="offerTitle" formControlName="offerTitle"
+                            placeholder="Enter offer title" />
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" formControlName="description" placeholder="Enter offer description"></textarea>
+                        <textarea class="form-control" id="description" formControlName="description"
+                            placeholder="Enter offer description"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="discountPercentage" class="form-label">Discount Percentage</label>
-                        <input type="number" class="form-control" id="discountPercentage" formControlName="discountPercentage" placeholder="e.g. 20.0" step="0.1" />
+                        <input type="number" class="form-control" id="discountPercentage"
+                            formControlName="discountPercentage" placeholder="e.g. 20.0" step="0.1" />
                     </div>
                     <div class="row g-2 mb-3">
                         <div class="col-md-6">
@@ -209,7 +240,8 @@
                         </select>
                     </div>
                     <div class="text-center">
-                        <button type="submit" class="btn btn-outline-primary px-5" [disabled]="offerForm.invalid">Save</button>
+                        <button type="submit" class="btn btn-outline-primary px-5"
+                            [disabled]="offerForm.invalid">Save</button>
                     </div>
                 </form>
             </div>

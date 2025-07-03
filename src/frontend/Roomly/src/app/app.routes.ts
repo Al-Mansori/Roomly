@@ -39,28 +39,39 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
-        path: 'offers',
-        loadComponent: () =>
-          import('./components/offers/all-offers-list/all-offers-list.component').then((m) => m.AllOffersListComponent),
-        children: [
-          { path: '', redirectTo: 'all', pathMatch: 'full' },
-          {
-            path: 'all',
-            loadComponent: () =>
-              import('./components/offers/offers-all/offers-all.component').then((m) => m.OffersAllComponent)
-          },
-          {
-            path: 'present',
-            loadComponent: () =>
-              import('./components/offers/offers-present/offers-present.component').then((m) => m.OffersPresentComponent)
-          },
-          {
-            path: 'expired',
-            loadComponent: () =>
-              import('./components/offers/offers-expired/offers-expired.component').then((m) => m.OffersExpiredComponent)
-          }
-        ]
+        path: 'offers/:roomId', loadComponent: () => import('./components/offers/all-offers-list/all-offers-list.component').then(m => m.AllOffersListComponent),
+        children:
+          [
+            { path: '', redirectTo: 'all', pathMatch: 'full' },
+            { path: 'all', loadComponent: () => import('./components/offers/offers-all/offers-all.component').then((m) => m.OffersAllComponent)},
+            {path: 'expired', loadComponent: () => import('./components/offers/offers-expired/offers-expired.component').then((m) => m.OffersExpiredComponent)},
+            {path: 'present', loadComponent: () => import('./components/offers//offers-present/offers-present.component').then((m)=> m.OffersPresentComponent)}
+
+          ]
       },
+      // {
+      //   path: 'offers',
+      //   loadComponent: () =>
+      //     import('./components/offers/all-offers-list/all-offers-list.component').then((m) => m.AllOffersListComponent),
+      //   children: [
+      //     { path: '', redirectTo: 'all', pathMatch: 'full' },
+      //     {
+      //       path: 'all',
+      //       loadComponent: () =>
+      //         import('./components/offers/offers-all/offers-all.component').then((m) => m.OffersAllComponent)
+      //     },
+      //     {
+      //       path: 'present',
+      //       loadComponent: () =>
+      //         import('./components/offers/offers-present/offers-present.component').then((m) => m.OffersPresentComponent)
+      //     },
+      //     {
+      //       path: 'expired',
+      //       loadComponent: () =>
+      //         import('./components/offers/offers-expired/offers-expired.component').then((m) => m.OffersExpiredComponent)
+      //     }
+      //   ]
+      // },
 
       {
         path: 'dashboard',
@@ -78,7 +89,7 @@ export const routes: Routes = [
       // {
       //   path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then((m) => m.RoomsFeesComponent)
       // },
-      { path: 'offers/:workspaceId', loadComponent: () => import('./components/offers/all-offers-list/all-offers-list.component').then(m => m.AllOffersListComponent) },
+
 
       { path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then(m => m.RoomsFeesComponent) },
 
@@ -97,7 +108,7 @@ export const routes: Routes = [
         path: 'bookings',
         loadComponent: () => import('./components/bookings/bookings-list/bookings-list.component').then(m => m.BookingsListComponent),
         children: [
-        
+
           {
             path: 'all',
             loadComponent: () => import('./components/bookings/all-bookings/all-bookings.component').then(m => m.AllBookingsComponent),
@@ -122,7 +133,7 @@ export const routes: Routes = [
         ]
       },
       {
-        path : 'add-rooms', loadComponent: () => import('./components/add-rooms/add-rooms.component').then((m) => m.AddRoomsComponent )
+        path: 'add-rooms', loadComponent: () => import('./components/add-rooms/add-rooms.component').then((m) => m.AddRoomsComponent)
       }
 
 
