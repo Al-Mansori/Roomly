@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
+import 'package:roomly/features/BookingsStatus/presentation/cubit/bookings_cubit.dart';
 
 class HistoryRoomCard extends StatelessWidget {
   final String imageUrl;
@@ -154,80 +155,51 @@ class HistoryRoomList extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        padding:
-            EdgeInsets.all(screenWidth * 0.04), // Add some padding to the list
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'October 2024',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: screenWidth * 0.045, // Responsive font size
-                fontFamily: 'Roboto',
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: screenHeight * 0.02), // Responsive spacing
-            HistoryRoomCard(
-              imageUrl:
-                  "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
-              title: 'Meeting Room (2 people)',
-              dateRange: 'Oct. 5 - 8, 2024',
-              price: '\$700',
-              status: 'Completed',
-            ),
-            SizedBox(height: screenHeight * 0.02), // Responsive spacing
-            HistoryRoomCard(
-              imageUrl:
-                  "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
-              title: 'Meeting Room (2 people)',
-              dateRange: 'Oct. 5 - 8, 2024',
-              price: '\$700',
-              status: 'Completed',
-            ),
-            SizedBox(height: screenHeight * 0.02), // Responsive spacing
-            HistoryRoomCard(
-              imageUrl:
-                  "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
-              title: 'Meeting Room (2 people)',
-              dateRange: 'Oct. 5 - 8, 2024',
-              price: '\$700',
-              status: 'Completed',
-            ),
-            SizedBox(height: screenHeight * 0.02), // Responsive spacing
+      body: Padding(
+        padding: EdgeInsets.all(screenWidth * 0.04),
+        child: BlocBuilder<BookingsCubit, BookingsState>(
+          builder: (context, state) {
+            if (state is BookingsLoading) {
+              return Center(child: CircularProgressIndicator());
+            } else if (state is BookingsLoaded) {
+              // Filter for history bookings (COMPLETED or CANCELLED)
+              final historyBookings = state.bookings
+                  .where((b) =>
+                      b.reservation.status == 'COMPLETED' ||
+                      b.reservation.status == 'CANCELLED')
+                  .toList();
 
-            Text(
-              'November 2024',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: screenWidth * 0.045, // Responsive font size
-                fontFamily: 'Roboto',
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: screenHeight * 0.02), // Responsive spacing
-            HistoryRoomCard(
-              imageUrl:
-                  "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
-              title: 'Meeting Room (2 people)',
-              dateRange: 'Nov. 5 - 8, 2024',
-              price: '\$700',
-              status: 'Completed',
-            ),
-            SizedBox(height: screenHeight * 0.02), // Responsive spacing
-            HistoryRoomCard(
-              imageUrl:
-                  "https://i.pinimg.com/736x/ed/06/48/ed0648e5064eb923e74a9c2c1d7bf65c.jpg",
-              title: 'Meeting Room (2 people)',
-              dateRange: 'Nov. 5 - 8, 2024',
-              price: '\$700',
-              status: 'Completed',
-            ),
-          ],
+              if (historyBookings.isEmpty) {
+                return Center(child: Text('No history bookings found.'));
+              }
+
+              return ListView.separated(
+                itemCount: historyBookings.length,
+                separatorBuilder: (context, index) =>
+                    SizedBox(height: screenHeight * 0.02),
+                itemBuilder: (context, index) {
+                  final booking = historyBookings[index];
+                  return HistoryRoomCard(
+                    imageUrl: booking.roomDetails.imageUrl,
+                    title: booking.roomDetails.name,
+                    dateRange:
+                        '${_formatDate(booking.reservation.startTime)} - ${_formatDate(booking.reservation.endTime)}',
+                    price: '\$${booking.reservation.totalCost}',
+                    status: booking.reservation.status,
+                  );
+                },
+              );
+            } else if (state is BookingsError) {
+              return Center(child: Text('Error: \\${state.message}'));
+            }
+            return Center(child: Text('No bookings available.'));
+          },
         ),
       ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
   }
 }

@@ -5,6 +5,8 @@ import 'package:dio/dio.dart';
 
 abstract class BookingsRepository {
   Future<List<BookingWithRoom>> getUserBookings(String userId);
+  Future<void> cancelReservation(
+      {required String reservationId, required String userId});
 }
 
 final dio = Dio();

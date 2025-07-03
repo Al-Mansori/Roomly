@@ -9,6 +9,7 @@ import 'package:roomly/features/BookingsStatus/data/data_sources/bookings_remote
 import 'package:roomly/features/BookingsStatus/data/data_sources/room_remote_data_source.dart';
 import 'package:roomly/features/BookingsStatus/data/repositories/bookings_repository_impl.dart';
 import 'package:roomly/features/BookingsStatus/domain/usecases/get_user_bookings.dart';
+import 'package:roomly/features/BookingsStatus/domain/usecases/cancel_reservation_usecase.dart';
 import 'package:roomly/features/BookingsStatus/presentation/cubit/bookings_cubit.dart';
 import 'package:roomly/features/BookingsStatus/presentation/screens/Activity.dart';
 import 'package:roomly/features/GlobalWidgets/bot_layout.dart';
@@ -92,8 +93,8 @@ import '../../features/room_management/presentation/screens/send_request_screen.
 import '../service_locator/service_locator.dart';
 import '../../features/Search/data/data_sources/recommendation_remote_data_source.dart';
 import '../../features/Search/domain/usecases/get_recommendations_usecase.dart';
-import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart' as room_di;
-
+import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart'
+    as room_di;
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/login',
@@ -102,7 +103,8 @@ final GoRouter appRouter = GoRouter(
       path: '/home',
       builder: (context, state) {
         return BlocProvider(
-          create: (_) => LocationBloc(locationManager: LocationManager())..add(LoadInitialLocation()),
+          create: (_) => LocationBloc(locationManager: LocationManager())
+            ..add(LoadInitialLocation()),
           child: const BotLayout(child: HomeScreen()),
         );
       },
@@ -258,7 +260,8 @@ final GoRouter appRouter = GoRouter(
         return MultiBlocProvider(
           providers: [
             BlocProvider<LoyaltyPointsCubit>(
-              create: (context) => sl<LoyaltyPointsCubit>()..loadLoyaltyPoints(),
+              create: (context) =>
+                  sl<LoyaltyPointsCubit>()..loadLoyaltyPoints(),
             ),
             BlocProvider<BookingCubit>(
               create: (context) => sl<BookingCubit>(),
@@ -350,9 +353,12 @@ final GoRouter appRouter = GoRouter(
           create: (context) {
             // Create dependencies manually
             final client = http.Client();
-            final remoteDataSource = WorkspaceRemoteDataSourceImpl(client: client);
-            final repository = WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
-            final getWorkspaceReviewsUseCase = GetWorkspaceReviewsUseCase(repository);
+            final remoteDataSource =
+                WorkspaceRemoteDataSourceImpl(client: client);
+            final repository =
+                WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
+            final getWorkspaceReviewsUseCase =
+                GetWorkspaceReviewsUseCase(repository);
 
             return ReviewsCubit(
               getWorkspaceReviewsUseCase: getWorkspaceReviewsUseCase,
@@ -530,12 +536,18 @@ final GoRouter appRouter = GoRouter(
                 create: (_) {
                   // Manual creation logic
                   final client = http.Client();
-                  final remoteDataSource = WorkspaceRemoteDataSourceImpl(client: client);
-                  final repository = WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
-                  final getWorkspaceDetailsUseCase = GetWorkspaceDetailsUseCase(repository: repository);
-                  final getWorkspaceReviewsUseCase = GetWorkspaceReviewsUseCase(repository);
-                  final getRoomDetailsUseCase = GetRoomDetailsUseCase(repository: repository);
-                  final getWorkspaceSchedulesUseCase = GetWorkspaceSchedulesUseCase(repository);
+                  final remoteDataSource =
+                      WorkspaceRemoteDataSourceImpl(client: client);
+                  final repository = WorkspaceRepositoryImpl(
+                      remoteDataSource: remoteDataSource);
+                  final getWorkspaceDetailsUseCase =
+                      GetWorkspaceDetailsUseCase(repository: repository);
+                  final getWorkspaceReviewsUseCase =
+                      GetWorkspaceReviewsUseCase(repository);
+                  final getRoomDetailsUseCase =
+                      GetRoomDetailsUseCase(repository: repository);
+                  final getWorkspaceSchedulesUseCase =
+                      GetWorkspaceSchedulesUseCase(repository);
 
                   final cubit = WorkspaceDetailsCubit(
                     getWorkspaceDetailsUseCase: getWorkspaceDetailsUseCase,
@@ -566,7 +578,6 @@ final GoRouter appRouter = GoRouter(
       },
     ),
 
-
     GoRoute(
       path: '/booking',
       builder: (context, state) {
@@ -579,7 +590,10 @@ final GoRouter appRouter = GoRouter(
               remoteDataSource: remoteDataSource,
               roomRemoteDataSource: roomRemoteDataSource,
             );
-            return BookingsCubit(getUserBookings: GetUserBookings(repository));
+            return BookingsCubit(
+              getUserBookings: GetUserBookings(repository),
+              cancelReservationUseCase: CancelReservationUseCase(repository),
+            );
           },
           child: const ActivityScreen(),
         );
@@ -661,9 +675,10 @@ final GoRouter appRouter = GoRouter(
         create: (context) {
           final client = http.Client();
           final remoteDataSource = ChatbotRemoteDataSourceImpl(client: client);
-          final repository = ChatbotRepositoryImpl(remoteDataSource: remoteDataSource);
+          final repository =
+              ChatbotRepositoryImpl(remoteDataSource: remoteDataSource);
           final sendMessageUseCase = SendMessageUseCase(repository: repository);
-          
+
           return ChatbotCubit(sendMessageUseCase: sendMessageUseCase);
         },
         child: const ChatbotScreen(),
@@ -672,13 +687,14 @@ final GoRouter appRouter = GoRouter(
   ],
 );
 
-
 // Helper function to create a new WorkspaceDetailsCubit
 WorkspaceDetailsCubit _createWorkspaceCubit(String workspaceId) {
   final client = http.Client();
   final remoteDataSource = WorkspaceRemoteDataSourceImpl(client: client);
-  final repository = WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
-  final getWorkspaceDetailsUseCase = GetWorkspaceDetailsUseCase(repository: repository);
+  final repository =
+      WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
+  final getWorkspaceDetailsUseCase =
+      GetWorkspaceDetailsUseCase(repository: repository);
   final getWorkspaceReviewsUseCase = GetWorkspaceReviewsUseCase(repository);
   final getRoomDetailsUseCase = GetRoomDetailsUseCase(repository: repository);
   final getWorkspaceSchedulesUseCase = GetWorkspaceSchedulesUseCase(repository);
