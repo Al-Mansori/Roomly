@@ -1,1 +1,61 @@
-<p>requests works!</p>
+<div class="row">
+    @for (request of requests; track request.id) {
+    <div class="col-12 mb-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <!-- Header -->
+                <div class="d-flex justify-content-between flex-wrap mb-3">
+                    <h5 class="card-title mb-0 fs-6">
+                        Request Type: <span class="text-primary">{{ request.type }}</span>
+                    </h5>
+                    <span class="text-muted fs-6">Request Date: {{ request.requestDate | date: 'mediumDate' }}</span>
+                </div>
+
+                <!-- Details -->
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="mb-2">
+                            <small class="text-muted">Details:</small>
+                            <div class="fs-6">{{ request.details }}</div>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Response Date:</small>
+                            <div class="fs-6">{{ request.responseDate ? (request.responseDate | date: 'mediumDate') :
+                                'N/A' }}</div>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">Response:</small>
+                            <div class="fs-6">{{ request.requestResponse || 'N/A' }}</div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="mt-2">
+                            <span class="badge" [class]="{
+                  'bg-warning text-dark': request.status === 'PENDING',
+                  'bg-success': request.status === 'APPROVED',
+                  'bg-secondary': request.status === 'REJECTED'
+                }">
+                                {{ request.status | titlecase }}
+                            </span>
+                        </div>
+                        @if (request.status === 'PENDING') {
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-success btn-sm shadow-sm py-2" (click)="approveRequest(request.id)">
+                                <i class="fas fa-check me-2"></i>Approve
+                            </button>
+                            <button class="btn btn-danger btn-sm shadow-sm py-2" (click)="rejectRequest(request.id)">
+                                <i class="fas fa-times me-2"></i>Reject
+                            </button>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    } @empty {
+    <div class="col-12 text-center py-5">
+        <p class="text-muted">No requests available</p>
+    </div>
+    }
+</div>

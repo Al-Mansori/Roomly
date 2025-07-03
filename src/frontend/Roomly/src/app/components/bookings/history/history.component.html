@@ -1,5 +1,4 @@
-<!-- Booking History -->
-<div class="row">
+<div class="row history">
   @for (booking of bookings; track booking.id) {
     <div class="col-12 mb-4">
       <div class="card shadow-sm border-0 h-100">
@@ -8,14 +7,10 @@
             <h5 class="card-title mb-0 fs-6">
               Reservation Date: <small class="text-muted">{{ booking.reservationDate | date: 'mediumDate' }}</small>
             </h5>
-            <span class="text-muted fs-6">Booking ID: {{ booking.id }}</span>
+            <!-- Removed Booking ID -->
           </div>
           <div class="row g-3">
-            <div class="col-12 col-md-5">
-              <img src="/assets/Images/workspace01.jpg" class="img-fluid rounded-3 w-100"
-                   style="height: 150px; object-fit: cover;" />
-            </div>
-            <div class="col-12 col-md-7">
+            <div class="col-12 col-md-12"> <!-- Removed image column -->
               <h6 class="fw-bold mt-2 mb-3 fs-6">Summary</h6>
               <div class="mb-2"><small class="text-muted">From:</small><div class="fs-6">{{ booking.startTime | date:'short' }}</div></div>
               <div class="mb-2"><small class="text-muted">To:</small><div class="fs-6">{{ booking.endTime | date:'short' }}</div></div>

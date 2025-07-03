@@ -1,4 +1,4 @@
-<div class="my-workspaces bg-light">
+<div class="my-workspaces bg-light min-vh-100">
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
@@ -57,16 +57,6 @@
                                                 <div class="col-4 p-2 d-flex align-items-center position-relative">
                                                     <img [src]="workspace.workspaceImages?.[0] || './../assets/Images/workspace01.jpg'"
                                                         class="img-fluid rounded" style="height: 110px; object-fit: cover; width: 100%;" />
-                                                    <!-- <div class="position-absolute top-0 end-0 p-2 d-flex gap-2">
-                                                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                                                            data-bs-target="#addOfferModal">
-                                                            + Add Offer
-                                                        </button>
-                                                        <button class="btn btn-sm btn-outline-dark"
-                                                            (click)="goToOffers(workspace.id); $event.stopPropagation()">
-                                                            Show Offers
-                                                        </button>
-                                                    </div> -->
                                                 </div>
                                                 <div class="col-8">
                                                     <div class="card-body">
@@ -98,20 +88,10 @@
                         <div class="col-lg-6 ps-3">
                             <div class="card shadow-sm d-flex flex-column p-3 position-relative">
                                 @if (selectedWorkspace(); as workspace) {
-                                    <!-- Image with Buttons Overlay -->
+                                    <!-- Image -->
                                     <div class="position-relative mb-3">
                                         <img [src]="workspace.workspaceImages?.[0] || './../assets/Images/workspace01.jpg'"
                                             class="rounded w-100" style="height: 180px; object-fit: cover;" />
-                                        <div class="position-absolute top-0 end-0 p-2 d-flex gap-2">
-                                            <button class="btn btn-sm rounded-4 bg-light" data-bs-toggle="modal"
-                                                data-bs-target="#addOfferModal">
-                                                + Add Offer
-                                            </button>
-                                            <button class="btn btn-sm  rounded-4 bg-light"
-                                                (click)="goToOffers(workspace.id)">
-                                                Show Offers
-                                            </button>
-                                        </div>
                                     </div>
 
                                     <!-- Workspace Details -->
@@ -128,14 +108,16 @@
 
                                     <!-- Rooms -->
                                     <p class="fw-bold mt-3">Rooms</p>
-                                    <div class="row g-3 mb-4">
+                                    <div class="d-flex flex-nowrap overflow-auto rooms-container h-50">
                                         @if (selectedWorkspaceRooms().length > 0) {
                                             @for (room of selectedWorkspaceRooms(); track room.id) {
-                                            <div class="col-6">
-                                                <div class="card shadow-sm p-2">
-                                                    <img [src]="room.roomImages?.[0] || './../assets/Images/room01.png'"
-                                                        class="img-fluid rounded mb-2" style="height: 150px; object-fit: cover;" />
-                                                    <p class="card-text text-center mb-0">{{ room.name }}</p>
+                                            <div class="me-3" (click)="selectRoom(room)">
+                                                <div class="card h-100" style="width: 150px;">
+                                                    <img [src]="room.roomImages?.[0]?.imageUrl || './../assets/Images/room01.png'"
+                                                        class="card-img-top" alt="{{ room.name }}" style="height: 120px; object-fit: cover;" />
+                                                    <div class="card-body p-2">
+                                                        <p class="card-text text-center text-truncate">{{ room.name }}</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                             }
@@ -144,15 +126,37 @@
                                         }
                                     </div>
 
-                                    <!-- Action Buttons -->
-                                    <div class="mt-auto d-flex flex-column gap-3 justify-content-between">
-                                        <button class="btn btn-outline-primary">Edit Workspace</button>
-                                        <button class="btn btn-outline-secondary"
-                                            (click)="goToRecommendedFees(workspace.id)">
-                                            Show Recommended Fees
-                                        </button>
-                                        <button class="btn btn-danger">Delete Workspace</button>
-                                    </div>
+                                    <!-- Expanded Room Details -->
+                                    @if (selectedRoom(); as room) {
+                                        <div class="card mt-3 p-3">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <h5 class="fw-bold">{{ room.name }}</h5>
+                                                <button class="btn btn-close" (click)="deselectRoom()"></button>
+                                            </div>
+                                            <p class="text-muted"><strong>Type:</strong> {{ room.type }}</p>
+                                            <p class="text-muted"><strong>Description:</strong> {{ room.description }}</p>
+                                            <p class="text-muted"><strong>Capacity:</strong> {{ room.capacity }}</p>
+                                            <p class="text-muted"><strong>Available:</strong> {{ room.availableCount }}</p>
+                                            <p class="text-muted"><strong>Price per Hour:</strong> ${{ room.pricePerHour }}</p>
+                                            <p class="text-muted"><strong>Status:</strong> {{ room.status }}</p>
+                                            @if (room.amenities && room.amenities.length > 0) {
+                                                <p class="text-muted"><strong>Amenities:</strong> {{ room.amenities.join(', ') }}</p>
+                                            }
+                                            @if (room.offers && room.offers.length > 0) {
+                                                <div class="mt-2">
+                                                    <p class="fw-bold">Offers:</p>
+                                                    @for (offer of room.offers; track offer.id) {
+                                                        <p class="text-muted small">
+                                                            {{ offer.offerTitle }} ({{ offer.discountPercentage }}% off, {{ offer.validFrom }} - {{ offer.validTo }})
+                                                        </p>
+                                                    }
+                                                </div>
+                                            }
+                                            <button class="btn btn-primary w-100 mt-2" data-bs-toggle="modal" data-bs-target="#addOfferModal">
+                                                Add Offer
+                                            </button>
+                                        </div>
+                                    }
                                 } @else {
                                     <div class="text-center my-5">
                                         <p class="text-muted">No workspace selected</p>
@@ -171,40 +175,38 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-4 rounded-3 shadow-sm">
                 <div class="d-flex justify-content-between align-items-start mb-3">
-                    <h5 class="modal-title fw-semibold" id="addOfferModalLabel">Add Offer</h5>
+                    <h5 class="modal-title fw-semibold" id="addOfferModalLabel">Add Offer for {{ selectedRoom()?.name || 'Room' }}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form [formGroup]="offerForm" (ngSubmit)="onAddOffer()">
                     <div class="mb-3">
-                        <label for="offerTitle" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="offerTitle" formControlName="title" placeholder="Enter offer title" />
+                        <label for="offerTitle" class="form-label">Offer Title</label>
+                        <input type="text" class="form-control" id="offerTitle" formControlName="offerTitle" placeholder="Enter offer title" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" formControlName="description" placeholder="Enter offer description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="discountPercentage" class="form-label">Discount Percentage</label>
+                        <input type="number" class="form-control" id="discountPercentage" formControlName="discountPercentage" placeholder="e.g. 20.0" step="0.1" />
                     </div>
                     <div class="row g-2 mb-3">
                         <div class="col-md-6">
-                            <label for="dateFrom" class="form-label">Date From</label>
-                            <input type="date" class="form-control" id="dateFrom" formControlName="dateFrom" />
+                            <label for="validFrom" class="form-label">Valid From</label>
+                            <input type="date" class="form-control" id="validFrom" formControlName="validFrom" />
                         </div>
                         <div class="col-md-6">
-                            <label for="dateTo" class="form-label">Date To</label>
-                            <input type="date" class="form-control" id="dateTo" formControlName="dateTo" />
+                            <label for="validTo" class="form-label">Valid To</label>
+                            <input type="date" class="form-control" id="validTo" formControlName="validTo" />
                         </div>
                     </div>
-                    <div class="row g-2 mb-3 align-items-end">
-                        <div class="col-md-5">
-                            <label for="timeFrom" class="form-label">Time</label>
-                            <input type="time" class="form-control" id="timeFrom" formControlName="timeFrom" />
-                        </div>
-                        <div class="col-md-2 text-center">
-                            <i class="fas fa-arrow-right mt-4 d-block"></i>
-                        </div>
-                        <div class="col-md-5">
-                            <label class="form-label invisible">Time To</label>
-                            <input type="time" class="form-control" id="timeTo" formControlName="timeTo" />
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <label for="percentage" class="form-label">Offer Percentage</label>
-                        <input type="text" class="form-control" id="percentage" formControlName="percentage" placeholder="e.g. 70" />
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-control" id="status" formControlName="status">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
                     </div>
                     <div class="text-center">
                         <button type="submit" class="btn btn-outline-primary px-5" [disabled]="offerForm.invalid">Save</button>

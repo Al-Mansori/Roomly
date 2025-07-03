@@ -7,8 +7,8 @@ import { headerInterceptor } from './core/interceptor/header/header.interceptor'
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(withInterceptors([headerInterceptor])),
+    provideHttpClient(withInterceptors([headerInterceptor]), withFetch()),
     provideRouter(routes, withViewTransitions()),
-    provideHttpClient(withFetch()) // ✅ Enable fetch mode (SSR-safe)
+    // provideHttpClient(withFetch()) // ✅ Enable fetch mode (SSR-safe)
   ]
 };

@@ -8,21 +8,6 @@ import { IRoom, IWorkspace } from '../../../interfaces/iworkspace';
 })
 export class WorkspaceService {
 
-
-
-  // constructor(private http: HttpClient) {}
-
-  // getWorkspacesByStaff(staffId: string): Observable<IWorkspace[]> {
-  //   return this.http.get<IWorkspace[]>(`/api/staff/workspaces?staffId=${staffId}`);
-  // }
-
-  // getRoomsByWorkspace(workspaceId: string): Observable<IRoom[]> {
-  //   return this.http.get<IRoom[]>(`/api/staff/room/workspace/${workspaceId}`);
-  // }
-
-  // getWorkspaceReviews(workspaceId: string): Observable<Review[]> {
-  //   return this.http.get<Review[]>(`/api/customer/WorkspaceReviews?workspaceId=${workspaceId}`);
-  // }
   constructor(private http: HttpClient) { }
 
   getWorkspacesByStaff(staffId: string): Observable<IWorkspace[]> {
