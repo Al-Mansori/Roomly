@@ -30,7 +30,9 @@ export interface IRoom {
   pricePerHour: number;
   status: string;
   amenities: string[] | null;
-  roomImages: string[] | null;
+  // roomImages: string[] | null;
+  roomImages: { imageUrl: string }[] | null;
+
   offers: IOffer[] | null;
 }
 export interface IReview {
@@ -43,11 +45,11 @@ export interface IReview {
 }
 
 export interface IOffer {
-  id: string;
-  title: string;
+  id?: string;
+  offerTitle: string;
   description: string;
   discountPercentage: number;
-  startDate: string;
-  endDate: string;
-  applicableRoomTypes: string[];
+  validFrom: string;
+  validTo: string;
+  status: string;
 }

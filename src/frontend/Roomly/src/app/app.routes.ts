@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 import { BlankLayoutComponent } from './layouts/blank-layout/blank-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
-// import { authGuard } from './core/guards/auth.guard';
-// import { loggedGuard } from './core/guards/logged.guard';
+import { authGuard } from './core/guards/auth.guard';
+import { loggedGuard } from './core/guards/logged.guard';
 
 export const routes: Routes = [
   // 🔒 Auth routes (Temporarily disabled)
@@ -11,7 +11,7 @@ export const routes: Routes = [
   {
     path: '',
     component: AuthLayoutComponent,
-    // canActivate: [loggedGuard],
+    canActivate: [loggedGuard],
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       {
@@ -35,33 +35,43 @@ export const routes: Routes = [
   {
     path: '',
     component: BlankLayoutComponent,
-    // canActivate: [authGuard], // ⛔ optional: disable during development
+    canActivate: [authGuard], // ⛔ optional: disable during development
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      // offers
       {
-        path: 'offers',
-        loadComponent: () =>
-          import('./components/offers/all-offers-list/all-offers-list.component').then((m) => m.AllOffersListComponent),
-        children: [
-          { path: '', redirectTo: 'all', pathMatch: 'full' },
-          {
-            path: 'all',
-            loadComponent: () =>
-              import('./components/offers/offers-all/offers-all.component').then((m) => m.OffersAllComponent)
-          },
-          {
-            path: 'present',
-            loadComponent: () =>
-              import('./components/offers/offers-present/offers-present.component').then((m) => m.OffersPresentComponent)
-          },
-          {
-            path: 'expired',
-            loadComponent: () =>
-              import('./components/offers/offers-expired/offers-expired.component').then((m) => m.OffersExpiredComponent)
-          }
-        ]
+        path: 'offers/:roomId', loadComponent: () => import('./components/offers/all-offers-list/all-offers-list.component').then(m => m.AllOffersListComponent),
+        children:
+          [
+            { path: '', redirectTo: 'all', pathMatch: 'full' },
+            { path: 'all', loadComponent: () => import('./components/offers/offers-all/offers-all.component').then((m) => m.OffersAllComponent)},
+            {path: 'expired', loadComponent: () => import('./components/offers/offers-expired/offers-expired.component').then((m) => m.OffersExpiredComponent)},
+            {path: 'present', loadComponent: () => import('./components/offers//offers-present/offers-present.component').then((m)=> m.OffersPresentComponent)}
+
+          ]
       },
+      // {
+      //   path: 'offers',
+      //   loadComponent: () =>
+      //     import('./components/offers/all-offers-list/all-offers-list.component').then((m) => m.AllOffersListComponent),
+      //   children: [
+      //     { path: '', redirectTo: 'all', pathMatch: 'full' },
+      //     {
+      //       path: 'all',
+      //       loadComponent: () =>
+      //         import('./components/offers/offers-all/offers-all.component').then((m) => m.OffersAllComponent)
+      //     },
+      //     {
+      //       path: 'present',
+      //       loadComponent: () =>
+      //         import('./components/offers/offers-present/offers-present.component').then((m) => m.OffersPresentComponent)
+      //     },
+      //     {
+      //       path: 'expired',
+      //       loadComponent: () =>
+      //         import('./components/offers/offers-expired/offers-expired.component').then((m) => m.OffersExpiredComponent)
+      //     }
+      //   ]
+      // },
 
       {
         path: 'dashboard',
@@ -79,10 +89,8 @@ export const routes: Routes = [
       // {
       //   path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then((m) => m.RoomsFeesComponent)
       // },
-      // ✅ Offers List for a workspace
-      { path: 'offers/:workspaceId', loadComponent: () => import('./components/offers/all-offers-list/all-offers-list.component').then(m => m.AllOffersListComponent) },
 
-      // ✅ Recommended Fees
+
       { path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then(m => m.RoomsFeesComponent) },
 
       {
@@ -100,7 +108,7 @@ export const routes: Routes = [
         path: 'bookings',
         loadComponent: () => import('./components/bookings/bookings-list/bookings-list.component').then(m => m.BookingsListComponent),
         children: [
-          { path: '', redirectTo: 'all', pathMatch: 'full' },
+
           {
             path: 'all',
             loadComponent: () => import('./components/bookings/all-bookings/all-bookings.component').then(m => m.AllBookingsComponent),
@@ -120,13 +128,13 @@ export const routes: Routes = [
           {
             path: 'history',
             loadComponent: () => import('./components/bookings/history/history.component').then(m => m.HistoryComponent),
-          }
+          },
+          { path: '', redirectTo: 'all', pathMatch: 'full' }
         ]
+      },
+      {
+        path: 'add-rooms', loadComponent: () => import('./components/add-rooms/add-rooms.component').then((m) => m.AddRoomsComponent)
       }
-      // {
-      //   path: 'bookings-list', loadComponent: () => import('./components/bookings/bookings-list/bookings-list.component').then((m) => m.BookingsListComponent)
-
-      // },
 
 
     ]
