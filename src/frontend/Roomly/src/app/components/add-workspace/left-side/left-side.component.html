@@ -1,0 +1,157 @@
+<!-- Workspace Cover Image Section -->
+<div class="w-100">
+  <label class="form-label fw-semibold">Workspace Cover Images</label>
+  
+  <!-- Main Image Display -->
+  <div class="position-relative mb-3">
+    <div *ngIf="images.length > 0" class="main-image">
+    <img [src]="tempImages[currentImageIndex] || images[currentImageIndex]" 
+        class="rounded shadow-sm"
+        [style.border]="isEditing ? '2px solid #0d6efd' : '1px solid #dee2e6'"
+        style="height: 300px; width: 100%; object-fit: cover;" 
+        alt="Workspace cover image" />
+      <!-- داخل div.main-image -->
+    <div *ngIf="isLoading" class="position-absolute top-50 start-50 translate-middle">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+      <!-- Edit/Remove Overlay -->
+      <div class="position-absolute top-0 end-0 m-2 d-flex gap-2">
+        <button class="btn btn-light btn-sm border shadow-sm" 
+                (click)="startEditing()"
+                title="Edit image"
+                *ngIf="!isEditing">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-light btn-sm border shadow-sm" 
+                (click)="removeImage(currentImageIndex)"
+                title="Remove image">
+          <i class="bi bi-trash"></i>
+        </button>
+        <button class="btn btn-light btn-sm border shadow-sm" 
+                (click)="saveChanges()"
+                title="Save changes"
+                *ngIf="isEditing">
+          <i class="bi bi-check"></i>
+        </button>
+      </div>
+      
+      <!-- Navigation Arrows -->
+      <div *ngIf="images.length > 1" class="position-absolute top-50 start-0 translate-middle-y ms-2">
+        <button class="btn btn-light btn-sm border shadow-sm" 
+                (click)="prevImage()"
+                title="Previous image">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+      </div>
+      <div *ngIf="images.length > 1" class="position-absolute top-50 end-0 translate-middle-y me-2">
+        <button class="btn btn-light btn-sm border shadow-sm" 
+                (click)="nextImage()"
+                title="Next image">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+      
+      <!-- Image Counter -->
+      <div *ngIf="images.length > 1" class="position-absolute bottom-0 start-50 translate-middle-x mb-2">
+        <span class="badge bg-dark bg-opacity-75">
+          {{ currentImageIndex + 1 }} / {{ images.length }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Upload Area -->
+    <div class="mb-3 upload-area">
+      <label for="imageUpload" class="cursor-pointer d-block">
+        <div *ngIf="images.length === 0" 
+             class="border border-2 border-dashed rounded p-4 text-center bg-light hover-bg-light">
+          <i class="bi bi-cloud-upload text-muted" style="font-size: 2rem;"></i>
+          <p class="text-muted mb-2 mt-2">Click to upload workspace images</p>
+          <small class="text-muted">Supports JPG, PNG, GIF (Max 5MB)</small>
+        </div>
+        <div *ngIf="images.length > 0" 
+             class="border border-dashed rounded p-3 text-center bg-light hover-bg-light">
+          <i class="bi bi-plus-circle text-primary"></i>
+          <span class="text-primary ms-2">Add another image</span>
+        </div>
+      </label>
+      <input id="imageUpload" 
+             type="file" 
+             accept="image/*" 
+             (change)="onFileSelected($event)" 
+             class="d-none">
+    </div>
+
+    <!-- Thumbnail Gallery -->
+    <div class="d-flex flex-wrap gap-2 mb-3" *ngIf="images.length > 1">
+      <div *ngFor="let img of images; let i = index" 
+           (click)="currentImageIndex = i"
+           class="thumbnail-container position-relative cursor-pointer"
+           [class.active-thumbnail]="i === currentImageIndex">
+        <img [src]="img" 
+             class="img-thumbnail" 
+             style="height: 60px; width: 60px; object-fit: cover;"
+             [class.border-primary]="i === currentImageIndex"
+             [class.border-2]="i === currentImageIndex">
+        <button class="btn btn-danger btn-sm position-absolute top-0 end-0 translate-middle rounded-circle p-1"
+                style="width: 20px; height: 20px; font-size: 10px;"
+                (click)="removeImage(i); $event.stopPropagation()"
+                title="Remove">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Upload Guidelines -->
+    <div class="mt-3">
+      <small class="text-muted">
+        <i class="bi bi-info-circle"></i>
+        Upload high-quality images that showcase your workspace. First image will be used as the main cover.
+      </small>
+    </div>
+  </div>
+</div>
+
+<style>
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.hover-bg-light:hover {
+  background-color: #f8f9fa !important;
+}
+
+.thumbnail-container {
+  transition: transform 0.2s ease;
+}
+
+.thumbnail-container:hover {
+  transform: scale(1.05);
+}
+
+.active-thumbnail {
+  transform: scale(1.1);
+}
+
+.main-image {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+}
+
+.upload-area {
+  border: 2px dashed #ced4da;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.upload-area:hover {
+  border-color: #86b7fe;
+  background-color: #e7f1ff;
+  transform: translateY(-2px);
+}
+</style>

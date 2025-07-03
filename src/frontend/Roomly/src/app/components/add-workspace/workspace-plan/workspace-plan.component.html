@@ -1,0 +1,23 @@
+<div class="workspace-plan p-3">
+  <h5 class="mb-3">Workspace Plan</h5>
+  
+  <div class="mb-3">
+    <label class="form-label">Payment Type</label>
+    <select class="form-select" 
+            [(ngModel)]="selectedPaymentType" 
+            (change)="onPaymentTypeChange()">
+      <option value="">Select Payment Type</option>
+      <option value="cash">Cash</option>
+      <option value="credit">Credit</option>
+      <option value="both">Both</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Workspace Type</label>
+    <input type="text" class="form-control" 
+           [ngModel]="workspaceType"
+           (input)="onWorkspaceTypeChange($event)"
+           placeholder="e.g., Office, Co-working Space">
+  </div>
+</div>

@@ -1,0 +1,123 @@
+<div class="w-100">
+  <!-- Workspace Name -->
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Workspace Name</label>
+    <div class="position-relative">
+      <input *ngIf="!isEditing" class="form-control" [value]="form.get('name')?.value" readonly>
+      <input *ngIf="isEditing" class="form-control" [formControl]="nameControl" (input)="onInputChange()">
+      <div class="position-absolute top-0 end-0 m-2 d-flex gap-2">
+        <button class="btn btn-light btn-sm border shadow-sm" 
+                (click)="startEditing()"
+                title="Edit name"
+                *ngIf="!isEditing">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-light btn-sm border shadow-sm" 
+                (click)="removeField('name')"
+                title="Remove name">
+          <i class="bi bi-trash"></i>
+        </button>
+        <button class="btn btn-light btn-sm border shadow-sm" 
+                (click)="saveChanges()"
+                title="Save changes"
+                *ngIf="isEditing">
+          <i class="bi bi-check"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phone -->
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Phone</label>
+    <div class="position-relative phone-input">
+      <input *ngIf="!isEditing" class="form-control" [value]="form.get('phone')?.value" readonly>
+      <input *ngIf="isEditing" class="form-control" [formControl]="phoneControl" (input)="onInputChange()">
+      <div class="position-absolute top-0 end-0 m-2 d-flex gap-2">
+        <button class="btn btn-light btn-sm border shadow-sm" 
+                (click)="startEditing()"
+                title="Edit phone"
+                *ngIf="!isEditing">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-light btn-sm border shadow-sm" 
+                (click)="removeField('phone')"
+                title="Remove phone">
+          <i class="bi bi-trash"></i>
+        </button>
+        <button class="btn btn-light btn-sm border shadow-sm" 
+                (click)="saveChanges()"
+                title="Save changes"
+                *ngIf="isEditing">
+          <i class="bi bi-check"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="mb-3">
+    <label class="form-label fw-semibold">Description <span class="character-counter">{{ getDescriptionLength() }}/500</span></label>
+    <div class="position-relative">
+      <textarea *ngIf="!isEditing" class="form-control" [value]="form.get('description')?.value" readonly></textarea>
+      <textarea *ngIf="isEditing" class="form-control" [formControl]="descriptionControl" (input)="onInputChange()" maxlength="500"></textarea>
+      <div class="position-absolute top-0 end-0 m-2 d-flex gap-2">
+        <button class="btn btn-light btn-sm border shadow-sm" 
+                (click)="startEditing()"
+                title="Edit description"
+                *ngIf="!isEditing">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="btn btn-light btn-sm border shadow-sm" 
+                (click)="removeField('description')"
+                title="Remove description">
+          <i class="bi bi-trash"></i>
+        </button>
+        <button class="btn btn-light btn-sm border shadow-sm" 
+                (click)="saveChanges()"
+                title="Save changes"
+                *ngIf="isEditing">
+          <i class="bi bi-check"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+<app-map-location
+  [initialAddress]="selectedAddress"
+  [initialPosition]="markerPosition"
+  (locationChanged)="onLocationChange($event)"
+  (locationRemoved)="onLocationRemoved()">
+</app-map-location>
+
+  <!-- عرض البيانات المستلمة (اختياري) -->
+  <div *ngIf="selectedAddress" class="mt-3">
+    <h4>Workspace location :</h4>
+    <p><strong>location:</strong> {{ selectedAddress }}</p>
+    <p *ngIf="markerPosition">
+      <strong>Coordinates:</strong> 
+      {{ markerPosition.lat | number:'1.4-4' }}, 
+      {{ markerPosition.lng | number:'1.4-4' }}
+    </p>
+  </div>
+
+  <!-- City, Town, Country -->
+  <div class="row g-2">
+    <div class="col-6">
+      <label class="form-label fw-semibold">City</label>
+      <input *ngIf="!isEditing" class="form-control" [value]="form.get('city')?.value" readonly>
+      <input *ngIf="isEditing" class="form-control" [formControl]="cityControl" (input)="onInputChange()">
+    </div>
+    <div class="col-6">
+      <label class="form-label fw-semibold">Country</label>
+      <input *ngIf="!isEditing" class="form-control" [value]="form.get('country')?.value" readonly>
+      <input *ngIf="isEditing" class="form-control" [formControl]="countryControl" (input)="onInputChange()">
+    </div>
+    <div class="col-12">
+      <label class="form-label fw-semibold">Town</label>
+      <input *ngIf="!isEditing" class="form-control" [value]="form.get('town')?.value" readonly>
+      <input *ngIf="isEditing" class="form-control" [formControl]="townControl" (input)="onInputChange()">
+    </div>
+  </div>
+</div>

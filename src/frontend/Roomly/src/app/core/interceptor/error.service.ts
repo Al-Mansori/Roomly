@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+// import { Injectable } from '@angular/core';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class ErrorService {
+// @Injectable({
+//   providedIn: 'root'
+// })
+// export class ErrorService {
 
-  constructor() { }
-}
+//   constructor() { }
+// }
