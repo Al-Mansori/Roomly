@@ -224,14 +224,71 @@ class _ActivityScreenState extends State<ActivityScreen> {
       itemBuilder: (context, index) => BookingCard(
         bookingWithRoom: bookings[index],
         type: _getCardType(),
-        onCancel: () {
+        onCancel: () async {
           final userId = _currentUserId;
           final reservationId = bookings[index].reservation.id;
-          if (userId != null) {
-            context.read<BookingsCubit>().cancelReservation(
+          final reservationDate = bookings[index].reservation.reservationDate;
+          final now = DateTime.now();
+          final daysDiff = reservationDate.difference(now).inDays;
+
+          bool? confirmed = await showDialog<bool>(
+            context: context,
+            builder: (context) {
+              final isWithin3Days = daysDiff <= 3;
+              return AlertDialog(
+                title: Text('Cancel Booking'),
+                content: Text(
+                  isWithin3Days
+                      ? 'Note: Canceling your booking may incur fees. Please review our cancellation policy before proceeding.'
+                      : 'Your booking will be canceled, but no fees will be charged. Are you sure you want to proceed?',
+                  style: TextStyle(
+                    color: isWithin3Days ? Colors.red : Colors.black,
+                  ),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text('No'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.red,
+                    ),
+                    child: const Text('Yes'),
+                  ),
+                ],
+              );
+            },
+          );
+
+          if (confirmed == true && userId != null) {
+            await context.read<BookingsCubit>().cancelReservation(
                   reservationId: reservationId,
                   userId: userId,
                 );
+            await showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text('Booking #$reservationId canceled'),
+                  content: const Text(
+                    'Your booking has been canceled. Please note that cancellation fees may apply. For more details, contact our support team.',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.blue,
+                      ),
+                      child: const Text('Done'),
+                    ),
+                  ],
+                );
+              },
+            );
           }
         },
         onRebook: () {
