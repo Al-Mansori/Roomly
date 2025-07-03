@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../domain/entities/booking_with_room.dart';
 import '../../domain/usecases/get_user_bookings.dart';
+import '../../domain/usecases/cancel_reservation_usecase.dart';
 
 // Events
 abstract class BookingsEvent extends Equatable {
@@ -53,14 +54,28 @@ class BookingsError extends BookingsState {
 // Cubit
 class BookingsCubit extends Cubit<BookingsState> {
   final GetUserBookings getUserBookings;
+  final CancelReservationUseCase cancelReservationUseCase;
 
-  BookingsCubit({required this.getUserBookings}) : super(BookingsInitial());
+  BookingsCubit(
+      {required this.getUserBookings, required this.cancelReservationUseCase})
+      : super(BookingsInitial());
 
   Future<void> loadBookings(String userId) async {
     emit(BookingsLoading());
     try {
       final bookings = await getUserBookings(userId);
       emit(BookingsLoaded(bookings));
+    } catch (e) {
+      emit(BookingsError(e.toString()));
+    }
+  }
+
+  Future<void> cancelReservation(
+      {required String reservationId, required String userId}) async {
+    try {
+      await cancelReservationUseCase(
+          reservationId: reservationId, userId: userId);
+      await loadBookings(userId); // Refresh bookings after cancel
     } catch (e) {
       emit(BookingsError(e.toString()));
     }

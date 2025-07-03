@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
 import 'package:roomly/features/request/presentation/cubit/requests_cubit.dart';
 import 'package:roomly/features/request/presentation/cubit/requests_state.dart';
 import 'package:roomly/features/request/presentation/widgets/request_card.dart';
+
+import '../../../GlobalWidgets/app_session.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 
 class RequestsScreen extends StatefulWidget {
   const RequestsScreen({Key? key}) : super(key: key);
@@ -21,7 +23,9 @@ class _RequestsScreenState extends State<RequestsScreen> {
   }
 
   Future<void> _fetchRequests() async {
-    final userId = await SecureStorage.getId();
+    final UserEntity? user = AppSession().currentUser;
+
+    final userId = user?.id;
     if (userId != null) {
       context.read<RequestsCubit>().fetchRequests(userId);
     } else {

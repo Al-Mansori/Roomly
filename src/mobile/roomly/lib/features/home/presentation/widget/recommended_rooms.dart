@@ -46,7 +46,7 @@ class RecommendedRooms extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SectionTitle('Recommended for you!'),
+              const SectionTitle('Top Rated Rooms!'),
               SizedBox(
                 height: 280,
                 child: Padding(

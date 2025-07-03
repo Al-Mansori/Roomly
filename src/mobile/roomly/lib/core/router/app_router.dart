@@ -9,11 +9,17 @@ import 'package:roomly/features/BookingsStatus/data/data_sources/bookings_remote
 import 'package:roomly/features/BookingsStatus/data/data_sources/room_remote_data_source.dart';
 import 'package:roomly/features/BookingsStatus/data/repositories/bookings_repository_impl.dart';
 import 'package:roomly/features/BookingsStatus/domain/usecases/get_user_bookings.dart';
+import 'package:roomly/features/BookingsStatus/domain/usecases/cancel_reservation_usecase.dart';
 import 'package:roomly/features/BookingsStatus/presentation/cubit/bookings_cubit.dart';
 import 'package:roomly/features/BookingsStatus/presentation/screens/Activity.dart';
 import 'package:roomly/features/GlobalWidgets/bot_layout.dart';
 import 'package:roomly/features/account/presentation/account_screen.dart';
 import 'package:roomly/features/auth/presentation/screens/OTP_Screen.dart';
+import 'package:roomly/features/chatbot/data/data_sources/chatbot_remote_data_source_impl.dart';
+import 'package:roomly/features/chatbot/data/repositories/chatbot_repository_impl.dart';
+import 'package:roomly/features/chatbot/domain/usecases/send_message_usecase.dart';
+import 'package:roomly/features/chatbot/presentation/cubit/chatbot_cubit.dart';
+import 'package:roomly/features/chatbot/presentation/screens/chatbot_screen.dart';
 import 'package:roomly/features/favorite/presentation/cubit/favorite_cubit.dart';
 import 'package:roomly/features/help/presentation/screens/about_app_screen.dart';
 import 'package:roomly/features/help/presentation/screens/help_center_screen.dart';
@@ -22,10 +28,8 @@ import 'package:roomly/features/help/presentation/screens/settings_screen.dart';
 import 'package:roomly/features/help/presentation/screens/terms_and_policies_screen.dart';
 import 'package:roomly/features/home/presentation/screens/home_screen.dart';
 import 'package:roomly/features/loyalty/presentation/screens/loyalty_page.dart';
-import 'package:roomly/features/payment/presentation/di/payment_injection.dart';
 import 'package:roomly/features/payment/presentation/screens/add_card_screen.dart';
 import 'package:roomly/features/payment/presentation/screens/cards_screen.dart';
-import 'package:roomly/features/profile/data/data_source/user_local_data_source.dart';
 import 'package:roomly/features/profile/data/data_source/user_remote_data_source.dart';
 import 'package:roomly/features/profile/data/repository/user_repository_impl.dart';
 import 'package:roomly/features/profile/domain/usecases/delete_user.dart';
@@ -34,8 +38,6 @@ import 'package:roomly/features/profile/domain/usecases/update_user.dart';
 import 'package:roomly/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:roomly/features/profile/presentation/screens/profile_screen.dart';
 import 'package:roomly/features/room_management/presentation/cubits/room_details_cubit.dart';
-import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart'
-    as di;
 import 'package:roomly/features/room_management/presentation/screens/room_details_screen.dart';
 import 'package:roomly/features/room_management/presentation/screens/room_list_screen.dart';
 import 'package:roomly/features/room_management/presentation/screens/Booking_2nd_Screen.dart';
@@ -83,16 +85,16 @@ import 'package:roomly/features/request/presentation/screens/request_detail_scre
 import 'package:roomly/features/request/presentation/screens/requests_screen.dart';
 import 'package:roomly/features/workspace/domain/usecases/get_workspace_schedules_usecase.dart';
 import '../../features/payment/presentation/screens/payment_screen.dart';
-import '../../features/room_management/data/data_sources/api_service.dart';
 import '../../features/room_management/domain/entities/room_entity.dart';
 import '../../features/room_management/presentation/cubits/booking/cubit/booking_cubit.dart';
-import '../../features/room_management/presentation/cubits/booking/di.dart';
 import '../../features/room_management/presentation/cubits/request.dart';
 import '../../features/room_management/presentation/screens/booking_3rd_screen.dart';
 import '../../features/room_management/presentation/screens/send_request_screen.dart';
 import '../service_locator/service_locator.dart';
 import '../../features/Search/data/data_sources/recommendation_remote_data_source.dart';
 import '../../features/Search/domain/usecases/get_recommendations_usecase.dart';
+import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart'
+    as room_di;
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/login',
@@ -101,7 +103,8 @@ final GoRouter appRouter = GoRouter(
       path: '/home',
       builder: (context, state) {
         return BlocProvider(
-          create: (_) => LocationBloc(locationManager: LocationManager())..add(LoadInitialLocation()),
+          create: (_) => LocationBloc(locationManager: LocationManager())
+            ..add(LoadInitialLocation()),
           child: const BotLayout(child: HomeScreen()),
         );
       },
@@ -154,7 +157,6 @@ final GoRouter appRouter = GoRouter(
           getCachedUser: GetCachedUser(
             UserRepositoryImpl(
               remoteDataSource: UserRemoteDataSourceImpl(client: http.Client()),
-              localDataSource: UserLocalDataSourceImpl(),
               networkInfo:
                   NetworkInfoImpl(InternetConnectionChecker.createInstance()),
             ),
@@ -162,7 +164,6 @@ final GoRouter appRouter = GoRouter(
           updateUser: UpdateUser(
             UserRepositoryImpl(
               remoteDataSource: UserRemoteDataSourceImpl(client: http.Client()),
-              localDataSource: UserLocalDataSourceImpl(),
               networkInfo:
                   NetworkInfoImpl(InternetConnectionChecker.createInstance()),
             ),
@@ -170,7 +171,6 @@ final GoRouter appRouter = GoRouter(
           deleteUser: DeleteUser(
             UserRepositoryImpl(
               remoteDataSource: UserRemoteDataSourceImpl(client: http.Client()),
-              localDataSource: UserLocalDataSourceImpl(),
               networkInfo:
                   NetworkInfoImpl(InternetConnectionChecker.createInstance()),
             ),
@@ -260,7 +260,8 @@ final GoRouter appRouter = GoRouter(
         return MultiBlocProvider(
           providers: [
             BlocProvider<LoyaltyPointsCubit>(
-              create: (context) => sl<LoyaltyPointsCubit>()..loadLoyaltyPoints(),
+              create: (context) =>
+                  sl<LoyaltyPointsCubit>()..loadLoyaltyPoints(),
             ),
             BlocProvider<BookingCubit>(
               create: (context) => sl<BookingCubit>(),
@@ -352,9 +353,12 @@ final GoRouter appRouter = GoRouter(
           create: (context) {
             // Create dependencies manually
             final client = http.Client();
-            final remoteDataSource = WorkspaceRemoteDataSourceImpl(client: client);
-            final repository = WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
-            final getWorkspaceReviewsUseCase = GetWorkspaceReviewsUseCase(repository);
+            final remoteDataSource =
+                WorkspaceRemoteDataSourceImpl(client: client);
+            final repository =
+                WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
+            final getWorkspaceReviewsUseCase =
+                GetWorkspaceReviewsUseCase(repository);
 
             return ReviewsCubit(
               getWorkspaceReviewsUseCase: getWorkspaceReviewsUseCase,
@@ -438,69 +442,141 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: '/rooms', builder: (context, state) => const RoomListScreen()),
 
+    // GoRoute(
+    //   path: '/room/:id',
+    //   builder: (context, state) {
+    //     final String roomId = state.pathParameters['id'] ?? '';
+    //     final extras = state.extra as Map<String, dynamic>?;
+
+    //     final WorkspaceDetailsCubit? workspaceCubit = extras?['workspaceCubit'];
+    //     final String? workspaceId = extras?['workspaceId'];
+
+    //     RoomDetailsCubit createRoomDetailsCubitSafely() {
+    //       if (!sl.isRegistered<RoomDetailsCubit>()) {
+    //         // fallback manual creation (if needed) or show an error screen
+    //         return RoomDetailsCubit(
+    //           getRoomDetailsUseCase: sl(),
+    //           getRoomImagesUseCase: sl(),
+    //           getRoomOffersUseCase: sl(),
+    //           getFavoriteRoomsUseCase: sl(),
+    //           addFavoriteRoomUseCase: sl(),
+    //           removeFavoriteRoomUseCase: sl(),
+    //         );
+    //       }
+    //       return sl<RoomDetailsCubit>();
+    //     }
+
+    //     // ✅ Case 1: workspaceCubit is passed
+    //     if (workspaceCubit != null) {
+    //       return MultiBlocProvider(
+    //         providers: [
+    //           BlocProvider.value(value: workspaceCubit),
+    //           BlocProvider<RoomDetailsCubit>(
+    //             create: (_) => createRoomDetailsCubitSafely(),
+    //           ),
+    //         ],
+    //         child: RoomDetailsScreen(roomId: roomId),
+    //       );
+    //     }
+
+    //     // ✅ Case 2: workspaceId is passed
+    //     if (workspaceId != null) {
+    //       return MultiBlocProvider(
+    //         providers: [
+    //           BlocProvider<WorkspaceDetailsCubit>(
+    //             create: (_) => _createWorkspaceCubit(workspaceId),
+    //           ),
+    //           BlocProvider<RoomDetailsCubit>(
+    //             create: (_) => createRoomDetailsCubitSafely(),
+    //           ),
+    //         ],
+    //         child: RoomDetailsScreen(
+    //           roomId: roomId,
+    //           workspaceId: workspaceId,
+    //         ),
+    //       );
+    //     }
+
+    //     // ❗ Fallback (neither workspaceCubit nor workspaceId was passed)
+    //     return BlocProvider<RoomDetailsCubit>(
+    //       create: (_) => createRoomDetailsCubitSafely(),
+    //       child: RoomDetailsScreen(roomId: roomId),
+    //     );
+    //   },
+    // ),
+
     GoRoute(
       path: '/room/:id',
       builder: (context, state) {
         final String roomId = state.pathParameters['id'] ?? '';
+
         final extras = state.extra as Map<String, dynamic>?;
 
         final WorkspaceDetailsCubit? workspaceCubit = extras?['workspaceCubit'];
         final String? workspaceId = extras?['workspaceId'];
 
-        RoomDetailsCubit createRoomDetailsCubitSafely() {
-          if (!sl.isRegistered<RoomDetailsCubit>()) {
-            // fallback manual creation (if needed) or show an error screen
-            return RoomDetailsCubit(
-              getRoomDetailsUseCase: sl(),
-              getRoomImagesUseCase: sl(),
-              getRoomOffersUseCase: sl(),
-              getFavoriteRoomsUseCase: sl(),
-              addFavoriteRoomUseCase: sl(),
-              removeFavoriteRoomUseCase: sl(),
-            );
-          }
-          return sl<RoomDetailsCubit>();
-        }
-
-        // ✅ Case 1: workspaceCubit is passed
+        // Case 1: WorkspaceDetailsCubit is passed
         if (workspaceCubit != null) {
           return MultiBlocProvider(
             providers: [
               BlocProvider.value(value: workspaceCubit),
               BlocProvider<RoomDetailsCubit>(
-                create: (_) => createRoomDetailsCubitSafely(),
+                create: (_) => room_di.sl<RoomDetailsCubit>(),
               ),
             ],
             child: RoomDetailsScreen(roomId: roomId),
           );
         }
 
-        // ✅ Case 2: workspaceId is passed
+        // Case 2: Only workspaceId is passed
         if (workspaceId != null) {
           return MultiBlocProvider(
             providers: [
               BlocProvider<WorkspaceDetailsCubit>(
-                create: (_) => _createWorkspaceCubit(workspaceId),
+                create: (_) {
+                  // Manual creation logic
+                  final client = http.Client();
+                  final remoteDataSource =
+                      WorkspaceRemoteDataSourceImpl(client: client);
+                  final repository = WorkspaceRepositoryImpl(
+                      remoteDataSource: remoteDataSource);
+                  final getWorkspaceDetailsUseCase =
+                      GetWorkspaceDetailsUseCase(repository: repository);
+                  final getWorkspaceReviewsUseCase =
+                      GetWorkspaceReviewsUseCase(repository);
+                  final getRoomDetailsUseCase =
+                      GetRoomDetailsUseCase(repository: repository);
+                  final getWorkspaceSchedulesUseCase =
+                      GetWorkspaceSchedulesUseCase(repository);
+
+                  final cubit = WorkspaceDetailsCubit(
+                    getWorkspaceDetailsUseCase: getWorkspaceDetailsUseCase,
+                    getRoomDetailsUseCase: getRoomDetailsUseCase,
+                    getWorkspaceReviewsUseCase: getWorkspaceReviewsUseCase,
+                    getWorkspaceSchedulesUseCase: getWorkspaceSchedulesUseCase,
+                  );
+
+                  // Trigger the fetch
+                  cubit.getWorkspaceDetails(workspaceId);
+
+                  return cubit;
+                },
               ),
               BlocProvider<RoomDetailsCubit>(
-                create: (_) => createRoomDetailsCubitSafely(),
+                create: (_) => room_di.sl<RoomDetailsCubit>(),
               ),
             ],
-            child: RoomDetailsScreen(
-              roomId: roomId,
-              workspaceId: workspaceId,
-            ),
+            child: RoomDetailsScreen(roomId: roomId),
           );
         }
 
-        // ❗ Fallback (neither workspaceCubit nor workspaceId was passed)
+        // Fallback if workspaceCubit or workspaceId is null
         return BlocProvider<RoomDetailsCubit>(
-          create: (_) => createRoomDetailsCubitSafely(),
+          create: (_) => room_di.sl<RoomDetailsCubit>(),
           child: RoomDetailsScreen(roomId: roomId),
         );
       },
     ),
-
 
     GoRoute(
       path: '/booking',
@@ -514,7 +590,10 @@ final GoRouter appRouter = GoRouter(
               remoteDataSource: remoteDataSource,
               roomRemoteDataSource: roomRemoteDataSource,
             );
-            return BookingsCubit(getUserBookings: GetUserBookings(repository));
+            return BookingsCubit(
+              getUserBookings: GetUserBookings(repository),
+              cancelReservationUseCase: CancelReservationUseCase(repository),
+            );
           },
           child: const ActivityScreen(),
         );
@@ -588,23 +667,34 @@ final GoRouter appRouter = GoRouter(
         return RequestDetailScreen(request: request);
       },
     ),
+
+    // Chatbot route
+    GoRoute(
+      path: '/chatbot',
+      builder: (context, state) => BlocProvider(
+        create: (context) {
+          final client = http.Client();
+          final remoteDataSource = ChatbotRemoteDataSourceImpl(client: client);
+          final repository =
+              ChatbotRepositoryImpl(remoteDataSource: remoteDataSource);
+          final sendMessageUseCase = SendMessageUseCase(repository: repository);
+
+          return ChatbotCubit(sendMessageUseCase: sendMessageUseCase);
+        },
+        child: const ChatbotScreen(),
+      ),
+    ),
   ],
 );
-// Helper function to extract workspace ID from cubit state
-String? _getWorkspaceIdFromCubit(WorkspaceDetailsCubit cubit) {
-  final state = cubit.state;
-  if (state is WorkspaceDetailsLoaded) {
-    return state.workspace.id;
-  }
-  return null;
-}
 
 // Helper function to create a new WorkspaceDetailsCubit
 WorkspaceDetailsCubit _createWorkspaceCubit(String workspaceId) {
   final client = http.Client();
   final remoteDataSource = WorkspaceRemoteDataSourceImpl(client: client);
-  final repository = WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
-  final getWorkspaceDetailsUseCase = GetWorkspaceDetailsUseCase(repository: repository);
+  final repository =
+      WorkspaceRepositoryImpl(remoteDataSource: remoteDataSource);
+  final getWorkspaceDetailsUseCase =
+      GetWorkspaceDetailsUseCase(repository: repository);
   final getWorkspaceReviewsUseCase = GetWorkspaceReviewsUseCase(repository);
   final getRoomDetailsUseCase = GetRoomDetailsUseCase(repository: repository);
   final getWorkspaceSchedulesUseCase = GetWorkspaceSchedulesUseCase(repository);

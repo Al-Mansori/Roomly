@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:roomly/features/GlobalWidgets/app_session.dart';
 import 'package:roomly/features/account/data/loyalty_api_service.dart';
-import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
 import 'package:roomly/features/auth/data/models/user_model.dart';
 
 class AccountPage extends StatefulWidget {
@@ -27,9 +27,12 @@ class _AccountPageState extends State<AccountPage> {
 
   Future<void> _loadUserData() async {
     try {
-      final userData = await SecureStorage.getUserData();
+
+      final userData = AppSession().currentUser;
+      final userModel = UserModel.fromEntity(userData!);
+
       setState(() {
-        _currentUser = userData;
+        _currentUser = userModel;
         _isLoading = false;
       });
     } catch (e) {
@@ -403,8 +406,7 @@ class _AccountPageState extends State<AccountPage> {
 
       if (shouldLogout == true) {
         // Clear user data from secure storage
-        await SecureStorage.clearAll();
-        
+        AppSession().clearUser();
         // Navigate to login screen
         if (context.mounted) {
           context.go('/login');

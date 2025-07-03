@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
+import 'package:roomly/features/GlobalWidgets/app_session.dart';
 
 class LoyaltyApiService {
   // Base URL - Update this to match your backend URL
@@ -11,14 +11,14 @@ class LoyaltyApiService {
   static Future<int?> getLoyaltyPoints() async {
     try {
       // Get userId from secure storage
-      final userId = await SecureStorage.getId();
+      final userId = AppSession().currentUser?.id;
       if (userId == null) {
         print('No user ID found in secure storage');
         return null;
       }
 
       // Get auth token for authorization
-      final token = await SecureStorage.getToken();
+      final token = AppSession().token;
       if (token == null) {
         print('No auth token found in secure storage');
         return null;
@@ -75,8 +75,8 @@ class LoyaltyApiService {
 
   /// Checks if the user is authenticated and has required data for API calls
   static Future<bool> isUserAuthenticated() async {
-    final userId = await SecureStorage.getId();
-    final token = await SecureStorage.getToken();
+    final userId = AppSession().currentUser?.id;
+    final token = AppSession().token;
     return userId != null && token != null;
   }
 }

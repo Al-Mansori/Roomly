@@ -7,7 +7,8 @@ import 'package:roomly/features/Search/presentation/screens/workSpaceSection.dar
 import 'package:roomly/features/Search/presentation/screens/filter_popup_screen.dart';
 import 'package:roomly/features/Search/presentation/cubit/search_cubit.dart';
 import 'package:roomly/features/Search/domain/entities/search_result.dart';
-import 'package:roomly/features/auth/data/data_sources/secure_storage.dart';
+import '../../../GlobalWidgets/app_session.dart';
+import '../../../auth/domain/entities/user_entity.dart';
 import '../../domain/entities/recommendation.dart';
 import '../../data/models/recommendation_model.dart';
 
@@ -30,7 +31,9 @@ class _CustomSearchBottomSheetState extends State<CustomSearchBottomSheet> {
   }
 
   Future<void> _initUserAndFetchRecommendations() async {
-    final userId = await SecureStorage.getId();
+    final UserEntity? user = AppSession().currentUser;
+
+    final userId = user?.id;
     if (userId != null) {
       setState(() => _userId = userId);
       context.read<SearchCubit>().fetchEnrichedRecommendations(userId);
@@ -264,8 +267,10 @@ class _CustomSearchBottomSheetState extends State<CustomSearchBottomSheet> {
                   imageUrl: room.roomImages?.isNotEmpty == true
                       ? room.roomImages!.first.imageUrl
                       : "https://i.pinimg.com/736x/94/1e/89/941e8944db3e73b4248cefbcd9b45241.jpg",
+                  roomId: room.id,
+                  workspaceId: room.workspaceId,
                   title: room.name,
-                  workspaceName: "", //"in ${room.type} workspace"
+                  workspaceName: "", //"in \\${room.type} workspace"
                   details:
                       "${room.capacity} Seats . ${room.pricePerHour.toStringAsFixed(0)} EGP/Hour",
                   price: "${room.pricePerHour.toStringAsFixed(2)} EGP/Hour",
@@ -342,8 +347,10 @@ class _CustomSearchBottomSheetState extends State<CustomSearchBottomSheet> {
                   imageUrl: room.roomImages?.isNotEmpty == true
                       ? room.roomImages!.first.imageUrl
                       : "https://i.pinimg.com/736x/94/1e/89/941e8944db3e73b4248cefbcd9b45241.jpg",
+                  roomId: room.id,
+                  workspaceId: room.workspaceId,
                   title: room.name,
-                  workspaceName: "", //in ${room.type} workspace
+                  workspaceName: "", //in \\${room.type} workspace
                   details:
                       "${room.capacity} Seats . ${room.pricePerHour.toStringAsFixed(0)} EGP/Hour",
                   price: "${room.pricePerHour.toStringAsFixed(2)} EGP/Hour",

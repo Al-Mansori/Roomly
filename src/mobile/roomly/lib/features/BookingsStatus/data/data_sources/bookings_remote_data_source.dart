@@ -3,6 +3,8 @@ import '../models/booking_model.dart';
 
 abstract class BookingsRemoteDataSource {
   Future<List<Map<String, dynamic>>> getUserBookings(String userId);
+  Future<void> cancelReservation(
+      {required String reservationId, required String userId});
 }
 
 class BookingsRemoteDataSourceImpl implements BookingsRemoteDataSource {
@@ -36,6 +38,28 @@ class BookingsRemoteDataSourceImpl implements BookingsRemoteDataSource {
       }
     } on DioException catch (e) {
       throw Exception('Failed to load bookings: ${e.message}');
+    }
+  }
+
+  @override
+  Future<void> cancelReservation(
+      {required String reservationId, required String userId}) async {
+    try {
+      final response = await dio.put(
+        '$baseUrl/customer/CancelReservation',
+        queryParameters: {
+          'reservationId': reservationId,
+          'userId': userId,
+        },
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Failed to cancel reservation');
+      }
+    } on DioException catch (e) {
+      throw Exception('Failed to cancel reservation: \\${e.message}');
     }
   }
 }

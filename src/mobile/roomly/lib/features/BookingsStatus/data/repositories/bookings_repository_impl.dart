@@ -34,4 +34,11 @@ class BookingsRepositoryImpl implements BookingsRepository {
     }
     return result;
   }
+
+  @override
+  Future<void> cancelReservation(
+      {required String reservationId, required String userId}) async {
+    await remoteDataSource.cancelReservation(
+        reservationId: reservationId, userId: userId);
+  }
 }

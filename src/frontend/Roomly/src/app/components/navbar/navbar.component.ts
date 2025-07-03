@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router'; 
+import { Component, ElementRef, ViewChild } from '@angular/core';
+
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -10,6 +11,7 @@ import { Router, RouterModule } from '@angular/router';
 export class NavbarComponent {
   constructor(private router: Router) {}
 
+<<<<<<< HEAD
   isMenuOpen = false;
 
   toggleMenu() {
@@ -20,4 +22,17 @@ export class NavbarComponent {
     localStorage.removeItem('token');
     this.router.navigate(['/login']);
   }
+=======
+  @ViewChild('navEl', { static: true }) navEl!: ElementRef;
+  private height = 0;
+
+  ngAfterViewInit(): void {
+    this.height = this.navEl.nativeElement.offsetHeight;
+  }
+
+  getNavbarHeight(): number {
+    return this.height;
+  }
+
+>>>>>>> 9d890f7d568efeec9b3f76b0f6af0208c8729ee7
 }

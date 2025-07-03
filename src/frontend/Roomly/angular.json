@@ -72,8 +72,12 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "proxyConfig": "./src/proxy.conf.json",
+<<<<<<< HEAD
              "port": 3000
 
+=======
+            "port": 3000
+>>>>>>> 9d890f7d568efeec9b3f76b0f6af0208c8729ee7
           },
           "configurations": {
             "production": {

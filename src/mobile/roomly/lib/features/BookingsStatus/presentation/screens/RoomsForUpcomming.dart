@@ -7,7 +7,6 @@ class BookingCard extends StatelessWidget {
   final String roomDescription;
   final String distance;
   final VoidCallback onCancel;
-  final VoidCallback onModify;
 
   const BookingCard({
     Key? key,
@@ -17,7 +16,6 @@ class BookingCard extends StatelessWidget {
     required this.roomDescription,
     required this.distance,
     required this.onCancel,
-    required this.onModify,
   }) : super(key: key);
 
   @override
@@ -104,27 +102,16 @@ class BookingCard extends StatelessWidget {
                         onPressed: onCancel,
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.black,
-                          side: BorderSide(color: Colors.black.withOpacity(0.5)),
+                          side:
+                              BorderSide(color: Colors.black.withOpacity(0.5)),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
                         ),
-                        child: const Text("Cancel Booking" , style: TextStyle(fontSize: 10),),
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: onModify,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
+                        child: const Text(
+                          "Cancel Booking",
+                          style: TextStyle(fontSize: 10),
                         ),
-                        icon: const Icon(Icons.edit, size: 10),
-                        label: const Text("Modify" , style: TextStyle(fontSize: 10),),
                       ),
                     ),
                   ],
@@ -138,27 +125,30 @@ class BookingCard extends StatelessWidget {
   }
 }
 
-
-
 class BookingList extends StatelessWidget {
   final List<Map<String, String>> bookings = [
     {
       "bookingDate": "March 8, 2025",
-      "imageUrl": "https://i.pinimg.com/736x/a5/06/0f/a5060f1a5bd1d9bfe99d474bd052a891.jpg",
+      "imageUrl":
+          "https://i.pinimg.com/736x/a5/06/0f/a5060f1a5bd1d9bfe99d474bd052a891.jpg",
       "roomTitle": "Meeting Room (2 people)",
-      "roomDescription": "2 rooms - business, gaming, studying workspace\ncan be customized",
+      "roomDescription":
+          "2 rooms - business, gaming, studying workspace\ncan be customized",
       "distance": "12.5 km away"
     },
     {
       "bookingDate": "March 9, 2025",
-      "imageUrl": "https://i.pinimg.com/736x/a5/06/0f/a5060f1a5bd1d9bfe99d474bd052a891.jpg",
+      "imageUrl":
+          "https://i.pinimg.com/736x/a5/06/0f/a5060f1a5bd1d9bfe99d474bd052a891.jpg",
       "roomTitle": "Private Office",
-      "roomDescription": "1 office - ideal for business meetings and work sessions",
+      "roomDescription":
+          "1 office - ideal for business meetings and work sessions",
       "distance": "8 km away"
     },
     {
       "bookingDate": "March 10, 2025",
-      "imageUrl": "https://i.pinimg.com/736x/a5/06/0f/a5060f1a5bd1d9bfe99d474bd052a891.jpg",
+      "imageUrl":
+          "https://i.pinimg.com/736x/a5/06/0f/a5060f1a5bd1d9bfe99d474bd052a891.jpg",
       "roomTitle": "Conference Room",
       "roomDescription": "Spacious room for team discussions and presentations",
       "distance": "15 km away"
@@ -178,7 +168,8 @@ class BookingList extends StatelessWidget {
             imageUrl: booking["imageUrl"]!,
             roomTitle: booking["roomTitle"]!,
             roomDescription: booking["roomDescription"]!,
-            distance: booking["distance"]!, onCancel: () {  }, onModify: () {  },
+            distance: booking["distance"]!,
+            onCancel: () {},
           );
         },
       ),

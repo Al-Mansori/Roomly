@@ -16,12 +16,17 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<String> updateUser(UserModel user) async {
+    print("[UserRemoteDataSourceImpl] updateUser called with user: ${user.toJson()}");
     try {
       // Add the required "type" field for the API request
       final requestBody = user.toJson();
-      requestBody['type'] = 'CUSTOMER';
+      requestBody.remove('email'); // Remove 'email' if not needed in the request
+      requestBody.remove('password'); // Remove 'password' if not needed in the request
+      // requestBody['type'] = 'CUSTOMER';
       // Removed the line: requestBody['password'] = user.password ?? '';
       // The password is now included in user.toJson() if it exists
+
+      print("[UserRemoteDataSourceImpl] Request body: $requestBody");
 
       final response = await client.put(
         Uri.parse('${AppApi.baseUrl}/api/users/update-user'),
@@ -31,12 +36,17 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         body: jsonEncode(requestBody),
       );
 
+      print("[UserRemoteDataSourceImpl] Response status: ${response.statusCode}");
+
       if (response.statusCode == 200) {
+        print("[UserRemoteDataSourceImpl] User updated successfully");
         return response.body;
       } else {
+        print("[UserRemoteDataSourceImpl] Failed to update user, status code: ${response.statusCode}");
         throw ServerException();
       }
     } catch (e) {
+      print("[UserRemoteDataSourceImpl] Exception occurred: $e");
       throw ServerException();
     }
   }

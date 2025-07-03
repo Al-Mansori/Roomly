@@ -2,7 +2,6 @@ import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:roomly/core/network/network_info.dart';
-import 'package:roomly/features/profile/data/data_source/user_local_data_source.dart';
 import 'package:roomly/features/profile/data/data_source/user_remote_data_source.dart';
 import 'package:roomly/features/profile/data/repository/user_repository_impl.dart';
 import 'package:roomly/features/profile/domain/repository/user_repository.dart';
@@ -34,7 +33,6 @@ Future<void> init() async {
   sl.registerLazySingleton<UserRepository>(
     () => UserRepositoryImpl(
       remoteDataSource: sl(),
-      localDataSource: sl(),
       networkInfo: sl(),
     ),
   );
@@ -44,9 +42,6 @@ Future<void> init() async {
     () => UserRemoteDataSourceImpl(client: sl()),
   );
 
-  sl.registerLazySingleton<UserLocalDataSource>(
-    () => UserLocalDataSourceImpl(),
-  );
 
   //! Core
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));

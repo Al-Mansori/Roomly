@@ -7,7 +7,6 @@ class BookingCard extends StatelessWidget {
   final BookingWithRoom bookingWithRoom;
   final BookingCardType type;
   final VoidCallback? onCancel;
-  final VoidCallback? onModify;
   final VoidCallback? onRebook;
 
   const BookingCard({
@@ -15,7 +14,6 @@ class BookingCard extends StatelessWidget {
     required this.bookingWithRoom,
     required this.type,
     this.onCancel,
-    this.onModify,
     this.onRebook,
   }) : super(key: key);
 
@@ -112,22 +110,6 @@ class BookingCard extends StatelessWidget {
                       ),
                       child: const Text("Cancel Booking",
                           style: TextStyle(fontSize: 12)),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: onModify,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                      icon: const Icon(Icons.edit, size: 14),
-                      label:
-                          const Text("Modify", style: TextStyle(fontSize: 12)),
                     ),
                   ),
                 ],

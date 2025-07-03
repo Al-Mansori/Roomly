@@ -2,6 +2,7 @@ import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 
 import { routes } from './app.routes';
+<<<<<<< HEAD
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { provideToastr } from 'ngx-toastr';
@@ -21,5 +22,15 @@ export const appConfig: ApplicationConfig = {
     
     importProvidersFrom(GoogleMapsModule , BrowserModule), // ✅ أضف دي هنا
 
+=======
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { headerInterceptor } from './core/interceptor/header/header.interceptor';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(withInterceptors([headerInterceptor]), withFetch()),
+    provideRouter(routes, withViewTransitions()),
+    // provideHttpClient(withFetch()) // ✅ Enable fetch mode (SSR-safe)
+>>>>>>> 9d890f7d568efeec9b3f76b0f6af0208c8729ee7
   ]
 };
