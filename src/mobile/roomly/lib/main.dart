@@ -17,16 +17,21 @@ import 'features/auth/domain/usecases/verify_usecase.dart';
 import 'features/auth/presentation/blocs/auth_cubit.dart';
 import 'package:dio/dio.dart';
 import 'package:roomly/features/room_management/presentation/di/room_management_injection_container.dart';
-import 'package:roomly/features/payment/presentation/di/payment_injection.dart' as payment_di;
-import 'package:roomly/features/request/presentation/di/requests_injection_container.dart' as requests_di;
-import 'package:roomly/features/favorite/presentation/di/favorite_injection_container.dart' as favorite_di;
+import 'package:roomly/features/payment/presentation/di/payment_injection.dart'
+    as payment_di;
+import 'package:roomly/features/request/presentation/di/requests_injection_container.dart'
+    as requests_di;
+import 'package:roomly/features/favorite/presentation/di/favorite_injection_container.dart'
+    as favorite_di;
 
 import 'features/home/domain/usecases/initHomeDependencies.dart';
 import 'features/home/presentation/bloc/cubit/workspace_cubit.dart';
 import 'features/room_management/presentation/cubits/booking/di.dart';
-import 'features/room_management/presentation/cubits/di_request.dart' as request_di;
+import 'features/room_management/presentation/cubits/di_request.dart'
+    as request_di;
 import 'features/room_management/presentation/cubits/di_request.dart';
 import 'features/room_management/presentation/di/staff_injection_container.dart';
+
 final sl = GetIt.instance;
 
 Future<void> main() async {
@@ -36,7 +41,6 @@ Future<void> main() async {
   runApp(const RoomlyApp());
 }
 
-
 Future<void> initDependencies() async {
   // Dio
   if (!sl.isRegistered<Dio>()) {
@@ -45,7 +49,6 @@ Future<void> initDependencies() async {
 
   // Core
   setupDependencies();
-
 
   await initHomeDependencies();
   setupDependencies(); // ✅ موجودة هنا
@@ -60,9 +63,7 @@ Future<void> initDependencies() async {
   // await payment_di.initPaymentDependencies();
   // await requests_di.initRequestsDependencies();
   await initStaffDependencies(); // ⬅️ الجديد
-
 }
-
 
 class RoomlyApp extends StatelessWidget {
   const RoomlyApp({super.key});
@@ -97,35 +98,51 @@ class RoomlyApp extends StatelessWidget {
               BlocProvider<AuthCubit>(
                 create: (_) {
                   final client = http.Client();
-                  final remoteDataSource = AuthRemoteDataSourceImpl(client: client);
-                  final repository = AuthRepositoryImpl(remoteDataSource: remoteDataSource);
+                  final remoteDataSource =
+                      AuthRemoteDataSourceImpl(client: client);
+                  final repository =
+                      AuthRepositoryImpl(remoteDataSource: remoteDataSource);
 
                   return AuthCubit(
                     loginUseCase: LoginUseCase(repository: repository),
-                    registerCustomerUseCase: RegisterCustomerUseCase(repository: repository),
-                    registerStaffUseCase: RegisterStaffUseCase(repository: repository),
-                    verifyUserUseCase: VerifyUserUseCase(repository: repository),
-                    completeProfileUseCase: CompleteProfileUseCase(repository: repository),
-                    resetPasswordUseCase: ResetPasswordUseCase(repository: repository),
-                    sendForgotPasswordOtpUseCase: SendForgotPasswordOtpUseCase(repository),
+                    registerCustomerUseCase:
+                        RegisterCustomerUseCase(repository: repository),
+                    registerStaffUseCase:
+                        RegisterStaffUseCase(repository: repository),
+                    verifyUserUseCase:
+                        VerifyUserUseCase(repository: repository),
+                    completeProfileUseCase:
+                        CompleteProfileUseCase(repository: repository),
+                    resetPasswordUseCase:
+                        ResetPasswordUseCase(repository: repository),
+                    sendForgotPasswordOtpUseCase:
+                        SendForgotPasswordOtpUseCase(repository),
                     verifyResetOtpUseCase: VerifyResetOtpUseCase(repository),
-                    continueWithGoogleUseCase: ContinueWithGoogleUseCase(repository: repository),
+                    continueWithGoogleUseCase:
+                        ContinueWithGoogleUseCase(repository: repository),
                   );
                 },
               ),
               BlocProvider<WorkspaceCubit>(
-
                 create: (_) => WorkspaceCubit(
-
                   getNearbyWorkspaces: sl(),
                   getTopRatedWorkspaces: sl(),
                   getWorkspaceDetails: sl(),
                   getWorkspaceImages: sl(),
                 )..loadInitialData(),
               ),
-
             ],
             child: MaterialApp.router(
+              theme: ThemeData(
+                brightness: Brightness.light,
+                scaffoldBackgroundColor: Colors.white,
+                colorScheme: ColorScheme.fromSeed(
+                  seedColor: Colors.blue,
+                  brightness: Brightness.light,
+                  background: Colors.white,
+                ),
+                // You can add more customizations here if needed
+              ),
               title: 'Roomly',
               debugShowCheckedModeBanner: false,
               routerConfig: appRouter,
