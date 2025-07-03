@@ -5,7 +5,7 @@ class UpcomingReservations extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       children: [
         ReservationCard(
           title: 'Meeting Room (2 people)',
@@ -36,17 +36,17 @@ class ReservationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.only(bottom: 16.0),
+      margin: const EdgeInsets.only(bottom: 16.0),
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
+            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
             Text(description),
-            SizedBox(height: 8),
-            Text(distance, style: TextStyle(color: Colors.grey)),
+            const SizedBox(height: 8),
+            Text(distance, style: const TextStyle(color: Colors.grey)),
           ],
         ),
       ),
