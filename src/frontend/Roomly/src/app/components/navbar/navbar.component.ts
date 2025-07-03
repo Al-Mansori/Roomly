@@ -11,7 +11,6 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 export class NavbarComponent {
   constructor(private router: Router) {}
 
-<<<<<<< HEAD
   isMenuOpen = false;
 
   toggleMenu() {
@@ -22,7 +21,6 @@ export class NavbarComponent {
     localStorage.removeItem('token');
     this.router.navigate(['/login']);
   }
-=======
   @ViewChild('navEl', { static: true }) navEl!: ElementRef;
   private height = 0;
 
@@ -34,5 +32,4 @@ export class NavbarComponent {
     return this.height;
   }
 
->>>>>>> 9d890f7d568efeec9b3f76b0f6af0208c8729ee7
 }

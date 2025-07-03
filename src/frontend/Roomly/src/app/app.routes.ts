@@ -1,17 +1,13 @@
 import { BlankLayoutComponent } from './layouts/blank-layout/blank-layout.component';
 import { AuthLayoutComponent } from './layouts/auth-layout/auth-layout.component';
-<<<<<<< HEAD
 import { Routes } from '@angular/router';
-=======
 import { authGuard } from './core/guards/auth.guard';
 import { loggedGuard } from './core/guards/logged.guard';
->>>>>>> 9d890f7d568efeec9b3f76b0f6af0208c8729ee7
 
 export const routes: Routes = [
   // 🔒 Auth routes (Temporarily disabled)
 
   // 🌐 Public Routes (not logged in)
-<<<<<<< HEAD
  {
   path: '',
   component: AuthLayoutComponent,
@@ -36,7 +32,6 @@ export const routes: Routes = [
   ]
  },
 
-=======
   {
     path: '',
     component: AuthLayoutComponent,
@@ -60,16 +55,11 @@ export const routes: Routes = [
       }
     ]
   },
->>>>>>> 9d890f7d568efeec9b3f76b0f6af0208c8729ee7
 
   {
     path: '',
     component: BlankLayoutComponent,
-<<<<<<< HEAD
-    // canActivate: [authenticationGGuard], // ✅ ضيفي دا هنا
-=======
     canActivate: [authGuard], // ⛔ optional: disable during development
->>>>>>> 9d890f7d568efeec9b3f76b0f6af0208c8729ee7
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
@@ -120,7 +110,6 @@ export const routes: Routes = [
       {
         path: 'my-workspaces', loadComponent: () => import('./components/my-workspaces/my-workspaces.component').then((m) => m.MyWorkspacesComponent)
       },
-<<<<<<< HEAD
       {
         path: 'add-workspace',
         loadComponent: () => import('./components/add-workspace/add-workspace.component').then(m => m.AddWorkspaceComponent)
@@ -136,7 +125,6 @@ export const routes: Routes = [
       {
         path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then((m) => m.RoomsFeesComponent)
       },
-=======
       // {
       //   path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then((m) => m.RoomsFeesComponent)
       // },
@@ -144,7 +132,6 @@ export const routes: Routes = [
 
       { path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then(m => m.RoomsFeesComponent) },
 
->>>>>>> 9d890f7d568efeec9b3f76b0f6af0208c8729ee7
       {
         path: 'support', loadComponent: () => import('./components/support/support.component').then((m) => m.SupportComponent)
 

@@ -1,11 +1,7 @@
 import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { NavbarComponent } from "../../components/navbar/navbar.component";
 import { RouterOutlet } from '@angular/router';
-<<<<<<< HEAD
-import { NgxSpinnerModule } from 'ngx-spinner';
-=======
 import { CommonModule } from '@angular/common';
->>>>>>> 9d890f7d568efeec9b3f76b0f6af0208c8729ee7
 
 @Component({
   selector: 'app-blank-layout',
