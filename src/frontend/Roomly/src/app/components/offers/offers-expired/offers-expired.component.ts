@@ -14,22 +14,21 @@ import { AllOffersListComponent } from '../all-offers-list/all-offers-list.compo
 })
 export class OffersExpiredComponent {
 
- offers: IOffer[] = [];
+  offers: IOffer[] = [];
   private now = new Date();
   private subscription = new Subscription();
 
   constructor(
-    private offerService: OfferService,
-    private allOffersListComponent: AllOffersListComponent // Access parent data
-  ) {}
+    public parent: AllOffersListComponent // Access parent data
+  ) { }
 
   ngOnInit(): void {
     this.subscription.add(
-      this.allOffersListComponent.offers$.subscribe({
+      this.parent.offers$.subscribe({
         next: (data: IOffer[]) => {
           this.offers = data.filter(offer => {
             const validTo = new Date(offer.validTo);
-            return this.now > validTo;
+            return new Date() > validTo;
           });
         },
         error: (err) => {
@@ -38,6 +37,7 @@ export class OffersExpiredComponent {
       })
     );
   }
+
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();

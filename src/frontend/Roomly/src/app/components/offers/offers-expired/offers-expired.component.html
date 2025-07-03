@@ -1,28 +1,28 @@
-@for (offer of offers; track offer.id) {
-  <div class="card border border-secondary-subtle shadow-sm">
-    <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-3">
-      <!-- Title and Dates -->
-      <div class="d-flex gap-3 align-items-center flex-grow-1">
-        <div class="bg-black bg-opacity-25 px-3 py-2 rounded-pill">
-          <h6 class="fw-semibold mb-0">{{ offer.offerTitle }}</h6>
-        </div>
-        <div class="small text-muted">
-          <div>{{ offer.validFrom }} - {{ offer.validTo }}</div>
-        </div>
+<!-- offers-expired.component.html -->
+<!-- @for (offer of offers; track offer.id) {
+<div class="card border border-secondary-subtle shadow-sm mb-2" (click)="parent.selectOffer(offer)" [class.expanded]="parent.selectedOffer()?.id === offer.id">
+  <div class="card-body d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div class="d-flex gap-3 align-items-center flex-grow-1">
+      <div class="bg-black bg-opacity-25 px-3 py-2 rounded-pill">
+        <h6 class="fw-semibold mb-0">{{ offer.offerTitle }}</h6>
       </div>
-
-      <span class="badge px-3 py-2 rounded-pill bg-warning text-white">
-        {{ offer.status | titlecase }}
-      </span>
-
-      <div class="d-flex gap-2">
-        <button class="btn rounded-circle bg-black bg-opacity-25 btn-sm">
-          <i class="fas fa-sync-alt" style="color: #0a3fb3;"></i>
-        </button>
-        <button class="btn rounded-circle bg-black bg-opacity-25 btn-sm">
-          <i class="fas fa-trash" style="color: #0a3fb3;"></i>
-        </button>
-      </div>
+      <div class="small text-muted">{{ offer.validFrom }} - {{ offer.validTo }}</div>
+    </div>
+    <span class="badge px-3 py-2 rounded-pill bg-warning text-white">Expired</span>
+    <div class="d-flex gap-2">
+      <button class="btn rounded-circle bg-black bg-opacity-25 btn-sm" (click)="parent.reapplyOffer(); $event.stopPropagation()" title="Reapply this expired offer with new dates">
+        <i class="fas fa-sync-alt" style="color: #0a3fb3;"></i>
+      </button>
+      <button class="btn rounded-circle bg-black bg-opacity-25 btn-sm" (click)="parent.confirmDeleteOffer(offer.id); $event.stopPropagation()" title="Delete this offer">
+        <i class="fas fa-trash" style="color: #0a3fb3;"></i>
+      </button>
     </div>
   </div>
-}
+  @if (parent.selectedOffer()?.id === offer.id) {
+  <div class="card-footer p-2 bg-light">
+    <p class="text-muted"><strong>Description:</strong> {{ offer.description }}</p>
+    <p class="text-muted"><strong>Discount:</strong> {{ offer.discountPercentage }}%</p>
+    <p class="text-muted"><strong>Status:</strong> {{ offer.status }}</p>
+  </div>
+  }
+} -->

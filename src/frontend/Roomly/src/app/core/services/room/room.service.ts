@@ -76,7 +76,7 @@ export class RoomService {
   //     })
   //   );
   // }
-  
+
   deleteRoom(roomId: string): Observable<any> {
     const url = `/api/staff/rooms/${roomId}`;
     return this.http.delete(url).pipe(
@@ -86,5 +86,5 @@ export class RoomService {
       })
     );
   }
-  
+
 }

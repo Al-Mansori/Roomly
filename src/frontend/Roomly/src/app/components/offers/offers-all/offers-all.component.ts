@@ -18,8 +18,8 @@ export class OffersAllComponent {
   private subscription = new Subscription();
 
   constructor(
-    private offerService: OfferService,
-    private allOffersListComponent: AllOffersListComponent // Access parent data
+    public allOffersListComponent: AllOffersListComponent, // Access parent data
+    
   ) {}
 
   ngOnInit(): void {

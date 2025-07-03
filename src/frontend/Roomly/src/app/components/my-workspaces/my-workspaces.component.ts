@@ -128,13 +128,6 @@ export class MyWorkspacesComponent {
     this.selectedRoom.set(null);
   }
 
-
-
-
-  // navigateToOffers(workspaceId: string): void {
-  //   this.router.navigate(['/offers', workspaceId]);
-  // }
-
   goToRecommendedFees(workspaceId: string): void {
     this.router.navigate(['/rooms-fees'], {
       queryParams: { workspaceId: workspaceId }
@@ -182,78 +175,43 @@ export class MyWorkspacesComponent {
   //     });
   //   }
   // }
-  // onAddOffer(): void {
-  //   if (this.offerForm.valid && this.selectedRoom()) {
-  //     const offer: IOffer = {
-  //       offerTitle: this.offerForm.value.offerTitle,
-  //       description: this.offerForm.value.description,
-  //       discountPercentage: parseFloat(this.offerForm.value.discountPercentage),
-  //       validFrom: this.offerForm.value.validFrom,
-  //       validTo: this.offerForm.value.validTo,
-  //       status: this.offerForm.value.status
-  //     };
-
-  //     const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
-  //     const staffId = user?.id;
-  //     if (!staffId) {
-  //       this.error.set('User not authenticated. Please log in.');
-  //       return;
-  //     }
-
-  //     this.roomService.addOffer(staffId, this.selectedRoom()!.id, offer).subscribe({
-  //       next: (response) => {
-  //         //   if (response.id) {
-  //         //     const updatedRoom = { ...this.selectedRoom()!, offers: [...(this.selectedRoom()?.offers || []), { ...offer, id: response.id }] };
-  //         //     this.selectedRoom.set(updatedRoom);
-  //         //   } else {
-  //         //     const updatedRoom = { ...this.selectedRoom()!, offers: [...(this.selectedRoom()?.offers || []), offer] };
-  //         //     this.selectedRoom.set(updatedRoom);
-  //         //   }
-  //         //   this.offerForm.reset();
-  //         //   this.offerForm.patchValue({ status: 'Active' });
-  //         //   this.closeModal();
-  //         //   this.selectWorkspace(this.selectedWorkspace()!);
-  //         // 
-  //         console.log('Offer added successfully:', response);
-  //         const newOffer = response.id ? { ...offer, id: response.id } : offer;
-  //         const updatedRoom = { ...this.selectedRoom()!, offers: [...(this.selectedRoom()?.offers || []), newOffer] };
-  //         this.selectedRoom.set(updatedRoom);
-  //         this.offerForm.reset();
-  //         this.offerForm.patchValue({ status: 'Active' });
-  //         this.closeModal();
-  //         this.selectWorkspace(this.selectedWorkspace()!); // Refresh workspace to reflect changes
-  //       },
-  //       error: (err) => {
-  //         console.error('Error adding offer:', err);
-  //         this.error.set(`Failed to add offer: ${err.message || 'Please try again or contact the backend team.'}`);
-  //       }
-  //     });
-  //   }
-  // }
-  async onAddOffer(): Promise<void> {
+  onAddOffer(): void {
     if (!this.offerForm.valid || !this.selectedRoom()) return;
 
-    try {
-      const user = JSON.parse(sessionStorage.getItem('user') || '{}');
-      const offerData = {
-        offerTitle: this.offerForm.value.offerTitle,
-        description: this.offerForm.value.description,
-        discountPercentage: +this.offerForm.value.discountPercentage,
-        validFrom: this.offerForm.value.validFrom,
-        validTo: this.offerForm.value.validTo,
-        status: this.offerForm.value.status
-      };
+    const offer: IOffer = {
+      offerTitle: this.offerForm.value.offerTitle,
+      description: this.offerForm.value.description,
+      discountPercentage: parseFloat(this.offerForm.value.discountPercentage),
+      validFrom: this.offerForm.value.validFrom,
+      validTo: this.offerForm.value.validTo,
+      status: this.offerForm.value.status
+    };
 
-      const response = await this.offerService.createOffer(
-        user.id,
-        this.selectedRoom()!.id,
-        offerData
-      ).toPromise();
-
-      this.handleSuccess(response);
-    } catch (error) {
-      this.handleError(error);
+    const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+    const staffId = user?.id;
+    if (!staffId) {
+      this.error.set('User not authenticated. Please log in.');
+      return;
     }
+
+    this.offerService.addOffer(staffId, this.selectedRoom()!.id, offer).subscribe({
+      next: (response) => {
+        console.log('Offer added successfully:', response.body);
+        const newOffer = response.body?.id ? { ...offer, id: response.body.id } : offer; // Use backend ID if returned
+        const updatedRoom = { ...this.selectedRoom()!, offers: [...(this.selectedRoom()?.offers || []), newOffer] };
+        this.selectedRoom.set(updatedRoom);
+        this.offerForm.reset();
+        this.offerForm.patchValue({ status: 'Active' });
+        this.closeModal();
+        this.selectWorkspace(this.selectedWorkspace()!);
+        Swal.fire('Success!', 'Offer added successfully.', 'success');
+      },
+      error: (err) => {
+        console.error('Error adding offer:', err);
+        this.error.set(`Failed to add offer: ${err.message || 'Please try again or contact support.'}`);
+        Swal.fire('Error!', 'Failed to add offer.', 'error');
+      }
+    });
   }
 
   private handleSuccess(response: any): void {
@@ -359,3 +317,5 @@ export class MyWorkspacesComponent {
   }
 
 }
+
+
