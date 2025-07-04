@@ -73,29 +73,6 @@ export const routes: Routes = [
 
           ]
       },
-      // {
-      //   path: 'offers',
-      //   loadComponent: () =>
-      //     import('./components/offers/all-offers-list/all-offers-list.component').then((m) => m.AllOffersListComponent),
-      //   children: [
-      //     { path: '', redirectTo: 'all', pathMatch: 'full' },
-      //     {
-      //       path: 'all',
-      //       loadComponent: () =>
-      //         import('./components/offers/offers-all/offers-all.component').then((m) => m.OffersAllComponent)
-      //     },
-      //     {
-      //       path: 'present',
-      //       loadComponent: () =>
-      //         import('./components/offers/offers-present/offers-present.component').then((m) => m.OffersPresentComponent)
-      //     },
-      //     {
-      //       path: 'expired',
-      //       loadComponent: () =>
-      //         import('./components/offers/offers-expired/offers-expired.component').then((m) => m.OffersExpiredComponent)
-      //     }
-      //   ]
-      // },
 
       {
         path: 'dashboard',
@@ -173,6 +150,9 @@ export const routes: Routes = [
       },
       {
         path: 'add-rooms', loadComponent: () => import('./components/add-rooms/add-rooms.component').then((m) => m.AddRoomsComponent)
+      },
+      {
+        path: 'new-rooms', loadComponent: () => import('./components/new-rooms/new-rooms.component').then((m) => m.NewRoomsComponent)
       }
 
 

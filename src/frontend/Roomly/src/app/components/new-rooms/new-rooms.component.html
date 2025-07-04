@@ -1,0 +1,132 @@
+<div class="container-fluid py-4 bg-light min-vh-100">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-12 col-md-2 mb-3 mb-md-0">
+            <app-side-navbar></app-side-navbar>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-12 col-md-10">
+            <div class="px-3 px-md-4">
+                <!-- Page Title & Breadcrumb -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+                    <div>
+                        <nav style="--bs-breadcrumb-divider: '›';" aria-label="breadcrumb">
+                            <ol class="breadcrumb mb-1">
+                                <li class="breadcrumb-item"><a href="#"
+                                        class="text-decoration-none text-secondary">Pages</a></li>
+                                <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">New Rooms</li>
+                            </ol>
+                        </nav>
+                        <h4 class="fw-bold text-primary">Recommended Room Types</h4>
+                    </div>
+                </div>
+
+                <!-- Workspace Selector -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+                        <label for="workspaceSelect" class="form-label fw-semibold text-dark">Select a Workspace</label>
+                        <select class="form-select shadow-sm" id="workspaceSelect" (change)="onWorkspaceChange($event)"
+                            [value]="selectedWorkspaceId">
+                            @for (workspace of workspaces; track workspace.id) {
+                            <option [value]="workspace.id">{{ workspace.name }}</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Loading/Error States -->
+                @if (isLoading) {
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                } @else if (error) {
+                <div class="alert alert-danger text-center py-4 shadow-sm">
+                    <i class="fas fa-exclamation-triangle me-2"></i> {{ error }}
+                </div>
+                } @else {
+                <!-- Recommendations Table -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
+                        <h5 class="fw-semibold text-dark mb-3">Room Recommendations</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle text-center">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class = "text-primary" scope="col"><i class="fa-solid fa-door-open me-1"></i> Type</th>
+                                        <th class = "text-primary" scope="col"><i class="fa-solid fa-users me-1"></i> Capacity</th>
+                                        <th class = "text-primary" scope="col"><i class="fa-solid fa-tag me-1"></i> Price Range</th>
+                                        <th class = "text-primary" scope="col"><i class="fa-solid fa-gift me-1"></i> Benefits</th>
+                                        <th class = "text-primary" scope="col"><i class="fa-solid fa-file-alt me-1"></i> Description</th>
+                                    </tr>
+                                </thead>
+                                <!-- <tbody>
+                    @for (recommendation of recommendations; track recommendation.type) {
+                      <tr>
+                        <td><span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">{{ recommendation.type }}</span></td>
+                        <td>{{ recommendation.capacity }}</td>
+                        <td><span class="text-success fw-medium">{{ recommendation.price_range }}</span></td>
+                        <td>{{ recommendation.benefits }}</td>
+                        <td class="text-muted small">{{ recommendation.description }}</td>
+                      </tr>
+                    }
+                    @if (recommendations.length === 0) {
+                      <tr>
+                        <td colspan="5" class="text-muted py-4">No recommendations available for this workspace.</td>
+                      </tr>
+                    }
+                  </tbody> -->
+                                <tbody>
+                                    @for (recommendation of recommendations; track recommendation.type) {
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">
+                                                {{ recommendation.type }}
+                                            </span>
+                                        </td>
+                                        <td>{{ recommendation.capacity }}</td>
+                                        <td>
+                                            <span class="text-success fw-medium">{{ recommendation.price_range }}</span>
+                                        </td>
+
+                                        <!-- Benefits Column -->
+                                        <td>
+                                            <div class="d-flex flex-wrap justify-content-center gap-1">
+                                                @for (benefit of recommendation.benefits.split(','); track benefit) {
+                                                <span class="badge bg-light text-black small rounded-pill px-2">
+                                                    <i class="fa-solid fa-check me-1"></i>{{ benefit.trim() }}
+                                                </span>
+                                                }
+                                            </div>
+                                        </td>
+
+                                        <!-- Description Column -->
+                                        <td class="text-muted small text-start">
+                                            <div style="max-height: 80px; overflow: auto;">
+                                                <i class="fa-regular fa-circle me-1 text-primary"></i>
+                                                {{ recommendation.description }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    }
+
+                                    @if (recommendations.length === 0) {
+                                    <tr>
+                                        <td colspan="5" class="text-muted py-4 text-center">
+                                            No recommendations available for this workspace.
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

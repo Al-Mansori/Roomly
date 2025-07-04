@@ -41,7 +41,7 @@ export class OfferService {
   //   return 'off-' + Math.random().toString(36).substring(2, 8);
   // }
 
-addOffer(body: any): Observable<any> {
+  addOffer(body: any): Observable<any> {
     const url = `/api/staff/offer`;
     console.log('Making offer request to:', url);
     console.log('Request payload:', body);
