@@ -153,6 +153,9 @@ export const routes: Routes = [
       },
       {
         path: 'new-rooms', loadComponent: () => import('./components/new-rooms/new-rooms.component').then((m) => m.NewRoomsComponent)
+      },
+      {
+        path: 'offers-recommendations', loadComponent: () => import('./components/offers-recommendations/offers-recommendations.component').then((m) => m.OffersRecommendationsComponent)
       }
 
 

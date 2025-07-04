@@ -116,4 +116,14 @@ export class OfferService {
       })
     );
   }
+
+  getRecommendations(staffId: string): Observable<any> {
+    const url = `https://mostafaabdelkawy-roomly-staff-offers.hf.space/api/recommend-offers`;
+    return this.http.post(url, { staff_id: staffId }).pipe(
+      catchError(error => {
+        console.error('Error fetching offer recommendations:', error);
+        return throwError(() => new Error('Failed to fetch offer recommendations'));
+      })
+    );
+  }
 }
