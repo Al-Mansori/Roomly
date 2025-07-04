@@ -29,7 +29,7 @@
               <input type="text" class="form-control" placeholder="Search by ID, listing name" />
             </div>
             <button class="btn btn-outline-secondary btn-sm">Filter</button>
-            <button class="btn btn-primary btn-sm">+ New Offer</button>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addOfferModal">+ New Offer</button>
           </div>
         </div>
 
@@ -40,4 +40,57 @@
       </div>
     </div>
   </div>
-</div>
+
+  <!-- Add/Edit/Reapply Offer Modal -->
+  <div class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addOfferModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content p-4 rounded-3 shadow-sm">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <h5 class="modal-title fw-semibold" id="addOfferModalLabel">
+            @if (selectedOffer() && selectedOffer()!.status === 'present') { Edit Offer for Room {{ getRoomId() }} }
+            @else if (selectedOffer() && selectedOffer()!.status === 'expired') { Reapply Offer for Room {{ getRoomId() }} }
+            @else { Add New Offer for Room {{ getRoomId() }} }
+          </h5>
+          <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
+        </div>
+        <form [formGroup]="offerForm" (ngSubmit)="onAddOffer()">
+          <div class="mb-3">
+            <label for="offerTitle" class="form-label">Offer Title</label>
+            <input type="text" class="form-control" id="offerTitle" formControlName="offerTitle" />
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" formControlName="description"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="discountPercentage" class="form-label">Discount Percentage</label>
+            <input type="number" class="form-control" id="discountPercentage" formControlName="discountPercentage" step="0.1" />
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <label for="validFrom" class="form-label">Valid From</label>
+              <input type="date" class="form-control" id="validFrom" formControlName="validFrom" />
+            </div>
+            <div class="col-md-6">
+              <label for="validTo" class="form-label">Valid To</label>
+              <input type="date" class="form-control" id="validTo" formControlName="validTo" />
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select class="form-control" id="status" formControlName="status">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-outline-primary px-5" [disabled]="offerForm.invalid">
+              @if (selectedOffer() && selectedOffer()!.status === 'present') { Save Changes }
+              @else if (selectedOffer() && selectedOffer()!.status === 'expired') { Reapply Offer }
+              @else { Create Offer }
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

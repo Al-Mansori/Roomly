@@ -18,13 +18,13 @@ export class OffersAllComponent {
   private subscription = new Subscription();
 
   constructor(
-    public allOffersListComponent: AllOffersListComponent, // Access parent data
+    public parent: AllOffersListComponent, // Access parent data
     
   ) {}
 
   ngOnInit(): void {
     this.subscription.add(
-      this.allOffersListComponent.offers$.subscribe({
+      this.parent.offers$.subscribe({
         next: (data: IOffer[]) => {
           this.offers = data; // No filtering for "All"
         },

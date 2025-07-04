@@ -41,22 +41,17 @@ export class OfferService {
   //   return 'off-' + Math.random().toString(36).substring(2, 8);
   // }
 
-  addOffer(staffId: string, roomId: string, offer: IOffer): Observable<any> {
-    const url = `/api/staff/offer?staffId=${staffId}&roomId=${roomId}`;
+addOffer(body: any): Observable<any> {
+    const url = `/api/staff/offer`;
     console.log('Making offer request to:', url);
-
-    const offerWithId = {
-      ...offer,
-      id: uuidv4() // Generate ID in service
-    };
-    console.log('Request payload:', offerWithId);
+    console.log('Request payload:', body);
 
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${localStorage.getItem('token') || sessionStorage.getItem('token')}`,
       'Content-Type': 'application/json'
     });
 
-    return this.http.post(url, offerWithId, { headers, observe: 'response' }).pipe(
+    return this.http.post(url, body, { headers, observe: 'response' }).pipe(
       tap({
         next: (response: HttpResponse<any>) => {
           console.log('Offer success:', response.body);
@@ -68,7 +63,6 @@ export class OfferService {
         return throwError(() => new Error('Failed to add offer. Check permissions or contact support.'));
       })
     );
-
   }
 
   getOffersByRoom(roomId: string): Observable<IOffer[]> {
@@ -81,16 +75,17 @@ export class OfferService {
     );
   }
 
-  editOffer(staffId: string, roomId: string, offer: IOffer): Observable<any> {
-    const url = `/api/staff/offer?staffId=${staffId}&roomId=${roomId}`;
+  editOffer(body: IOffer): Observable<any> {
+    const url = `/api/staff/offer`;
     console.log('Editing offer request to:', url);
+    console.log('Request payload:', body);
 
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${localStorage.getItem('token') || sessionStorage.getItem('token')}`,
       'Content-Type': 'application/json'
     });
 
-    return this.http.put(url, offer, { headers, observe: 'response' }).pipe(
+    return this.http.put(url, body, { headers, observe: 'response' }).pipe(
       tap({
         next: (response: HttpResponse<any>) => console.log('Offer edited:', response.body),
         error: (error) => console.error('Edit offer error:', error)
