@@ -1,0 +1,14 @@
+.step-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background-color: #fff;
+  transition: 0.3s;
+}
+
+.step-circle.active-step {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
