@@ -194,10 +194,16 @@ export class MyWorkspacesComponent {
       return;
     }
 
-    this.offerService.addOffer(staffId, this.selectedRoom()!.id, offer).subscribe({
+    const requestBody = {
+      ...offer,
+      staffId: staffId,
+      roomId: this.selectedRoom()!.id
+    };
+
+    this.offerService.addOffer(requestBody).subscribe({
       next: (response) => {
         console.log('Offer added successfully:', response.body);
-        const newOffer = response.body?.id ? { ...offer, id: response.body.id } : offer; // Use backend ID if returned
+        const newOffer = response.body?.id ? { ...offer, id: response.body.id } : offer;
         const updatedRoom = { ...this.selectedRoom()!, offers: [...(this.selectedRoom()?.offers || []), newOffer] };
         this.selectedRoom.set(updatedRoom);
         this.offerForm.reset();

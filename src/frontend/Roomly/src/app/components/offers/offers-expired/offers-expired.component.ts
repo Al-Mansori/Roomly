@@ -15,7 +15,6 @@ import { AllOffersListComponent } from '../all-offers-list/all-offers-list.compo
 export class OffersExpiredComponent {
 
   offers: IOffer[] = [];
-  private now = new Date();
   private subscription = new Subscription();
 
   constructor(

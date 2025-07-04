@@ -3,6 +3,7 @@ import { IRequest } from '../../../interfaces/irequest';
 import { ReservationService } from '../../../core/services/reservation/reservation.service';
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-requests',
@@ -17,7 +18,6 @@ export class RequestsComponent {
 
   constructor(
     private reservationService: ReservationService,
-    private authService: AuthService // Inject auth service
   ) { }
 
   ngOnInit(): void {
@@ -51,9 +51,26 @@ export class RequestsComponent {
     });
   }
 
+  // approveRequest(requestId: string): void {
+  //   if (!this.staffId) {
+  //     console.error('Cannot approve: staffId not available');
+  //     return;
+  //   }
+
+  //   this.reservationService.approveRequest(requestId).subscribe({
+  //     next: (response) => {
+  //       console.log('Request approved:', response);
+  //       this.loadRequests(); // Refresh the list
+  //     },
+  //     error: (err) => {
+  //       console.error('Error approving request:', err);
+  //     }
+  //   });
+  // }
   approveRequest(requestId: string): void {
     if (!this.staffId) {
       console.error('Cannot approve: staffId not available');
+      Swal.fire('Error!', 'User not authenticated.', 'error');
       return;
     }
 
@@ -61,9 +78,11 @@ export class RequestsComponent {
       next: (response) => {
         console.log('Request approved:', response);
         this.loadRequests(); // Refresh the list
+        Swal.fire('Success!', 'Request approved successfully!', 'success');
       },
       error: (err) => {
         console.error('Error approving request:', err);
+        Swal.fire('Error!', err.message || 'Failed to approve request.', 'error');
       }
     });
   }
@@ -71,6 +90,7 @@ export class RequestsComponent {
   rejectRequest(requestId: string): void {
     if (!this.staffId) {
       console.error('Cannot reject: staffId not available');
+      Swal.fire('Error!', 'User not authenticated.', 'error');
       return;
     }
 
@@ -78,9 +98,11 @@ export class RequestsComponent {
       next: (response) => {
         console.log('Request rejected:', response);
         this.loadRequests(); // Refresh the list
+        Swal.fire('Success!', 'Request rejected successfully!', 'success');
       },
       error: (err) => {
         console.error('Error rejecting request:', err);
+        Swal.fire('Error!', err.message || 'Failed to reject request.', 'error');
       }
     });
   }

@@ -87,6 +87,16 @@
                       }
                     </select>
                   </div>
+                  <div class="mb-3">
+                    <label for="reservationType" class="form-label">Reservation Type</label>
+                    <select class="form-select" id="reservationType" [(ngModel)]="formData.reservationType"
+                      name="reservationType" required>
+                      <option value="">Select Type</option>
+                      @for (type of reservationTypes; track type) {
+                      <option [value]="type">{{ type }}</option>
+                      }
+                    </select>
+                  </div>
                 </form>
               </div>
               <div class="modal-footer">

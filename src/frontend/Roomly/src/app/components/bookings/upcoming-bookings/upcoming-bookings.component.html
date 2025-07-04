@@ -3,39 +3,45 @@
     <div class="col-12 mb-4">
       <div class="card shadow-sm border-0 h-100">
         <div class="card-body">
+          <!-- Header -->
           <div class="d-flex justify-content-between flex-wrap mb-3">
             <h5 class="card-title mb-0 fs-6">
-              Reservation Date: <small class="text-muted">{{ booking.reservationDate | date: 'mediumDate' }}</small>
+              <i class="fas fa-calendar-day me-2"></i>
+              {{ booking.reservationDate | date: 'mediumDate' }}
             </h5>
-            <!-- Removed Booking ID as per request -->
+            <span class="text-muted fs-6">
+              <i class="fas fa-key me-1"></i>Access Code: {{ booking.accessCode || 'Not provided' }}
+            </span>
           </div>
+
+          <!-- Details -->
           <div class="row g-3">
-            <div class="col-12 col-md-12"> <!-- Removed image column -->
-              <h6 class="fw-bold mt-2 mb-3 fs-6">Booking Details</h6>
+            <div class="col-12 col-md-6">
               <div class="mb-2">
-                <small class="text-muted">From:</small>
+                <small class="text-primary"><i class="fas fa-clock me-1 text-primary"></i>From:</small>
                 <div class="fs-6">{{ booking.startTime | date: 'short' }}</div>
               </div>
               <div class="mb-2">
-                <small class="text-muted">To:</small>
+                <small class="text-danger"><i class="fas fa-clock me-1 text-danger"></i>To:</small>
                 <div class="fs-6">{{ booking.endTime | date: 'short' }}</div>
               </div>
-              <div class="mb-2">
-                <small class="text-muted">Access Code:</small>
-                <div class="fs-6">{{ booking.accessCode }}</div>
+              <div class="mb-2 text-warning" id="countdown-{{ booking.id }}">
+                <small class="text-muted">Starts in:</small>
+                <div class="fs-6" id="countdown-text-{{ booking.id }}"></div>
               </div>
-              <div class="mb-3">
-                <small class="text-muted">Total:</small>
+            </div>
+            <div class="col-12 col-md-6 fw-bold">
+              <div class="mb-2">
+                <small class=""><i class="fas fa-tools me-1 text-primary"></i>Amenities Count:</small>
+                <div class="fs-6">{{ booking.amenitiesCount }}</div>
+              </div>
+              <div class="mb-2">
+                <small class="fw-bold"><i class="fas fa-money-bill me-1 text-success"></i>Total Cost:</small>
                 <div class="fs-6">{{ booking.totalCost | number: '1.2-2' }} EGP</div>
               </div>
-              <div class="mt-2">
-                <span class="badge" [ngClass]="{
-                  'bg-success': booking.status.toLowerCase() === 'completed',
-                  'bg-info': booking.status.toLowerCase() === 'ongoing',
-                  'bg-warning text-dark': booking.status.toLowerCase() === 'upcoming'
-                }">
-                  {{ booking.status | titlecase }}
-                </span>
+              <div class="mb-2">
+                <small class=""><i class="fas fa-credit-card me-1"></i>Payment:</small>
+                <div class="fs-6">{{ booking.payment.paymentMethod || 'Payment method not specified' }}</div>
               </div>
             </div>
           </div>

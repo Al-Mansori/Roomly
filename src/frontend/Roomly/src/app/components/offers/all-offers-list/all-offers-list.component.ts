@@ -1,17 +1,19 @@
 import { Component, signal } from '@angular/core';
 import { SideNavbarComponent } from "../../side-navbar/side-navbar.component";
-import { FormBuilder, FormGroup, FormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { IOffer } from '../../../interfaces/iworkspace';
 import { OfferService } from '../../../core/services/offer/offer.service';
 import Swal from 'sweetalert2';
+import bootstrap from '../../../../main.server';
+
 
 @Component({
   selector: 'app-all-offers-list',
   standalone: true,
-  imports: [SideNavbarComponent, FormsModule, CommonModule, RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [SideNavbarComponent, FormsModule, CommonModule, RouterLink, RouterLinkActive, RouterOutlet, ReactiveFormsModule],
   templateUrl: './all-offers-list.component.html',
   styleUrl: './all-offers-list.component.scss'
 })
@@ -58,7 +60,7 @@ export class AllOffersListComponent {
 
   private offersSubject = new BehaviorSubject<IOffer[]>([]);
   offers$ = this.offersSubject.asObservable();
-  private roomId: string | null = null;
+  public _roomId: string | null = null;
   private subscription = new Subscription();
   selectedOffer = signal<IOffer | null>(null); // New signal for selected offer
   offerForm: FormGroup;
@@ -66,7 +68,8 @@ export class AllOffersListComponent {
   constructor(
     private offerService: OfferService,
     private route: ActivatedRoute,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router: Router
   ) {
     this.offerForm = this.fb.group({
       id: [''],
@@ -83,8 +86,8 @@ export class AllOffersListComponent {
     // this.fetchOffers();
     this.subscription.add(
       this.route.paramMap.subscribe(params => {
-        this.roomId = params.get('roomId');
-        if (this.roomId) {
+        this._roomId = params.get('roomId');
+        if (this._roomId) {
           this.fetchOffers();
         } else {
           console.error('No roomId provided in route');
@@ -92,8 +95,12 @@ export class AllOffersListComponent {
       })
     );
   }
+  getRoomId(): string | null {
+    return this._roomId;
+  }
   selectOffer(offer: IOffer): void {
     this.selectedOffer.set(offer);
+    this.updateFormState();
   }
 
   deselectOffer(): void {
@@ -101,6 +108,7 @@ export class AllOffersListComponent {
     this.selectedOffer.set(null);
     this.offerForm.reset();
     this.offerForm.patchValue({ status: 'Active' });
+    this.offerForm.enable();
   }
 
   // private fetchOffers(): void {
@@ -124,21 +132,23 @@ export class AllOffersListComponent {
   //   });
   // }
   private fetchOffers(): void {
-    if (!this.roomId) return;
-    this.offerService.getOffersByRoom(this.roomId).subscribe({
+    if (!this._roomId) return;
+    this.offerService.getOffersByRoom(this._roomId).subscribe({
       next: (offers) => {
+        console.log('Fetched offers:', offers); // Debug log
         const currentDate = new Date();
-        const updatedOffers = offers.map(offer => {
+        const updatedOffers = Array.isArray(offers) ? offers.map(offer => {
           const validTo = new Date(offer.validTo);
           return {
             ...offer,
             status: currentDate > validTo ? 'expired' : 'present'
           };
-        });
+        }) : [];
         this.offersSubject.next(updatedOffers);
       },
       error: (err) => {
         console.error('Error fetching offers:', err);
+        this.offersSubject.next([]); // Set to empty array on error
       }
     });
   }
@@ -159,7 +169,7 @@ export class AllOffersListComponent {
     });
   }
   deleteOffer(offerId: string): void {
-    if (!this.roomId) return;
+    if (!this._roomId) return;
     const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
     const staffId = user?.id;
     if (!staffId) return;
@@ -178,21 +188,9 @@ export class AllOffersListComponent {
     });
   }
 
-  // editOffer(): void {
-  //   if (!this.selectedOffer() || this.selectedOffer()!.status !== 'present') return;
-  //   this.offerForm.patchValue(this.selectedOffer());
-  //   this.openModal();
-  // }
-
-  reapplyOffer(): void {
-    if (!this.selectedOffer() || this.selectedOffer()!.status !== 'expired') return;
-    this.offerForm.patchValue({
-      ...this.selectedOffer(),
-      offerTitle: { value: this.selectedOffer()!.offerTitle, disabled: true },
-      description: { value: this.selectedOffer()!.description, disabled: true },
-      discountPercentage: { value: this.selectedOffer()!.discountPercentage, disabled: true },
-      status: { value: this.selectedOffer()!.status, disabled: true }
-    });
+  editOffer(): void {
+    if (!this.selectedOffer() || this.selectedOffer()!.status !== 'present') return;
+    this.offerForm.patchValue(this.selectedOffer()!);
     this.openModal();
   }
 
@@ -206,44 +204,110 @@ export class AllOffersListComponent {
       document.body.appendChild(backdrop);
     }
   }
+  // reapplyOffer(): void {
+  //   if (!this.selectedOffer() || this.selectedOffer()!.status !== 'expired') return;
+  //   const offer = this.selectedOffer()!;
+  //   this.offerForm.patchValue({
+  //     ...offer,
+  //     offerTitle: { value: offer.offerTitle, disabled: true },
+  //     description: { value: offer.description, disabled: true },
+  //     discountPercentage: { value: offer.discountPercentage, disabled: true },
+  //     status: { value: offer.status, disabled: true }
+  //   });
+  //   this.openModal();
+  // }
+  reapplyOffer(): void {
+    if (!this.selectedOffer() || this.selectedOffer()!.status !== 'expired') return;
+    const offer = this.selectedOffer()!;
+    this.offerForm.patchValue(offer);
+    this.updateFormState(); // Disable fields for reapply
+    this.openModal();
+  }
+
+
+  // onAddOffer(): void {
+  //   if (!this.offerForm.valid || !this._roomId) return;
+
+  //   const offer: IOffer = this.offerForm.value;
+  //   const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+  //   const staffId = user?.id;
+  //   if (!staffId) return;
+
+  //   if (this.selectedOffer() && this.selectedOffer()!.status === 'expired') {
+  //     this.offerService.editOffer(staffId, this._roomId, offer).subscribe({
+  //       next: (response) => {
+  //         console.log('Offer reapplied:', response.body);
+  //         this.updateOffers(offer);
+  //         this.closeModal();
+  //         Swal.fire('Success!', 'Offer reapplied successfully.', 'success');
+  //       },
+  //       error: (err) => {
+  //         console.error('Error reapplying offer:', err);
+  //         Swal.fire('Error!', 'Failed to reapply offer.', 'error');
+  //       }
+  //     });
+  //   } else if (this.selectedOffer() && this.selectedOffer()!.status === 'present') {
+  //     this.offerService.editOffer(staffId, this._roomId, offer).subscribe({
+  //       next: (response) => {
+  //         console.log('Offer edited:', response.body);
+  //         this.updateOffers(offer);
+  //         this.closeModal();
+  //         Swal.fire('Success!', 'Offer edited successfully.', 'success');
+  //       },
+  //       error: (err) => {
+  //         console.error('Error editing offer:', err);
+  //         Swal.fire('Error!', 'Failed to edit offer.', 'error');
+  //       }
+  //     });
+  //   } else {
+  //     // New offer creation
+  //     this.offerService.addOffer(staffId, this._roomId, offer).subscribe({
+  //       next: (response) => {
+  //         console.log('Offer added:', response.body);
+  //         const newOffer = response.body?.id ? { ...offer, id: response.body.id } : offer;
+  //         this.updateOffers(newOffer);
+  //         this.closeModal();
+  //         Swal.fire('Success!', 'Offer created successfully.', 'success');
+  //       },
+  //       error: (err) => {
+  //         console.error('Error adding offer:', err);
+  //         Swal.fire('Error!', 'Failed to add offer.', 'error');
+  //       }
+  //     });
+  //   }
+  // }
+
   onAddOffer(): void {
-    if (!this.offerForm.valid || !this.roomId) return;
+    if (!this.offerForm.valid || !this._roomId) return;
 
     const offer: IOffer = this.offerForm.value;
     const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
     const staffId = user?.id;
     if (!staffId) return;
 
-    if (this.selectedOffer() && this.selectedOffer()!.status === 'expired') {
-      this.offerService.editOffer(staffId, this.roomId, offer).subscribe({
-        next: (response) => {
-          console.log('Offer reapplied:', response.body);
-          this.updateOffers(offer);
-          this.closeModal();
-          Swal.fire('Success!', 'Offer reapplied successfully.', 'success');
-        },
-        error: (err) => {
-          console.error('Error reapplying offer:', err);
-          Swal.fire('Error!', 'Failed to reapply offer.', 'error');
-        }
-      });
-    } else if (this.selectedOffer() && this.selectedOffer()!.status === 'present') {
-      this.offerService.editOffer(staffId, this.roomId, offer).subscribe({
-        next: (response) => {
-          console.log('Offer edited:', response.body);
-          this.updateOffers(offer);
-          this.closeModal();
-          Swal.fire('Success!', 'Offer edited successfully.', 'success');
-        },
-        error: (err) => {
-          console.error('Error editing offer:', err);
-          Swal.fire('Error!', 'Failed to edit offer.', 'error');
-        }
-      });
-    }
+    const requestBody = {
+      ...offer,
+      staffId: staffId,
+      roomId: this._roomId
+    };
+
+    this.offerService.addOffer(requestBody).subscribe({
+      next: (response) => {
+        console.log('Offer added response:', response);
+        const newOffer = response.body?.id ? { ...offer, id: response.body.id } : offer;
+        this.updateOffers(newOffer);
+        this.closeModal();
+        Swal.fire('Success!', 'Offer created successfully.', 'success');
+        this.fetchOffers(); // Refresh offers after adding
+      },
+      error: (err) => {
+        console.error('Error adding offer:', err);
+        Swal.fire('Error!', 'Failed to add offer.', 'error');
+      }
+    });
   }
 
-  private closeModal(): void {
+  public closeModal(): void {
     const modal = document.getElementById('addOfferModal');
     if (modal) {
       modal.classList.remove('show');
@@ -253,6 +317,7 @@ export class AllOffersListComponent {
     }
     this.deselectOffer();
   }
+
   private updateOffers(offer: IOffer): void {
     const currentOffers = this.offersSubject.value;
     const offerIndex = currentOffers.findIndex(o => o.id === offer.id);
@@ -262,6 +327,20 @@ export class AllOffersListComponent {
       currentOffers.push({ ...offer, status: 'present' });
     }
     this.offersSubject.next(currentOffers);
+  }
+
+  private updateFormState(): void {
+    if (this.selectedOffer() && this.selectedOffer()!.status === 'expired') {
+      this.offerForm.get('offerTitle')?.disable();
+      this.offerForm.get('description')?.disable();
+      this.offerForm.get('discountPercentage')?.disable();
+      this.offerForm.get('status')?.disable();
+    } else {
+      this.offerForm.get('offerTitle')?.enable();
+      this.offerForm.get('description')?.enable();
+      this.offerForm.get('discountPercentage')?.enable();
+      this.offerForm.get('status')?.enable();
+    }
   }
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
