@@ -3,50 +3,61 @@
     <div class="col-12 mb-4">
       <div class="card shadow-sm border-0 h-100">
         <div class="card-body">
-          <!-- Header (Removed Reservation ID) -->
+          <!-- Header -->
           <div class="d-flex justify-content-between flex-wrap mb-3">
             <h5 class="card-title mb-0 fs-6">
-              <!-- Removed Reservation ID -->
+              <i class="fas fa-calendar-day me-2"></i>
+              {{ booking.reservationDate | date: 'mediumDate' }}
             </h5>
-            <span class="text-muted fs-6">Access Code: {{ booking.accessCode }}</span>
+            <span class="text-muted fs-6">
+              <i class="fas fa-key me-1"></i>Access Code: {{ booking.accessCode || 'Not provided' }}
+            </span>
           </div>
 
           <!-- Details -->
-          <div class="row g-3">
+          <div class="row g-3 fw-bold">
             <div class="col-12 col-md-6">
               <div class="mb-2">
-                <small class="text-muted">Reservation Date:</small>
-                <div class="fs-6">{{ booking.reservationDate | date: 'mediumDate' }}</div>
-              </div>
-              <div class="mb-2">
-                <small class="text-muted">Start Time:</small>
+                <small class="text-primary"><i class="fas fa-clock me-1 text-primary"></i>Start Time:</small>
                 <div class="fs-6">{{ booking.startTime | date: 'short' }}</div>
               </div>
               <div class="mb-2">
-                <small class="text-muted">End Time:</small>
+                <small class="text-danger"><i class="fas fa-clock me-1 text-danger"></i>End Time:</small>
                 <div class="fs-6">{{ booking.endTime | date: 'short' }}</div>
               </div>
+              @if (booking.status.toLowerCase() === 'upcoming') {
+                <div class="mb-2 text-warning" id="countdown-{{ booking.id }}">
+                  <small class="text-muted">Starts in:</small>
+                  <div class="fs-6" id="countdown-text-{{ booking.id }}"></div>
+                </div>
+              }
+              @if (booking.status.toLowerCase() === 'ongoing') {
+                <div class="mb-2 text-info" id="countdown-{{ booking.id }}">
+                  <small class="text-muted">Ends in:</small>
+                  <div class="fs-6" id="countdown-text-{{ booking.id }}"></div>
+                </div>
+              }
             </div>
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-6 fw-bold">
               <div class="mb-2">
-                <small class="text-muted">Amenities Count:</small>
+                <small class=""><i class="fas fa-tools me-1 text-primary"></i>Amenities Count:</small>
                 <div class="fs-6">{{ booking.amenitiesCount }}</div>
               </div>
               <div class="mb-2">
-                <small class="text-muted">Total Cost:</small>
+                <small class="fw-bold"><i class="fas fa-money-bill me-1 text-success"></i>Total Cost:</small>
                 <div class="fs-6">{{ booking.totalCost | number: '1.2-2' }} EGP</div>
               </div>
               <div class="mb-2">
-                <small class="text-muted">Payment:</small>
-                <div class="fs-6">{{ booking.payment || 'N/A' }}</div>
+                <small class=""><i class="fas fa-credit-card me-1"></i>Payment:</small>
+                <div class="fs-6">{{ booking.payment.paymentMethod || 'Payment method not specified' }}</div>
               </div>
               <div class="mt-2">
                 <span class="badge"
                       [ngClass]="{
-                        'bg-success': booking.status === 'COMPLETED',
-                        'bg-secondary': booking.status === 'CANCELLED',
-                        'bg-info': booking.status === 'ONGOING',
-                        'bg-warning text-dark': booking.status === 'UPCOMING'
+                        'bg-success': booking.status.toLowerCase() === 'completed',
+                        'bg-secondary': booking.status.toLowerCase() === 'cancelled',
+                        'bg-info': booking.status.toLowerCase() === 'ongoing',
+                        'bg-warning text-dark': booking.status.toLowerCase() === 'upcoming'
                       }">
                   {{ booking.status | titlecase }}
                 </span>
