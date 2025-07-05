@@ -87,7 +87,9 @@ import 'package:roomly/features/workspace/domain/usecases/get_workspace_schedule
 import '../../features/payment/presentation/screens/payment_screen.dart';
 import '../../features/room_management/domain/entities/room_entity.dart';
 import '../../features/room_management/presentation/cubits/booking/cubit/booking_cubit.dart';
+import '../../features/room_management/presentation/cubits/open_hours_cubit.dart';
 import '../../features/room_management/presentation/cubits/request.dart';
+import '../../features/room_management/presentation/cubits/seats_availability_cubit.dart';
 import '../../features/room_management/presentation/screens/booking_3rd_screen.dart';
 import '../../features/room_management/presentation/screens/send_request_screen.dart';
 import '../service_locator/service_locator.dart';
@@ -285,12 +287,27 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>;
         final room = extra['room'] as RoomEntity;
-        final workspaceId = extra['workspaceId'] as String; // Add type cast
+        final workspaceId = extra['workspaceId'] as String;
         final discountedPrice = extra['discountedPrice'] as double;
-        return SelectDataScreen(
-          room: room,
-          discountedPrice: discountedPrice,
-          workspaceId: workspaceId,
+
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => SeatsAvailabilityCubit(
+                checkAvailability: sl(), // Make sure this is registered in GetIt
+              ),
+            ),
+            BlocProvider(
+              create: (context) => OperatingHoursCubit(
+                 sl(), // Make sure this is registered in GetIt
+              ),
+            ),
+          ],
+          child: SelectDataScreen(
+            room: room,
+            discountedPrice: discountedPrice,
+            workspaceId: workspaceId,
+          ),
         );
       },
     ),
@@ -442,141 +459,141 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: '/rooms', builder: (context, state) => const RoomListScreen()),
 
-    // GoRoute(
-    //   path: '/room/:id',
-    //   builder: (context, state) {
-    //     final String roomId = state.pathParameters['id'] ?? '';
-    //     final extras = state.extra as Map<String, dynamic>?;
-
-    //     final WorkspaceDetailsCubit? workspaceCubit = extras?['workspaceCubit'];
-    //     final String? workspaceId = extras?['workspaceId'];
-
-    //     RoomDetailsCubit createRoomDetailsCubitSafely() {
-    //       if (!sl.isRegistered<RoomDetailsCubit>()) {
-    //         // fallback manual creation (if needed) or show an error screen
-    //         return RoomDetailsCubit(
-    //           getRoomDetailsUseCase: sl(),
-    //           getRoomImagesUseCase: sl(),
-    //           getRoomOffersUseCase: sl(),
-    //           getFavoriteRoomsUseCase: sl(),
-    //           addFavoriteRoomUseCase: sl(),
-    //           removeFavoriteRoomUseCase: sl(),
-    //         );
-    //       }
-    //       return sl<RoomDetailsCubit>();
-    //     }
-
-    //     // ✅ Case 1: workspaceCubit is passed
-    //     if (workspaceCubit != null) {
-    //       return MultiBlocProvider(
-    //         providers: [
-    //           BlocProvider.value(value: workspaceCubit),
-    //           BlocProvider<RoomDetailsCubit>(
-    //             create: (_) => createRoomDetailsCubitSafely(),
-    //           ),
-    //         ],
-    //         child: RoomDetailsScreen(roomId: roomId),
-    //       );
-    //     }
-
-    //     // ✅ Case 2: workspaceId is passed
-    //     if (workspaceId != null) {
-    //       return MultiBlocProvider(
-    //         providers: [
-    //           BlocProvider<WorkspaceDetailsCubit>(
-    //             create: (_) => _createWorkspaceCubit(workspaceId),
-    //           ),
-    //           BlocProvider<RoomDetailsCubit>(
-    //             create: (_) => createRoomDetailsCubitSafely(),
-    //           ),
-    //         ],
-    //         child: RoomDetailsScreen(
-    //           roomId: roomId,
-    //           workspaceId: workspaceId,
-    //         ),
-    //       );
-    //     }
-
-    //     // ❗ Fallback (neither workspaceCubit nor workspaceId was passed)
-    //     return BlocProvider<RoomDetailsCubit>(
-    //       create: (_) => createRoomDetailsCubitSafely(),
-    //       child: RoomDetailsScreen(roomId: roomId),
-    //     );
-    //   },
-    // ),
-
     GoRoute(
       path: '/room/:id',
       builder: (context, state) {
         final String roomId = state.pathParameters['id'] ?? '';
-
         final extras = state.extra as Map<String, dynamic>?;
 
         final WorkspaceDetailsCubit? workspaceCubit = extras?['workspaceCubit'];
         final String? workspaceId = extras?['workspaceId'];
 
-        // Case 1: WorkspaceDetailsCubit is passed
+        RoomDetailsCubit createRoomDetailsCubitSafely() {
+          if (!sl.isRegistered<RoomDetailsCubit>()) {
+            // fallback manual creation (if needed) or show an error screen
+            return RoomDetailsCubit(
+              getRoomDetailsUseCase: sl(),
+              getRoomImagesUseCase: sl(),
+              getRoomOffersUseCase: sl(),
+              getFavoriteRoomsUseCase: sl(),
+              addFavoriteRoomUseCase: sl(),
+              removeFavoriteRoomUseCase: sl(), checkRoomRecoveryStatusUseCase: sl(),
+            );
+          }
+          return sl<RoomDetailsCubit>();
+        }
+
+        // ✅ Case 1: workspaceCubit is passed
         if (workspaceCubit != null) {
           return MultiBlocProvider(
             providers: [
               BlocProvider.value(value: workspaceCubit),
               BlocProvider<RoomDetailsCubit>(
-                create: (_) => room_di.sl<RoomDetailsCubit>(),
+                create: (_) => createRoomDetailsCubitSafely(),
               ),
             ],
             child: RoomDetailsScreen(roomId: roomId),
           );
         }
 
-        // Case 2: Only workspaceId is passed
+        // ✅ Case 2: workspaceId is passed
         if (workspaceId != null) {
           return MultiBlocProvider(
             providers: [
               BlocProvider<WorkspaceDetailsCubit>(
-                create: (_) {
-                  // Manual creation logic
-                  final client = http.Client();
-                  final remoteDataSource =
-                      WorkspaceRemoteDataSourceImpl(client: client);
-                  final repository = WorkspaceRepositoryImpl(
-                      remoteDataSource: remoteDataSource);
-                  final getWorkspaceDetailsUseCase =
-                      GetWorkspaceDetailsUseCase(repository: repository);
-                  final getWorkspaceReviewsUseCase =
-                      GetWorkspaceReviewsUseCase(repository);
-                  final getRoomDetailsUseCase =
-                      GetRoomDetailsUseCase(repository: repository);
-                  final getWorkspaceSchedulesUseCase =
-                      GetWorkspaceSchedulesUseCase(repository);
-
-                  final cubit = WorkspaceDetailsCubit(
-                    getWorkspaceDetailsUseCase: getWorkspaceDetailsUseCase,
-                    getRoomDetailsUseCase: getRoomDetailsUseCase,
-                    getWorkspaceReviewsUseCase: getWorkspaceReviewsUseCase,
-                    getWorkspaceSchedulesUseCase: getWorkspaceSchedulesUseCase,
-                  );
-
-                  // Trigger the fetch
-                  cubit.getWorkspaceDetails(workspaceId);
-
-                  return cubit;
-                },
+                create: (_) => _createWorkspaceCubit(workspaceId),
               ),
               BlocProvider<RoomDetailsCubit>(
-                create: (_) => room_di.sl<RoomDetailsCubit>(),
+                create: (_) => createRoomDetailsCubitSafely(),
               ),
             ],
-            child: RoomDetailsScreen(roomId: roomId),
+            child: RoomDetailsScreen(
+              roomId: roomId,
+              workspaceId: workspaceId,
+            ),
           );
         }
 
-        // Fallback if workspaceCubit or workspaceId is null
+        // ❗ Fallback (neither workspaceCubit nor workspaceId was passed)
         return BlocProvider<RoomDetailsCubit>(
-          create: (_) => room_di.sl<RoomDetailsCubit>(),
+          create: (_) => createRoomDetailsCubitSafely(),
           child: RoomDetailsScreen(roomId: roomId),
         );
       },
     ),
+
+    // GoRoute(
+    //   path: '/room/:id',
+    //   builder: (context, state) {
+    //     final String roomId = state.pathParameters['id'] ?? '';
+    //
+    //     final extras = state.extra as Map<String, dynamic>?;
+    //
+    //     final WorkspaceDetailsCubit? workspaceCubit = extras?['workspaceCubit'];
+    //     final String? workspaceId = extras?['workspaceId'];
+    //
+    //     // Case 1: WorkspaceDetailsCubit is passed
+    //     if (workspaceCubit != null) {
+    //       return MultiBlocProvider(
+    //         providers: [
+    //           BlocProvider.value(value: workspaceCubit),
+    //           BlocProvider<RoomDetailsCubit>(
+    //             create: (_) => room_di.sl<RoomDetailsCubit>(),
+    //           ),
+    //         ],
+    //         child: RoomDetailsScreen(roomId: roomId),
+    //       );
+    //     }
+    //
+    //     // Case 2: Only workspaceId is passed
+    //     if (workspaceId != null) {
+    //       return MultiBlocProvider(
+    //         providers: [
+    //           BlocProvider<WorkspaceDetailsCubit>(
+    //             create: (_) {
+    //               // Manual creation logic
+    //               final client = http.Client();
+    //               final remoteDataSource =
+    //                   WorkspaceRemoteDataSourceImpl(client: client);
+    //               final repository = WorkspaceRepositoryImpl(
+    //                   remoteDataSource: remoteDataSource);
+    //               final getWorkspaceDetailsUseCase =
+    //                   GetWorkspaceDetailsUseCase(repository: repository);
+    //               final getWorkspaceReviewsUseCase =
+    //                   GetWorkspaceReviewsUseCase(repository);
+    //               final getRoomDetailsUseCase =
+    //                   GetRoomDetailsUseCase(repository: repository);
+    //               final getWorkspaceSchedulesUseCase =
+    //                   GetWorkspaceSchedulesUseCase(repository);
+    //
+    //               final cubit = WorkspaceDetailsCubit(
+    //                 getWorkspaceDetailsUseCase: getWorkspaceDetailsUseCase,
+    //                 getRoomDetailsUseCase: getRoomDetailsUseCase,
+    //                 getWorkspaceReviewsUseCase: getWorkspaceReviewsUseCase,
+    //                 getWorkspaceSchedulesUseCase: getWorkspaceSchedulesUseCase,
+    //               );
+    //
+    //               // Trigger the fetch
+    //               cubit.getWorkspaceDetails(workspaceId);
+    //
+    //               return cubit;
+    //             },
+    //           ),
+    //           BlocProvider<RoomDetailsCubit>(
+    //             create: (_) => room_di.sl<RoomDetailsCubit>(),
+    //           ),
+    //         ],
+    //         child: RoomDetailsScreen(roomId: roomId),
+    //       );
+    //     }
+    //
+    //     // Fallback if workspaceCubit or workspaceId is null
+    //     return BlocProvider<RoomDetailsCubit>(
+    //       create: (_) => room_di.sl<RoomDetailsCubit>(),
+    //       child: RoomDetailsScreen(roomId: roomId),
+    //     );
+    //   },
+    // ),
 
     GoRoute(
       path: '/booking',

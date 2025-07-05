@@ -714,6 +714,7 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
       userId: userId,
       workspaceId: widget.workspaceId,
       roomId: widget.room.id ?? 'default_room',
+      loyalityPoint: _pointsToRedeem
     );
 
     // If points are being redeemed, call the redeem API first
