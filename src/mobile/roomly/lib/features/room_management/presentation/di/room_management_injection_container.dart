@@ -63,6 +63,15 @@ import 'package:roomly/features/room_management/domain/usecases/get_room_offers_
 import 'package:roomly/features/room_management/domain/usecases/check_room_recovery_status_usecase.dart';
 import 'package:roomly/features/room_management/presentation/cubits/room_details_cubit.dart';
 
+import '../../data/data_sources/seats_availability_remote_data_source.dart';
+import '../../data/repositories/operating_hours_repo_impl.dart';
+import '../../data/repositories/seats_availability_repository_impl.dart';
+import '../../domain/repositories/open_hours_repo.dart';
+import '../../domain/repositories/seats_repository.dart';
+import '../../domain/usecases/seats_availability_use_case.dart';
+import '../cubits/open_hours_cubit.dart';
+import '../cubits/seats_availability_cubit.dart';
+
 final sl = GetIt.instance;
 
 Future<void> initRoomManagementDependencies() async {
@@ -100,6 +109,34 @@ Future<void> initRoomManagementDependencies() async {
   sl.registerLazySingleton<OfferRemoteDataSource>(
     () => OfferRemoteDataSourceImpl(dio: sl<Dio>()),
   );
+  sl.registerLazySingleton<SeatsAvailabilityRemoteDataSource>(
+        () => SeatsAvailabilityRemoteDataSourceImpl(dio: sl()),
+  );
+
+  // Repositories
+  sl.registerLazySingleton<SeatsAvailabilityRepository>(
+        () => SeatsAvailabilityRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  // Use cases
+  sl.registerLazySingleton(
+        () => CheckSeatsAvailabilityUseCase(sl()),
+  );
+
+  // Cubit
+  sl.registerFactory(
+        () => SeatsAvailabilityCubit(checkAvailability: sl()),
+  );
+  sl.registerLazySingleton<OperatingHoursRepository>(
+        () => OperatingHoursRepositoryImpl(
+      dio: sl(), // Make sure Dio is registered
+    ),
+  );
+  sl.registerFactory(
+        () => OperatingHoursCubit( sl()),
+  );
+
+
 }
 
 
