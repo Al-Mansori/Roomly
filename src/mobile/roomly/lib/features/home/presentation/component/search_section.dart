@@ -19,17 +19,17 @@ class SearchSection extends StatelessWidget {
               Color.fromARGB(127, 0, 0, 0), BlendMode.darken),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
-            const SizedBox(height: 20),
-            const CustomAppBar(),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
+            CustomAppBar(),
+            SizedBox(height: 20),
             _SalutationSection(),
-            const SizedBox(height: 20),
-            const CustomSearchBar(),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
+            CustomSearchBar(),
+            SizedBox(height: 20),
           ],
         ),
       ),
