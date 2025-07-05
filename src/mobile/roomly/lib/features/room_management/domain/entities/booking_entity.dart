@@ -6,6 +6,7 @@ class BookingRequest {
   final String endTime;
   final String paymentMethod;
   final int amenitiesCount;
+  final String reservationType;
   final int? loyalityPoint;
 
   BookingRequest({
@@ -15,7 +16,8 @@ class BookingRequest {
     required this.startTime,
     required this.endTime,
     required this.paymentMethod,
-    this.amenitiesCount = 2,
+    this.reservationType = 'HOURLY',
+    this.amenitiesCount = 1,
     this.loyalityPoint
   });
 }
