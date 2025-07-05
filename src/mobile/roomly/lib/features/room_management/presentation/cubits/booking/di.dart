@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:http/http.dart' as http;
+import 'package:roomly/features/loyalty/domain/usecases/get_top_rooms_usecase.dart';
 import '../../../../../core/network/network_info.dart';
 import '../../../../../core/service_locator/service_locator.dart';
 import '../../../../loyalty/data/data_source/loyalty_points_remote_data_source.dart';
@@ -73,6 +74,13 @@ void setupDependencies() {
     );
   }
 
+  // GetTopRoomsUseCase
+  if (!sl.isRegistered<GetTopRooms>()) {
+    sl.registerSingleton<GetTopRooms>(
+      GetTopRooms(sl<LoyaltyPointsRepository>()),
+    );
+  }
+
   // LoyaltyPointsCubit
   if (!sl.isRegistered<LoyaltyPointsCubit>()) {
     sl.registerFactory<LoyaltyPointsCubit>(
@@ -80,6 +88,7 @@ void setupDependencies() {
         getLoyaltyPointsUseCase: sl<GetLoyaltyPoints>(),
         addLoyaltyPointsUseCase: sl<AddLoyaltyPoints>(),
         redeemLoyaltyPointsUseCase: sl<RedeemLoyaltyPoints>(),
+        getTopRoomsUseCase: sl<GetTopRooms>(),
       ),
     );
   }
