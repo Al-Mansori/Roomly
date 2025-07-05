@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { SideStepsIndicatorComponent } from "../side-steps-indicator/side-steps-indicator.component";
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UploadImageComponent } from './upload-image/upload-image.component';
@@ -15,18 +15,19 @@ import Swal from 'sweetalert2';
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    UploadImageComponent
+    UploadImageComponent, 
+    RouterModule
   ],
   templateUrl: './add-rooms.component.html',
   styleUrls: ['./add-rooms.component.scss']
 })
 export class AddRoomsComponent {
-  steps = [
-    { icon: 'Add Worksapce step indicator.png', label: 'Add Workspace', active: true },
-    { icon: 'Add Rooms step indicator.png', label: 'Rooms', active: true },
-    { icon: 'Add amenities step indicator.png', label: 'Amenities', active: false },
-    { icon: 'Reception hours step indicator.png', label: 'Recipients', active: false }
-  ];
+  // steps = [
+  //   { icon: 'Add Worksapce step indicator.png', label: 'Add Workspace', active: true },
+  //   { icon: 'Add Rooms step indicator.png', label: 'Rooms', active: true },
+  //   { icon: 'Add amenities step indicator.png', label: 'Amenities', active: false },
+  //   { icon: 'Reception hours step indicator.png', label: 'Recipients', active: false }
+  // ];
 
   workspaceId: string | null = null;
   roomForm: FormGroup;

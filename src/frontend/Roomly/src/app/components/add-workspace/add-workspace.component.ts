@@ -7,7 +7,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { WorkspacePlanComponent } from './workspace-plan/workspace-plan.component';
 import { CreateWorkspaceService } from '../../core/services/workspace/create-workspace.service';
 import Swal from 'sweetalert2';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-add-workspace',
@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
     PostPreviewComponent,
     ReactiveFormsModule,
     WorkspacePlanComponent,
+    RouterModule
 
   ],
   templateUrl: './add-workspace.component.html',
@@ -33,12 +34,12 @@ export class AddWorkspaceComponent implements OnInit {
   workspacePlanType: string = '';
   workspaceId: string | null = null;
 
-  steps = [
-    { icon: 'Add Worksapce step indicator.png', label: 'Add Workspace', active: true },
-    { icon: 'Add Rooms step indicator.png', label: 'Rooms', active: false },
-    { icon: 'Add amenities step indicator.png', label: 'Amenities', active: false },
-    { icon: 'Reception hours step indicator.png', label: 'Recipients', active: false }
-  ];
+  // steps = [
+  //   { icon: 'Add Worksapce step indicator.png', label: 'Add Workspace', active: true },
+  //   { icon: 'Add Rooms step indicator.png', label: 'Rooms', active: false },
+  //   { icon: 'Add amenities step indicator.png', label: 'Amenities', active: false },
+  //   { icon: 'Reception hours step indicator.png', label: 'Recipients', active: false }
+  // ];
 
   constructor(private fb: FormBuilder,
     private CreateWorkspaceService: CreateWorkspaceService,

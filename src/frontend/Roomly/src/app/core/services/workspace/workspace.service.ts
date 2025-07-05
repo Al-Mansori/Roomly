@@ -37,4 +37,12 @@ export class WorkspaceService {
       })
     );
   }
+  getWorkspaceAnalysis(workspaceId: string): Observable<any> {
+    return this.http.get(`https://mostafaabdelkawy-roomly-workspace-analysis.hf.space/api/v1/analysis/workspace/${workspaceId}/all`).pipe(
+      catchError(error => {
+        console.error('Error fetching workspace analysis:', error);
+        throw error;
+      })
+    );
+  }
 }

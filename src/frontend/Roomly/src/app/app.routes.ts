@@ -8,29 +8,29 @@ export const routes: Routes = [
   // 🔒 Auth routes (Temporarily disabled)
 
   // 🌐 Public Routes (not logged in)
- {
-  path: '',
-  component: AuthLayoutComponent,
-  // canActivate: [logoutGuard], // ✅ ضيفي دا هنا
-  children: [
-    { path: '', redirectTo: 'home', pathMatch: 'full' },
-    {
-      path: 'home',
-      loadComponent: () =>
-        import('./components/home/home.component').then((m) => m.HomeComponent)
-    },
-    {
-      path: 'login',
-      loadComponent: () =>
-        import('./components/login/login.component').then((m) => m.LoginComponent)
-    },
-    {
-      path: 'register',
-      loadComponent: () =>
-        import('./components/register/register.component').then((m) => m.RegisterComponent)
-    }
-  ]
- },
+  {
+    path: '',
+    component: AuthLayoutComponent,
+    // canActivate: [logoutGuard], // ✅ ضيفي دا هنا
+    children: [
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      {
+        path: 'home',
+        loadComponent: () =>
+          import('./components/home/home.component').then((m) => m.HomeComponent)
+      },
+      {
+        path: 'login',
+        loadComponent: () =>
+          import('./components/login/login.component').then((m) => m.LoginComponent)
+      },
+      {
+        path: 'register',
+        loadComponent: () =>
+          import('./components/register/register.component').then((m) => m.RegisterComponent)
+      }
+    ]
+  },
 
   {
     path: '',
@@ -67,35 +67,12 @@ export const routes: Routes = [
         children:
           [
             { path: '', redirectTo: 'all', pathMatch: 'full' },
-            { path: 'all', loadComponent: () => import('./components/offers/offers-all/offers-all.component').then((m) => m.OffersAllComponent)},
-            {path: 'expired', loadComponent: () => import('./components/offers/offers-expired/offers-expired.component').then((m) => m.OffersExpiredComponent)},
-            {path: 'present', loadComponent: () => import('./components/offers//offers-present/offers-present.component').then((m)=> m.OffersPresentComponent)}
+            { path: 'all', loadComponent: () => import('./components/offers/offers-all/offers-all.component').then((m) => m.OffersAllComponent) },
+            { path: 'expired', loadComponent: () => import('./components/offers/offers-expired/offers-expired.component').then((m) => m.OffersExpiredComponent) },
+            { path: 'present', loadComponent: () => import('./components/offers//offers-present/offers-present.component').then((m) => m.OffersPresentComponent) }
 
           ]
       },
-      // {
-      //   path: 'offers',
-      //   loadComponent: () =>
-      //     import('./components/offers/all-offers-list/all-offers-list.component').then((m) => m.AllOffersListComponent),
-      //   children: [
-      //     { path: '', redirectTo: 'all', pathMatch: 'full' },
-      //     {
-      //       path: 'all',
-      //       loadComponent: () =>
-      //         import('./components/offers/offers-all/offers-all.component').then((m) => m.OffersAllComponent)
-      //     },
-      //     {
-      //       path: 'present',
-      //       loadComponent: () =>
-      //         import('./components/offers/offers-present/offers-present.component').then((m) => m.OffersPresentComponent)
-      //     },
-      //     {
-      //       path: 'expired',
-      //       loadComponent: () =>
-      //         import('./components/offers/offers-expired/offers-expired.component').then((m) => m.OffersExpiredComponent)
-      //     }
-      //   ]
-      // },
 
       {
         path: 'dashboard',
@@ -110,18 +87,15 @@ export const routes: Routes = [
       {
         path: 'my-workspaces', loadComponent: () => import('./components/my-workspaces/my-workspaces.component').then((m) => m.MyWorkspacesComponent)
       },
-      {
-        path: 'add-workspace',
-        loadComponent: () => import('./components/add-workspace/add-workspace.component').then(m => m.AddWorkspaceComponent)
-      },
-      {
-        path: 'add-rooms',
-        loadComponent: () => 
-          import('./components/add-rooms/add-rooms.component').then(m => m.AddRoomsComponent),
-        data: {
-          title: 'Add room'
-        }
-      },
+
+      // {
+      //   path: 'add-rooms',
+      //   loadComponent: () =>
+      //     import('./components/add-rooms/add-rooms.component').then(m => m.AddRoomsComponent),
+      //   data: {
+      //     title: 'Add room'
+      //   }
+      // },
       {
         path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then((m) => m.RoomsFeesComponent)
       },
@@ -172,7 +146,23 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'add-workspace',
+        loadComponent: () => import('./components/add-workspace/add-workspace.component').then(m => m.AddWorkspaceComponent)
+      },
+      {
         path: 'add-rooms', loadComponent: () => import('./components/add-rooms/add-rooms.component').then((m) => m.AddRoomsComponent)
+      },
+      {
+        path: 'add-amenities', loadComponent: () => import('./components/add-amenities/add-amenities.component').then((m) => m.AddAmenitiesComponent)
+      },
+      {
+        path: 'reception-hours', loadComponent: () => import('./components/reception-hours/reception-hours.component').then((m) => m.ReceptionHoursComponent)
+      },
+      {
+        path: 'new-rooms', loadComponent: () => import('./components/new-rooms/new-rooms.component').then((m) => m.NewRoomsComponent)
+      },
+      {
+        path: 'offers-recommendations', loadComponent: () => import('./components/offers-recommendations/offers-recommendations.component').then((m) => m.OffersRecommendationsComponent)
       }
 
 

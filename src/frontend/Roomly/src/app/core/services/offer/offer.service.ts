@@ -41,7 +41,7 @@ export class OfferService {
   //   return 'off-' + Math.random().toString(36).substring(2, 8);
   // }
 
-addOffer(body: any): Observable<any> {
+  addOffer(body: any): Observable<any> {
     const url = `/api/staff/offer`;
     console.log('Making offer request to:', url);
     console.log('Request payload:', body);
@@ -113,6 +113,16 @@ addOffer(body: any): Observable<any> {
       catchError(error => {
         console.error('Caught error:', error);
         return throwError(() => new Error('Failed to delete offer. Check permissions or contact support.'));
+      })
+    );
+  }
+
+  getRecommendations(staffId: string): Observable<any> {
+    const url = `https://mostafaabdelkawy-roomly-staff-offers.hf.space/api/recommend-offers`;
+    return this.http.post(url, { staff_id: staffId }).pipe(
+      catchError(error => {
+        console.error('Error fetching offer recommendations:', error);
+        return throwError(() => new Error('Failed to fetch offer recommendations'));
       })
     );
   }

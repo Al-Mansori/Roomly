@@ -1,10 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { SideStepsIndicatorComponent } from "../side-steps-indicator/side-steps-indicator.component";
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-add-amenities',
   standalone: true,
-  imports: [SideStepsIndicatorComponent],
+  imports: [SideStepsIndicatorComponent, RouterModule],
   templateUrl: './add-amenities.component.html',
   styleUrl: './add-amenities.component.scss'
 })

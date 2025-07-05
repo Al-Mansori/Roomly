@@ -1,0 +1,100 @@
+<div class="container-fluid py-4 bg-light min-vh-100">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-12 col-md-2 mb-3 mb-md-0">
+            <app-side-navbar></app-side-navbar>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-12 col-md-10">
+            <!-- Header -->
+            <div class="mb-4 px-3">
+                <h4 class="fw-bold text-dark mb-1 text-primary">Smart Offers Recommendations</h4>
+                <p class="text-muted small mb-0 ps-2">Based on usage, room type, and smart predictions</p>
+            </div>
+
+            <!-- Loading / Error -->
+            @if (isLoading) {
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            } @else if (error) {
+            <div class="alert alert-danger text-center py-3 mx-3" role="alert">
+                {{ error }}
+            </div>
+            } @else {
+            <!-- Enhanced Table -->
+            <div class="table-responsive bg-white shadow-sm rounded-4 mx-3 p-4">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light ">
+                        <tr class="text-center ">
+                            <th class="text-primary" scope="col">Room</th>
+                            <th class="text-primary" scope="col">Offer Title</th>
+                            <th class="text-primary" scope="col">Discount</th>
+                            <th class="text-primary" scope="col">Type</th>
+                            <th class="text-primary" scope="col">Description</th>
+                            <th class="text-primary" scope="col">Why This Offer?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (recommendation of recommendations; track recommendation.roomId) {
+                        @for (offer of recommendation.newOfferSuggestions; track offer.offerTitle) {
+                        <tr class="text-center">
+                            <!-- Room Name -->
+                            <td class="fw-medium text-primary-emphasis">
+                                <i class="fa-solid fa-door-open me-1 text-secondary"></i>
+                                {{ recommendation.roomDetails.RoomName }}
+                            </td>
+
+                            <!-- Offer Title -->
+                            <td>
+                                <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill">
+                                    {{ offer.offerTitle }}
+                                </span>
+                            </td>
+
+                            <!-- Discount -->
+                            <td>
+                                <span class="badge bg-success-subtle text-success px-2 py-2">
+                                    <i class="fa-solid fa-percent me-1"></i>{{ offer.discountPercentage }}%
+                                </span>
+                            </td>
+
+                            <!-- Offer Type -->
+                            <td>
+                                <span class="badge bg-warning-subtle text-warning">
+                                    {{ offer.offerType }}
+                                </span>
+                            </td>
+
+                            <!-- Description -->
+                            <td class="text-start text-muted small" style="max-width: 200px;">
+                                <i class="fa-regular fa-circle text-info me-1"></i>
+                                {{ offer.description }}
+                            </td>
+
+                            <!-- Reasoning -->
+                            <td class="text-start text-muted small" style="max-width: 240px;">
+                                <i class="fa-solid fa-lightbulb text-warning me-1"></i>
+                                {{ offer.reasoning }}
+                            </td>
+                        </tr>
+                        }
+                        }
+
+                        @if (recommendations.length === 0) {
+                        <tr>
+                            <td colspan="6" class="text-muted text-center py-4">
+                                No recommendations available at the moment.
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
+    </div>
+</div>
