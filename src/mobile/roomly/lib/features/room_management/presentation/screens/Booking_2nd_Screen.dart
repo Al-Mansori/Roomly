@@ -62,37 +62,44 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
     _scrollController.addListener(_handleScroll);
 
     // Initialize with default times
-    _checkInTimes = List.generate(24, (index) => DateFormat('h:mm a').format(DateTime(2024, 1, 1, index, 0)));
-    _checkOutTimes = List.generate(24, (index) => DateFormat('h:mm a').format(DateTime(2024, 1, 1, index, 0)));
+    _checkInTimes = List.generate(24,
+        (index) => DateFormat('h:mm a').format(DateTime(2024, 1, 1, index, 0)));
+    _checkOutTimes = List.generate(24,
+        (index) => DateFormat('h:mm a').format(DateTime(2024, 1, 1, index, 0)));
 
     _loadInitialData();
   }
 
   /// Load both operating hours and availability data
   void _loadInitialData() {
-    print('🚀 Loading initial data for date: ${_selectedDate.toIso8601String()}');
+    print(
+        '🚀 Loading initial data for date: ${_selectedDate.toIso8601String()}');
     _loadOperatingHours();
     _loadInitialAvailability();
   }
 
   void _loadInitialAvailability() {
     setState(() => _isLoading = true);
-    _availabilityCubit.loadAvailability(
+    _availabilityCubit
+        .loadAvailability(
       roomId: widget.room.id,
       date: _selectedDate,
-    ).then((_) {
+    )
+        .then((_) {
       setState(() => _isLoading = false);
       _validateTimes();
     });
   }
 
   void _loadOperatingHours() {
-
     setState(() => _isOperatingHoursLoading = true);
-    _operatingHoursCubit.loadOperatingHours(
+    _operatingHoursCubit
+        .loadOperatingHours(
       workspaceId: widget.workspaceId,
-      date: DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day),
-    ).then((_) {
+      date:
+          DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day),
+    )
+        .then((_) {
       setState(() => _isOperatingHoursLoading = false);
       _validateTimes();
     });
@@ -118,8 +125,7 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
     if (_isDailyBooking) {
       final minSeats = _calculateMinAvailableSeats(
           _operatingHours?.startTime.hour ?? 9,
-          _operatingHours?.endTime.hour ?? 23
-      );
+          _operatingHours?.endTime.hour ?? 23);
       if (minSeats <= 0) {
         setState(() {
           _isTimeValid = false;
@@ -143,8 +149,10 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
 
     // Past time validation
     if (isToday && !_isDailyBooking) {
-      final currentTime = DateTime(now.year, now.month, now.day, now.hour, now.minute);
-      final selectedCheckIn = DateTime(now.year, now.month, now.day, checkIn.hour, checkIn.minute);
+      final currentTime =
+          DateTime(now.year, now.month, now.day, now.hour, now.minute);
+      final selectedCheckIn =
+          DateTime(now.year, now.month, now.day, checkIn.hour, checkIn.minute);
 
       if (selectedCheckIn.isBefore(currentTime)) {
         setState(() {
@@ -161,38 +169,47 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
         _isTimeValid = false;
         _timeValidationMessage = 'Check-out must be after check-in';
       });
+      return;
     } else if (checkOut == checkIn) {
       setState(() {
         _isTimeValid = false;
         _timeValidationMessage = 'Check-out cannot be same as check-in';
       });
-    } else {
-      // Enhanced availability validation for all hours in range
-      final checkInHour = checkIn.hour;
-      final checkOutHour = checkOut.hour;
-      bool allHoursAvailable = true;
-      String unavailableHour = '';
+      return;
+    }
 
-      for (int hour = checkInHour; hour < checkOutHour; hour++) {
-        if (!_isHourAvailable(hour)) {
-          allHoursAvailable = false;
-          unavailableHour = DateFormat('h:mm a').format(DateTime(2024, 1, 1, hour, 0));
-          break;
-        }
-      }
+    final checkInHour = checkIn.hour;
+    final checkOutHour = checkOut.hour;
 
-      if (!allHoursAvailable) {
-        setState(() {
-          _isTimeValid = false;
-          _timeValidationMessage = 'Hour $unavailableHour is not available';
-        });
+    if (_noAvailabilityData) {
+      // Do not check for operating hours, allow any slot
+      return;
+    }
+
+    // Enhanced availability validation for all hours in range (only if we have specific data)
+    bool allHoursAvailable = true;
+    String unavailableHour = '';
+
+    for (int hour = checkInHour; hour < checkOutHour; hour++) {
+      if (!_isHourAvailable(hour)) {
+        allHoursAvailable = false;
+        unavailableHour =
+            DateFormat('h:mm a').format(DateTime(2024, 1, 1, hour, 0));
+        break;
       }
+    }
+
+    if (!allHoursAvailable) {
+      setState(() {
+        _isTimeValid = false;
+        _timeValidationMessage = 'Hour $unavailableHour is not available';
+      });
     }
   }
 
   /// Check if a specific hour is available for booking
   bool _isHourAvailable(int hour) {
-    // If no availability data, all hours within operating hours are available
+    // If availability data is empty (API returned []), all hours within operating hours are available
     if (_noAvailabilityData) {
       if (_operatingHours != null) {
         final startHour = _operatingHours!.startTime.hour;
@@ -204,7 +221,7 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
 
     // If we have availability data, check if hour exists and has available seats
     final slot = _availability.firstWhere(
-          (slot) => slot.hour == hour,
+      (slot) => slot.hour == hour,
       orElse: () => SeatsAvailability(
         roomId: widget.room.id,
         date: _selectedDate,
@@ -226,8 +243,10 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
         if (_isDailyBooking) {
           // Set daily booking times based on operating hours
           if (_operatingHours != null) {
-            _checkInTime = DateFormat('h:mm a').format(_operatingHours!.startTime.toLocal());
-            _checkOutTime = DateFormat('h:mm a').format(_operatingHours!.endTime.toLocal());
+            _checkInTime = DateFormat('h:mm a')
+                .format(_operatingHours!.startTime.toLocal());
+            _checkOutTime =
+                DateFormat('h:mm a').format(_operatingHours!.endTime.toLocal());
           } else {
             _checkInTime = '9:00 AM';
             _checkOutTime = '6:00 PM';
@@ -279,8 +298,10 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
 
   void _updateAvailableTimes() {
     print('🔄 Updating available times...');
-    print('   Operating hours: ${_operatingHours?.startTime} - ${_operatingHours?.endTime}');
-    print('   No availability data: $_noAvailabilityData');
+    print(
+        '   Operating hours: ${_operatingHours?.startTime} - ${_operatingHours?.endTime}');
+    print(
+        '   Availability status: ${_noAvailabilityData ? "All slots available (API returned [])" : "Specific availability data"}');
     print('   Availability slots: ${_availability.length}');
 
     if (_operatingHours == null) {
@@ -291,25 +312,40 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
     final now = DateTime.now();
     final isToday = isSameDay(_selectedDate, now);
 
-    // Convert operating hours to local time
+    // Generate all possible time slots within operating hours
     final localStart = _operatingHours!.startTime.toLocal();
     final localEnd = _operatingHours!.endTime.toLocal();
-
-    // Generate all possible time slots within operating hours
     final allPossibleTimes = _generateTimeSlots(localStart, localEnd);
     print('   Generated ${allPossibleTimes.length} possible time slots');
 
-    // Update available check-in times
+    if (_noAvailabilityData) {
+      // All slots are available, just filter out past times for today
+      _checkInTimes = allPossibleTimes.where((time) {
+        final parsedTime = _parseTime(time);
+        final isTimePassed = isToday && parsedTime.isBefore(now);
+        return !isTimePassed;
+      }).toList();
+
+      _checkOutTimes = allPossibleTimes.where((time) {
+        final parsedTime = _parseTime(time);
+        final isTimePassed = isToday && parsedTime.isBefore(now);
+        return !isTimePassed;
+      }).toList();
+      print(
+          '   [NO AVAILABILITY DATA] All slots available: check-in: [32m${_checkInTimes.length}[0m, check-out: [32m${_checkOutTimes.length}[0m');
+      return;
+    }
+git checkout main
+
+    // Update available check-in times (when there is specific availability data)
     _checkInTimes = allPossibleTimes.where((time) {
       final parsedTime = _parseTime(time);
       final hour = parsedTime.hour;
       final isTimePassed = isToday && parsedTime.isBefore(now);
-
       // For daily booking, only check if time has passed
       if (_isDailyBooking) {
         return !isTimePassed;
       }
-
       // For custom time, check availability
       return !isTimePassed && _isHourAvailable(hour);
     }).toList();
@@ -322,15 +358,12 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
 
       _checkOutTimes = allPossibleTimes.where((time) {
         final checkOutHour = _parseTime(time).hour;
-
         // Rule 1: Check-out must be after check-in
         if (checkOutHour <= checkInHour) return false;
-
         // For daily booking, allow any time after check-in within operating hours
         if (_isDailyBooking) {
           return true;
         }
-
         // Rule 2: All hours between check-in and check-out must be available
         for (int hour = checkInHour; hour < checkOutHour; hour++) {
           if (!_isHourAvailable(hour)) {
@@ -387,14 +420,17 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
       endHour = _operatingHours?.endTime.hour ?? 23;
     }
 
-    // If no availability data, return full capacity
-    if (_noAvailabilityData) return minSeats;
+    // If availability data is empty (API returned []), all slots are available with full capacity
+    if (_noAvailabilityData) {
+      // Always return full capacity if all slots are available
+      return minSeats;
+    }
 
-    // Find minimum available seats in the selected range
+    // If we have availability data, find minimum available seats in the selected range
     for (int hour = startHour; hour < endHour; hour++) {
       if (_isHourAvailable(hour)) {
         final slot = _availability.firstWhere(
-              (slot) => slot.hour == hour,
+          (slot) => slot.hour == hour,
           orElse: () => SeatsAvailability(
             roomId: widget.room.id,
             date: _selectedDate,
@@ -418,11 +454,13 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
   }
 
   void _handleScroll() {
-    if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+    if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.reverse) {
       if (_isButtonVisible) {
         setState(() => _isButtonVisible = false);
       }
-    } else if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
+    } else if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.forward) {
       if (!_isButtonVisible) {
         setState(() => _isButtonVisible = true);
       }
@@ -447,38 +485,55 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
           final time = times[index];
           final parsedTime = _parseTime(time);
           final hour = parsedTime.hour;
-
           final isTimePassed = isToday && parsedTime.isBefore(now);
-          final isAvailable = _isDailyBooking || _isHourAvailable(hour);
-          final isDisabled = !isEnabled || (isToday && isTimePassed) || (!_isDailyBooking && !isAvailable);
+
+          // --- FIX: If all slots are available, don't check _isHourAvailable ---
+          bool isAvailable = _noAvailabilityData
+              ? true
+              : (_isDailyBooking || _isHourAvailable(hour));
+
+          bool isDisabled = !isEnabled || isTimePassed || !isAvailable;
+
+          // For check-out, disable slots before or equal to check-in
+          if (onSelect == _handleCheckOutChange &&
+              !_isDailyBooking &&
+              _noAvailabilityData) {
+            final checkInHour =
+                _checkInTime.isNotEmpty ? _parseTime(_checkInTime).hour : -1;
+            if (hour <= checkInHour) isDisabled = true;
+          }
 
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: ElevatedButton(
               style: time == selectedTime
                   ? ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0A3FB3),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              )
+                      backgroundColor: const Color(0xFF0A3FB3),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    )
                   : ElevatedButton.styleFrom(
-                backgroundColor: isDisabled ? Colors.grey[200] : Colors.white,
-                foregroundColor: isDisabled ? Colors.grey : Colors.black,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  side: BorderSide(
-                    color: isDisabled ? Colors.grey[300]! : Colors.grey,
-                  ),
-                ),
-              ),
+                      backgroundColor:
+                          isDisabled ? Colors.grey[200] : Colors.white,
+                      foregroundColor: isDisabled ? Colors.grey : Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        side: BorderSide(
+                          color: isDisabled ? Colors.grey[300]! : Colors.grey,
+                        ),
+                      ),
+                    ),
               onPressed: isDisabled ? null : () => onSelect?.call(time),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(time),
-                  if (!isAvailable && !isTimePassed && !_isDailyBooking)
+                  if (!isAvailable &&
+                      !isTimePassed &&
+                      !_isDailyBooking &&
+                      !_noAvailabilityData)
                     const Icon(Icons.block, size: 12, color: Colors.red),
                 ],
               ),
@@ -500,12 +555,16 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
               setState(() {
                 _availability = state.availability;
                 _noAvailabilityData = state.availability.isEmpty;
+                print(
+                    '📊 Availability data: ${state.availability.isEmpty ? "Empty array [] - All slots available" : "${state.availability.length} specific slots"}');
                 _updateAvailableTimes();
               });
             } else if (state is SeatsAvailabilityError) {
               print('❌ Seat availability error: ${state.message}');
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error loading availability: ${state.message}')),
+                SnackBar(
+                    content:
+                        Text('Error loading availability: ${state.message}')),
               );
             }
           },
@@ -521,7 +580,9 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
             } else if (state is OperatingHoursError) {
               print('❌ Operating hours error: ${state.message}');
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error loading operating hours: ${state.message}')),
+                SnackBar(
+                    content: Text(
+                        'Error loading operating hours: ${state.message}')),
               );
             }
           },
@@ -531,9 +592,11 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
         appBar: AppBar(
           leading: IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(FontAwesomeIcons.arrowLeft, size: 16, color: Colors.black),
+            icon: const Icon(FontAwesomeIcons.arrowLeft,
+                size: 16, color: Colors.black),
           ),
-          title: const Text('Select Date and Time', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          title: const Text('Select Date and Time',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         ),
         body: Stack(
           children: [
@@ -558,9 +621,14 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Debug Info:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue[800])),
-                          Text('Operating Hours: ${DateFormat('h:mm a').format(_operatingHours!.startTime.toLocal())} - ${DateFormat('h:mm a').format(_operatingHours!.endTime.toLocal())}'),
-                          Text('No Availability Data: $_noAvailabilityData'),
+                          Text('Debug Info:',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue[800])),
+                          Text(
+                              'Operating Hours: ${DateFormat('h:mm a').format(_operatingHours!.startTime.toLocal())} - ${DateFormat('h:mm a').format(_operatingHours!.endTime.toLocal())}'),
+                          Text(
+                              'Availability Status: ${_noAvailabilityData ? "All slots available (API returned [])" : "Specific availability data"}'),
                           Text('Available Slots: ${_availability.length}'),
                           Text('Check-in Options: ${_checkInTimes.length}'),
                           Text('Check-out Options: ${_checkOutTimes.length}'),
@@ -592,12 +660,14 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                     children: [
                       Text(
                         DateFormat("d MMMM y").format(_selectedDate),
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const Spacer(),
                       Text(
                         DateFormat('MMMM y').format(_focusedDay),
-                        style: const TextStyle(fontSize: 16, color: Colors.grey),
+                        style:
+                            const TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                     ],
                   ),
@@ -606,24 +676,29 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10.0),
                       color: Colors.white,
-                      boxShadow: const [BoxShadow(color: Colors.grey, blurRadius: 4)],
+                      boxShadow: const [
+                        BoxShadow(color: Colors.grey, blurRadius: 4)
+                      ],
                     ),
                     child: TableCalendar(
                       firstDay: DateTime.utc(2010, 10, 16),
                       lastDay: DateTime.utc(2030, 3, 14),
                       focusedDay: _focusedDay,
-                      selectedDayPredicate: (day) => isSameDay(_selectedDate, day),
+                      selectedDayPredicate: (day) =>
+                          isSameDay(_selectedDate, day),
                       onDaySelected: (selectedDay, focusedDay) {
                         setState(() {
                           _selectedDate = selectedDay;
                           _focusedDay = focusedDay;
                         });
 
-                        print('📅 Date selected: ${selectedDay.toIso8601String()}');
+                        print(
+                            '📅 Date selected: ${selectedDay.toIso8601String()}');
                         _loadInitialData();
                       },
                       enabledDayPredicate: (day) {
-                        return !day.isBefore(DateTime.now().subtract(const Duration(days: 1)));
+                        return !day.isBefore(
+                            DateTime.now().subtract(const Duration(days: 1)));
                       },
                       calendarFormat: _calendarFormat,
                       onFormatChanged: (format) {
@@ -645,35 +720,70 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Text('Check-in', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  _buildTimeSelector(
-                    times: _checkInTimes,
-                    selectedTime: _checkInTime,
-                    onSelect: _isDailyBooking ? null : _handleCheckInChange,
-                    isEnabled: !_isDailyBooking,
-                  ),
-                  const SizedBox(height: 8),
-                  if (!_isTimeValid && _timeValidationMessage.contains('check-in'))
-                    Text(
-                      _timeValidationMessage,
-                      style: const TextStyle(color: Colors.red, fontSize: 12),
+                  // Daily Booking UI improvement
+                  if (_isDailyBooking && _operatingHours != null) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.blue[50],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.calendar_today,
+                                color: Colors.blue),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Full day reservation:\n'
+                              '${DateFormat('h:mm a').format(_operatingHours!.startTime.toLocal())} '
+                              '– '
+                              '${DateFormat('h:mm a').format(_operatingHours!.endTime.toLocal())}',
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  const SizedBox(height: 24),
-                  const Text('Check-out', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  _buildTimeSelector(
-                    times: _checkOutTimes,
-                    selectedTime: _checkOutTime,
-                    onSelect: _isDailyBooking ? null : _handleCheckOutChange,
-                    isEnabled: !_isDailyBooking,
-                  ),
-                  const SizedBox(height: 8),
-                  if (!_isTimeValid && !_timeValidationMessage.contains('check-in'))
-                    Text(
-                      _timeValidationMessage,
-                      style: const TextStyle(color: Colors.red, fontSize: 12),
+                  ] else ...[
+                    const Text('Check-in',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    _buildTimeSelector(
+                      times: _checkInTimes,
+                      selectedTime: _checkInTime,
+                      onSelect: _isDailyBooking ? null : _handleCheckInChange,
+                      isEnabled: !_isDailyBooking,
                     ),
+                    const SizedBox(height: 8),
+                    if (!_isTimeValid &&
+                        _timeValidationMessage.contains('check-in'))
+                      Text(
+                        _timeValidationMessage,
+                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                    const SizedBox(height: 24),
+                    const Text('Check-out',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 8),
+                    _buildTimeSelector(
+                      times: _checkOutTimes,
+                      selectedTime: _checkOutTime,
+                      onSelect: _isDailyBooking ? null : _handleCheckOutChange,
+                      isEnabled: !_isDailyBooking,
+                    ),
+                    const SizedBox(height: 8),
+                    if (!_isTimeValid &&
+                        !_timeValidationMessage.contains('check-in'))
+                      Text(
+                        _timeValidationMessage,
+                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                  ],
                   const SizedBox(height: 100),
                 ],
               ),
@@ -688,7 +798,10 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
               right: 20,
               child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 300),
-                opacity: _isButtonVisible && MediaQuery.of(context).viewInsets.bottom == 0 ? 1.0 : 0.0,
+                opacity: _isButtonVisible &&
+                        MediaQuery.of(context).viewInsets.bottom == 0
+                    ? 1.0
+                    : 0.0,
                 child: _buildReviewButton(),
               ),
             ),
@@ -726,14 +839,21 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
     final totalPrice = getTotalPrice();
     final isPriceValid = totalPrice > 0;
     final now = DateTime.now();
-    final isDateValid = !_selectedDate.isBefore(DateTime(now.year, now.month, now.day));
+    final isDateValid =
+        !_selectedDate.isBefore(DateTime(now.year, now.month, now.day));
 
-    final checkInHour = _checkInTime.isNotEmpty ? _parseTime(_checkInTime).hour : -1;
-    final checkOutHour = _checkOutTime.isNotEmpty ? _parseTime(_checkOutTime).hour : -1;
-    final minAvailableSeats = _calculateMinAvailableSeats(checkInHour, checkOutHour);
+    final checkInHour =
+        _checkInTime.isNotEmpty ? _parseTime(_checkInTime).hour : -1;
+    final checkOutHour =
+        _checkOutTime.isNotEmpty ? _parseTime(_checkOutTime).hour : -1;
+    final minAvailableSeats =
+        _calculateMinAvailableSeats(checkInHour, checkOutHour);
 
-    final isSeatsValid = isPrivate ? true : (_numberOfSeats >= 1 && _numberOfSeats <= minAvailableSeats);
-    final isAllDataValid = _isTimeValid && isPriceValid && isSeatsValid && isDateValid;
+    final isSeatsValid = isPrivate
+        ? true
+        : (_numberOfSeats >= 1 && _numberOfSeats <= minAvailableSeats);
+    final isAllDataValid =
+        _isTimeValid && isPriceValid && isSeatsValid && isDateValid;
 
     return Container(
       margin: const EdgeInsets.all(16),
@@ -756,12 +876,15 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Text(
-                !_isTimeValid ? _timeValidationMessage :
-                !isPriceValid ? 'Invalid booking duration' :
-                !isSeatsValid ?
-                (_numberOfSeats < 1 ? 'Number of seats must be at least 1' :
-                'Maximum available seats: $minAvailableSeats') :
-                'Cannot select past dates',
+                !_isTimeValid
+                    ? _timeValidationMessage
+                    : !isPriceValid
+                        ? 'Invalid booking duration'
+                        : !isSeatsValid
+                            ? (_numberOfSeats < 1
+                                ? 'Number of seats must be at least 1'
+                                : 'Maximum available seats: $minAvailableSeats')
+                            : 'Cannot select past dates',
                 style: TextStyle(
                   color: Colors.red[300],
                   fontSize: 12,
@@ -785,7 +908,7 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                     if (!isPrivate) ...[
                       _buildControlButton(
                         Icons.remove,
-                            () {
+                        () {
                           if (_numberOfSeats > 1) {
                             setState(() => _numberOfSeats--);
                           }
@@ -805,7 +928,7 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                       ),
                       _buildControlButton(
                         Icons.add,
-                            () {
+                        () {
                           if (_numberOfSeats < _maxSeats) {
                             setState(() => _numberOfSeats++);
                           }
@@ -853,9 +976,7 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                       Text(
                         'Total ${totalPrice.toStringAsFixed(1)} EGP',
                         style: TextStyle(
-                          color: isAllDataValid
-                              ? Colors.white
-                              : Colors.grey,
+                          color: isAllDataValid ? Colors.white : Colors.grey,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
@@ -865,9 +986,8 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                         Text(
                           '${widget.discountedPrice.toStringAsFixed(1)} EGP/hour × $_numberOfSeats seats',
                           style: TextStyle(
-                            color: isAllDataValid
-                                ? Colors.white70
-                                : Colors.grey,
+                            color:
+                                isAllDataValid ? Colors.white70 : Colors.grey,
                             fontSize: 12,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -876,9 +996,8 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                         Text(
                           '${widget.discountedPrice.toStringAsFixed(1)} EGP/hour',
                           style: TextStyle(
-                            color: isAllDataValid
-                                ? Colors.white70
-                                : Colors.grey,
+                            color:
+                                isAllDataValid ? Colors.white70 : Colors.grey,
                             fontSize: 12,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -888,28 +1007,31 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: isAllDataValid ? () {
-                    context.push(
-                      '/review-booking',
-                      extra: {
-                        'room': widget.room,
-                        'selectedDate': _selectedDate,
-                        'checkInTime': _checkInTime,
-                        'checkOutTime': _checkOutTime,
-                        'numberOfSeats': isPrivate ? 1 : _numberOfSeats,
-                        'isDailyBooking': _isDailyBooking,
-                        'discountedPrice': widget.discountedPrice,
-                        'totalPrice': totalPrice,
-                        'workspaceId': widget.workspaceId,
-                        'availableSeats': _maxSeats,
-                      },
-                    );
-                  } : null,
+                  onPressed: isAllDataValid
+                      ? () {
+                          context.push(
+                            '/review-booking',
+                            extra: {
+                              'room': widget.room,
+                              'selectedDate': _selectedDate,
+                              'checkInTime': _checkInTime,
+                              'checkOutTime': _checkOutTime,
+                              'numberOfSeats': isPrivate ? 1 : _numberOfSeats,
+                              'isDailyBooking': _isDailyBooking,
+                              'discountedPrice': widget.discountedPrice,
+                              'totalPrice': totalPrice,
+                              'workspaceId': widget.workspaceId,
+                              'availableSeats': _maxSeats,
+                            },
+                          );
+                        }
+                      : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isAllDataValid
                         ? const Color(0xFF0A3FB3)
                         : Colors.grey[700],
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -927,7 +1049,8 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
     );
   }
 
-  Widget _buildControlButton(IconData icon, VoidCallback onPressed, {bool enabled = true}) {
+  Widget _buildControlButton(IconData icon, VoidCallback onPressed,
+      {bool enabled = true}) {
     return Container(
       width: 24,
       height: 24,
@@ -948,4 +1071,3 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
     );
   }
 }
-
