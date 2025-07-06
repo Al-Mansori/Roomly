@@ -264,9 +264,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Note: This is a temporary authorization. Your card will not be charged until your booking period begins.',
-                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                const SingleChildScrollView(
+                  child: Text(
+                    'Note: This is a temporary authorization. Your card will not be charged until your booking period begins.',
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
                 ),
                 const SizedBox(height: 20),
                 const Text(
