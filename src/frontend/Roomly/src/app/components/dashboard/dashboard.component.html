@@ -1,127 +1,499 @@
 <div class="dashboard bg-light">
-    <div class="container">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-12 col-md-2 mb-3 mb-md-0">
-                <app-side-navbar></app-side-navbar>
+  <div class="container">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-12 col-md-2 mb-3 mb-md-0">
+        <app-side-navbar></app-side-navbar>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-12 col-md-10">
+        <div class="p-3">
+          <!-- Header with Workspace Selector -->
+          <div
+            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+            <div>
+              <h2 class="mb-1">{{ getWorkspaceName() }}</h2>
+              <div class="text-muted small">
+                {{ getWorkspaceLocation() }}
+                @if (hasRating()) {
+                <span class="ms-2"><i class="bi bi-star-fill text-warning"></i> {{ getAverageRating() }}</span>
+                }
+              </div>
+            </div>
+            <div class="mt-2 mt-md-0">
+              <select class="form-select" [(ngModel)]="selectedWorkspaceId" (change)="onWorkspaceChange()">
+                @for (workspace of workspaces; track workspace?.id) {
+                <option [value]="workspace?.id">{{ workspace?.name || 'Unnamed Workspace' }}</option>
+                }
+                @if (!workspaces.length) {
+                <option disabled>No workspaces available</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          @if (isLoading) {
+          <div class="text-center py-5">
+            <ngx-skeleton-loader count="1" [theme]="{ height: '300px' }"></ngx-skeleton-loader>
+            <p class="mt-2">Loading workspace data...</p>
+          </div>
+          }
+
+          @else if (errorMessage) {
+          <div class="alert alert-danger text-center py-5" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            {{ errorMessage }}
+            <button class="btn btn-sm btn-outline-primary ms-2" (click)="onWorkspaceChange()">Retry</button>
+          </div>
+          }
+
+          @else {
+          <div class="row g-3 mb-4">
+            @for (kpi of getKPIs(); track kpi.title) {
+            <div class="col-6 col-md-4 col-lg-2">
+              <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                  <div [style.color]="kpi.color" style="font-size: 1.5rem;" class="mb-2">{{ kpi.icon }}</div>
+                  <!-- <h5 class="card-title mb-1">
+                        @if (kpi.format === 'currency') {
+                          {{ kpi.value| abs | currency:'USD':'symbol':'1.0-0' }}
+                        } @else {
+                          {{ kpi.value }}
+                        }
+                      </h5> -->
+                  <h5 class="card-title mb-1">
+                    @if (kpi.format === 'currency') {
+                    {{ kpi.value | abs | currency:'USD':'symbol':'1.0-0' }}
+                    } @else if (kpi.title === 'Average Rating') {
+                    {{ kpi.value | number:'1.1-1' }}
+                    } @else {
+                    {{ kpi.value | number:'1.0-0' }}
+                    }
+                  </h5>
+                  <p class="text-muted small mb-0">{{ kpi.title }}</p>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+
+          <!-- Revenue Analytics Dashboard -->
+          <div class="row g-3 mb-4">
+            @if (analysisData.revenue_analysis?.[0]) {
+            <div class="col-6 col-md-4">
+              <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                  <h5 class="card-title mb-1">{{ getTotalRevenue() | abs | currency:'USD':'symbol':'1.0-0' }}
+                  </h5>
+                  <p class="text-muted small mb-0">Total Revenue</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                  <h5 class="card-title mb-1">{{ getAveragePayment() | abs | currency:'USD':'symbol':'1.0-0' }}</h5>
+                  <p class="text-muted small mb-0">Average Payment</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                  <h5 class="card-title mb-1">{{ getRevenuePerRoom() | abs | currency:'USD':'symbol':'1.0-0' }}</h5>
+                  <p class="text-muted small mb-0">Revenue per Room</p>
+                </div>
+              </div>
+            </div>
+            }
+            <div class="col-lg-8">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h5 class="card-title">Revenue Trends</h5>
+                  @if (hasChartData(revenueChartData)) {
+                  <canvas baseChart [data]="revenueChartData" [options]="lineChartOptions"
+                    [type]="lineChartType"></canvas>
+                  } @else {
+                  <div class="text-muted text-center py-3">No revenue data available</div>
+                  }
+                </div>
+              </div>
+            </div>
+            <!-- <div class="col-lg-4">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h5 class="card-title">Payment Method Distribution</h5>
+                  @if (hasChartData(paymentMethodChartData)) {
+                  <canvas baseChart [data]="paymentMethodChartData" [options]="pieChartOptions"
+                    [type]="pieChartType"></canvas>
+                  } @else {
+                  <div class="text-muted text-center py-3">No payment method data available</div>
+                  }
+                </div>
+              </div>
+            </div> -->
+            <div class="col-lg-4">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h5 class="card-title">Payment Method Distribution</h5>
+                  @if (hasChartData(paymentMethodChartData)) {
+                  <canvas baseChart [data]="paymentMethodChartData" [options]="pieChartOptions"
+                    [type]="pieChartType"></canvas>
+                  <p class="text-muted small text-center mt-2">
+                    Distribution estimated from workspace payment type usage.
+                  </p>
+                  } @else {
+                  <div class="text-muted text-center py-3">No payment method data available</div>
+                  }
+                </div>
+              </div>
             </div>
 
-            <!-- Main Content -->
-            <div class="col-12 col-md-10">
-                <div class="p-3">
-                    <!-- Header with Workspace Selector -->
-                    <div
-                        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-lg-6">
+              <div class="card shadow-sm h-100">
+                <div class="card-header d-md-none" data-bs-toggle="collapse" data-bs-target="#roomStatusCollapse">
+                  <h5 class="card-title mb-0">Room Status Overview</h5>
+                </div>
+                <div class="card-body collapse show" id="roomStatusCollapse">
+                  <h5 class="card-title d-none d-md-block">Room Status Overview</h5>
+                  @if (hasChartData(roomStatusChartData)) {
+                  <canvas baseChart [data]="roomStatusChartData" [options]="pieChartOptions"
+                    [type]="doughnutChartType"></canvas>
+                  } @else {
+                  <div class="text-muted text-center py-3">No room status data available</div>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card shadow-sm h-100">
+                <div class="card-header d-md-none" data-bs-toggle="collapse" data-bs-target="#roomTypesCollapse">
+                  <h5 class="card-title mb-0">Room Types Distribution</h5>
+                </div>
+                <div class="card-body collapse show" id="roomTypesCollapse">
+                  <h5 class="card-title d-none d-md-block">Room Types Distribution</h5>
+                  @if (hasChartData(roomTypesChartData)) {
+                  <canvas baseChart [data]="roomTypesChartData" [options]="barChartOptions"
+                    [type]="barChartType"></canvas>
+                  } @else {
+                  <div class="text-muted text-center py-3">No room types data available</div>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h5 class="card-title">Top Reserved Rooms</h5>
+                  @if (getTopRooms(5).length) {
+                  <table class="table table-sm align-middle">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Room</th>
+                        <th class="text-end">Bookings</th>
+                        <th class="text-end">Revenue</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (room of getTopRooms(5); track room?.id) {
+                      <tr>
+                        <td>
+                          <strong>{{ room?.name ?? 'Unknown' }}</strong>
+                          <div class="text-muted small">{{ room?.type ?? '' }}</div>
+                        </td>
+                        <td class="text-end">{{ room?.BookingCount ?? 0 }}</td>
+                        <td class="text-end">{{ getRoomRevenue(room?.id ?? '') | abs | currency:'USD':'symbol':'1.0-0'
+                          }}</td>
+                      </tr>
+                      }
+                    </tbody>
+                  </table>
+                  } @else {
+                  <div class="text-muted text-center py-3">No room data available</div>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card shadow-sm h-100">
+                <div class="card-header d-md-none" data-bs-toggle="collapse" data-bs-target="#amenitiesCollapse">
+                  <h5 class="card-title mb-0">Amenities Distribution</h5>
+                </div>
+                <div class="card-body collapse show" id="amenitiesCollapse">
+                  <h5 class="card-title d-none d-md-block">Amenities Distribution</h5>
+                  @if (hasChartData(amenitiesChartData)) {
+                  <canvas baseChart [data]="amenitiesChartData" [options]="barChartOptions"
+                    [type]="barChartType"></canvas>
+                  } @else {
+                  <div class="text-muted text-center py-3">No amenities data available</div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer Insights Dashboard -->
+          <div class="row g-3 mb-4">
+            <div class="col-lg-6">
+              <div class="card shadow-sm h-100">
+                <div class="card-header d-md-none" data-bs-toggle="collapse" data-bs-target="#reviewsCollapse">
+                  <h5 class="card-title mb-0">Customer Reviews Distribution</h5>
+                </div>
+                <div class="card-body collapse show" id="reviewsCollapse">
+                  <h5 class="card-title d-none d-md-block">Customer Reviews Distribution</h5>
+                  @if (hasChartData(reviewsChartData)) {
+                  <canvas baseChart [data]="reviewsChartData" [options]="barChartOptions"
+                    [type]="barChartType"></canvas>
+                  } @else {
+                  <div class="text-muted text-center py-3">No review data available</div>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h5 class="card-title">Recent Reviews</h5>
+                  @if (getRecentReviews(5).length) {
+                  <div class="list-group">
+                    @for (review of getRecentReviews(5); track review?.id) {
+                    <div class="list-group-item border-0 py-2">
+                      <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <span class="text-secondary">Pages / </span>
-                            <span class="text-dark fw-bold">Dashboard</span>
+                          <h6 class="mb-1">{{ review?.FName ?? 'Anonymous' }} {{ review?.LName ?? '' }}</h6>
+                          <small class="text-muted">{{ safeDate(review?.reviewDate) | date:'shortDate' }}</small>
+                          <div>{{ review?.comment ?? 'No comment' }}</div>
                         </div>
-
-                        <div class="mt-2 mt-md-0">
-                            <select class="form-select" [(ngModel)]="selectedWorkspaceId"
-                                (change)="onWorkspaceChange()">
-                                @for (workspace of workspaces; track workspace.id) {
-                                <option [value]="workspace.id">{{ workspace.name }}</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-
-                    @if (isLoading) {
-                    <div class="text-center py-5">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                    } @else if (analysisData) {
-                    <!-- Booking Status & Workspace Peak Time -->
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6">
-                            <div class="card shadow-sm p-3">
-                                <h6 class="text-center fw-bold">Booking Status</h6>
-                                @if (isBrowser) {
-                                <canvas baseChart [type]="pieChartType" [data]="pieChartData"
-                                    [options]="pieChartOptions" class="w-100"></canvas>
-                                }
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card shadow-sm p-3 h-100 d-flex flex-column justify-content-between">
-                                <h6 class="text-center fw-bold">Workspace Peak Time</h6>
-                                @if (isBrowser) {
-                                <canvas baseChart [type]="barChartType" [data]="barChartData"
-                                    [options]="barChartOptions" class="w-100"></canvas>
-                                }
-
-                                <!-- Today's Stats -->
-                                <div class="row mt-4">
-                                    <div class="col-6">
-                                        <div class="bg-light border rounded text-center py-2">
-                                            <p class="text-muted small mb-1">Today's Profit</p>
-                                            <h6 class="fw-bold mb-1">
-                                                {{ analysisData.kpis?.[0]?.MonthlyRevenue | currency }}
-                                            </h6>
-                                            <span class="text-success small">+55% vs last week</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="bg-light border rounded text-center py-2">
-                                            <p class="text-muted small mb-1">New Clients</p>
-                                            <h6 class="fw-bold mb-1">
-                                                {{ analysisData.customers?.length || 0 }}
-                                            </h6>
-                                            <span class="text-danger small">-2% vs last week</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Top Reserved Rooms & Reservation Over Time -->
-                    <div class="row g-3">
-                        <div class="col-lg-6">
-                            <div class="card shadow-sm p-3">
-                                <h6 class="fw-bold mb-3">Top Reserved Rooms</h6>
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-sm align-middle text-center">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Room Name</th>
-                                                <th>Bookings</th>
-                                                <th>Revenue</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @for (room of analysisData.popular_rooms | slice:0:5; track room.id; let i =
-                                            $index) {
-                                            <tr>
-                                                <td>{{ i + 1 }}</td>
-                                                <td>{{ room.name }}</td>
-                                                <td>{{ room.BookingCount }}</td>
-                                                <td>{{ room.TotalRevenue | currency }}</td>
-                                            </tr>
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-6">
-                            <div class="card shadow-sm p-3">
-                                <h6 class="fw-bold text-center">Reservation Over Time</h6>
-                                @if (isBrowser) {
-                                <canvas baseChart [type]="lineChartType" [data]="lineChartData"
-                                    [options]="lineChartOptions"></canvas>
-                                }
-                            </div>
-                        </div>
+                        <span class="badge bg-warning">{{ review?.rating ?? 0 }}★</span>
+                      </div>
                     </div>
                     }
+                  </div>
+                  } @else {
+                  <div class="text-muted text-center py-3">No recent reviews</div>
+                  }
                 </div>
+              </div>
             </div>
+          </div>
+
+          <!-- Performance Trends Dashboard -->
+          <div class="row g-3 mb-4">
+            @if (analysisData.performance_metrics?.[0]) {
+            <div class="col-6 col-md-4">
+              <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                  <h5 class="card-title mb-1">{{ analysisData.performance_metrics?.[0]?.AverageOccupancyRate ?? '0%' }}
+                  </h5>
+                  <p class="text-muted small mb-0">Occupancy Rate</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                  <h5 class="card-title mb-1">{{ analysisData.performance_metrics?.[0]?.MonthlyBookings ?? 0 }}</h5>
+                  <p class="text-muted small mb-0">Monthly Bookings</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="card shadow-sm h-100">
+                <div class="card-body text-center">
+                  <h5 class="card-title mb-1">{{ parseAverageBookingDuration() | abs | number:'1.0-2' }}</h5>
+                  <p class="text-muted small mb-0">Average Duration</p>
+                </div>
+              </div>
+            </div>
+            }
+            <div class="col-lg-8">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h5 class="card-title">Booking Trends</h5>
+                  @if (hasChartData(bookingTrendsChartData)) {
+                  <canvas baseChart [data]="bookingTrendsChartData" [options]="lineChartOptions"
+                    [type]="lineChartType"></canvas>
+                  } @else {
+                  <div class="text-muted text-center py-3">No trends data available</div>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h5 class="card-title">Booking Status</h5>
+                  @if (analysisData.reservation_kpis?.[0] && hasChartData({ labels: ['Completed', 'Cancelled',
+                  'Confirmed'], datasets: [] })) {
+                  <canvas baseChart [data]="{
+                        labels: ['Completed', 'Cancelled', 'Confirmed'],
+                        datasets: [{
+                          data: [
+                            analysisData.reservation_kpis?.[0]?.CompletedReservations ?? 0,
+                            analysisData.reservation_kpis?.[0]?.CancelledReservations ?? 0,
+                            analysisData.reservation_kpis?.[0]?.ConfirmedReservations ?? 0
+                          ],
+                          backgroundColor: ['#28a745', '#dc3545', '#17a2b8'],
+                          hoverOffset: 4
+                        }]
+                      }" [options]="pieChartOptions" [type]="pieChartType"></canvas>
+                  <div class="mt-3">
+                    <div class="d-flex justify-content-between mb-1">
+                      <span>Completion Rate:</span>
+                      <strong>{{ analysisData.reservation_kpis?.[0]?.CompletionRate ?? '0%' }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                      <span>Cancellation Rate:</span>
+                      <strong>{{ (analysisData.reservation_kpis?.[0]?.CancelledReservations ?? 0) /
+                        (analysisData.reservation_kpis?.[0]?.TotalReservations ?? 1) | percent:'1.1-1' }}</strong>
+                    </div>
+                  </div>
+                  } @else {
+                  <div class="text-muted text-center py-3">No booking data available</div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Occupancy & Insights Section -->
+          <div class="row g-3 mb-4">
+            <div class="col-lg-8">
+              <div class="card shadow-sm h-100">
+                <div class="card-header d-md-none" data-bs-toggle="collapse" data-bs-target="#heatmapCollapse">
+                  <h5 class="card-title mb-0">Occupancy Heatmap</h5>
+                </div>
+                <div class="card-body collapse show" id="heatmapCollapse">
+                  <h5 class="card-title d-none d-md-block">Occupancy Heatmap</h5>
+                  @if (hasChartData(heatmapData)) {
+                  <canvas baseChart [data]="heatmapData" [options]="heatmapOptions" [type]="barChartType"></canvas>
+                  } @else {
+                  <div class="text-muted text-center py-3">No occupancy data available</div>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h5 class="card-title">Key Insights</h5>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                      <strong>Avg Amenity Usage:</strong> {{ dashboardInsight.averageAmenityUsage | number:'1.0-2' }}
+                    </li>
+                    <li class="list-group-item">
+                      <strong>Max Occupancy Rate:</strong> {{ dashboardInsight.maxOccupancyRate }}
+                    </li>
+                    <li class="list-group-item">
+                      <strong>Review Sentiment:</strong> {{ dashboardInsight.reviewSentimentScore | number:'1.0-1' }}⭐
+                    </li>
+                    <li class="list-group-item">
+                      <strong>Peak Hour:</strong> {{ dashboardInsight.peakOccupancyHour }}:00
+                    </li>
+                    <li class="list-group-item">
+                      <strong>Customer Retention:</strong> {{ dashboardInsight.customerRetentionRate | percent:'1.1-1'
+                      }}
+                    </li>
+                    <li class="list-group-item">
+                      <strong>Total Customer Value:</strong> {{ dashboardInsight.totalCustomerValue | abs |
+                      currency:'USD':'symbol':'1.0-0' }}
+                    </li>
+                    <li class="list-group-item">
+                      <strong>Top Amenities:</strong>
+                      <ul>
+                        @for (amenity of dashboardInsight.topAmenities; track amenity.name) {
+                        <li>{{ amenity.name }}: {{ amenity.usage | number:'1.0-2' }}</li>
+                        }
+                        @if (!dashboardInsight.topAmenities.length) {
+                        <li>No amenities data available</li>
+                        }
+                      </ul>
+                    </li>
+                    <li class="list-group-item">
+                      <strong>Revenue by Room Type:</strong>
+                      <ul>
+                        @for (type of dashboardInsight.revenuePerRoomType; track type.type) {
+                        <li>{{ type.type }}: {{ type.revenue | abs | currency:'USD':'symbol':'1.0-0' }}</li>
+                        }
+                        @if (!dashboardInsight.revenuePerRoomType.length) {
+                        <li>No room type revenue data available</li>
+                        }
+                      </ul>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Operational Dashboard -->
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h5 class="card-title">Recent Reservations</h5>
+                  @if (getRecentReservations(5).length) {
+                  <div class="list-group">
+                    @for (reservation of getRecentReservations(5); track reservation?.ReservationId) {
+                    <div class="list-group-item border-0 py-2">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                          <h6 class="mb-1">{{ reservation?.RoomName ?? 'Unknown Room' }}</h6>
+                          <small class="text-muted">
+                            {{ reservation?.FName ?? '' }} {{ reservation?.LName ?? '' }} •
+                            {{ safeDate(reservation?.BookingDate) | date:'shortDate' }}
+                          </small>
+                        </div>
+                        <span class="badge" [class.bg-success]="reservation?.ReservationStatus === 'COMPLETED'"
+                          [class.bg-danger]="reservation?.ReservationStatus === 'CANCELLED'"
+                          [class.bg-warning]="reservation?.ReservationStatus !== 'COMPLETED' && reservation?.ReservationStatus !== 'CANCELLED'">
+                          {{ reservation?.ReservationStatus ?? 'PENDING' }}
+                        </span>
+                      </div>
+                    </div>
+                    }
+                  </div>
+                  } @else {
+                  <div class="text-muted text-center py-3">No recent reservations</div>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h5 class="card-title">Active Offers</h5>
+                  @if (getActiveOffers().length) {
+                  <div class="list-group">
+                    @for (offer of getActiveOffers(); track offer?.id) {
+                    <div class="list-group-item border-0 py-2">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                          <h6 class="mb-1">{{ offer?.offerTitle ?? 'Unknown Offer' }}</h6>
+                          <small class="text-muted">
+                            {{ safeDate(offer?.validFrom) | date:'shortDate' }} - {{ safeDate(offer?.validTo) |
+                            date:'shortDate' }}
+                          </small>
+                        </div>
+                        <span class="badge bg-success">{{ offer?.discountPercentage ?? 0 }}% off</span>
+                      </div>
+                    </div>
+                    }
+                  </div>
+                  } @else {
+                  <div class="text-center text-muted py-3">No active offers currently</div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+          }
         </div>
+      </div>
     </div>
+  </div>
 </div>

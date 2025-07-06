@@ -1,0 +1,14 @@
+.card-body canvas {
+  max-height: 300px;
+}
+.list-group-item ul {
+  padding-left: 20px;
+}
+.card-header {
+  cursor: pointer;
+}
+@media (max-width: 767px) {
+  .card-header {
+    background-color: #f8f9fa;
+  }
+}

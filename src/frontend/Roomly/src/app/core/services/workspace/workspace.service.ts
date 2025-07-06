@@ -1,7 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, map, Observable, throwError } from 'rxjs';
 import { IRoom, IWorkspace } from '../../../interfaces/iworkspace';
+import { IWorkspaceAnalysisResponse } from '../../../interfaces/iworkspace-analysis';
 
 @Injectable({
   providedIn: 'root'
@@ -37,12 +38,41 @@ export class WorkspaceService {
       })
     );
   }
-  getWorkspaceAnalysis(workspaceId: string): Observable<any> {
-    return this.http.get(`https://mostafaabdelkawy-roomly-workspace-analysis.hf.space/api/v1/analysis/workspace/${workspaceId}/all`).pipe(
-      catchError(error => {
-        console.error('Error fetching workspace analysis:', error);
-        throw error;
+
+  // getWorkspaceAnalysis(workspaceId: string): Observable<IWorkspaceAnalysisResponse> {
+  //   return this.http.get<IWorkspaceAnalysisResponse>
+  //     (`https://mostafaabdelkawy-roomly-workspace-analysis.hf.space/api/v1/analysis/workspace/${workspaceId}/all`).pipe(
+  //       // catchError(error => {
+  //       //   console.error('Error fetching workspace analysis:', error);
+  //       //   throw error;
+  //       // })
+  //       map(response => {
+  //         // Try to replace NaN with null before JSON.parse
+  //         const sanitized = response.replace(/\bNaN\b/g, 'null');
+  //         return JSON.parse(sanitized) as IWorkspaceAnalysisResponse;
+  //       }),
+  //       catchError(err => {
+  //         console.error('Error fetching workspace analysis:', err);
+  //         return throwError(() => err);
+  //       })
+  //     );
+  // }
+
+  getWorkspaceAnalysis(workspaceId: string): Observable<IWorkspaceAnalysisResponse> {
+    const url = `https://mostafaabdelkawy-roomly-workspace-analysis.hf.space/api/v1/analysis/workspace/${workspaceId}/all`;
+
+    return this.http.get<string>(url, { responseType: 'text' as 'json' }).pipe(
+      map((response: string) => {
+        const sanitized = response.replace(/\bNaN\b/g, 'null');
+        return JSON.parse(sanitized) as IWorkspaceAnalysisResponse;
+      }),
+      catchError(err => {
+        console.error('Error fetching workspace analysis:', err);
+        return throwError(() => err);
       })
     );
   }
+
+
+
 }
