@@ -96,13 +96,6 @@ export const routes: Routes = [
       //     title: 'Add room'
       //   }
       // },
-      {
-        path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then((m) => m.RoomsFeesComponent)
-      },
-      // {
-      //   path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then((m) => m.RoomsFeesComponent)
-      // },
-
 
       { path: 'rooms-fees', loadComponent: () => import('./components/rooms-fees/rooms-fees.component').then(m => m.RoomsFeesComponent) },
 
