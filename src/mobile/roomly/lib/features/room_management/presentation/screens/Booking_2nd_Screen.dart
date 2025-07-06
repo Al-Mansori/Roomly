@@ -61,13 +61,23 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
     _availabilityCubit = context.read<SeatsAvailabilityCubit>();
     _scrollController.addListener(_handleScroll);
 
-    // Initialize with default times
-    _checkInTimes = List.generate(24, (index) => DateFormat('h:mm a').format(DateTime(2024, 1, 1, index, 0)));
-    _checkOutTimes = List.generate(24, (index) => DateFormat('h:mm a').format(DateTime(2024, 1, 1, index, 0)));
+    // Initialize with default times      _checkInTimes = List.generate(
+    _checkInTimes = List.generate(
+      48,
+          (index) => DateFormat('h:mm a').format(
+        DateTime(2024, 1, 1, index ~/ 2, (index % 2) * 30),
+      ),
+    );
+    _checkOutTimes = List.generate(
+      48,
+          (index) => DateFormat('h:mm a').format(
+        DateTime(2024, 1, 1, index ~/ 2, (index % 2) * 30),
+      ),
+    );
+
 
     _loadInitialData();
   }
-
   /// Load both operating hours and availability data
   void _loadInitialData() {
     print('🚀 Loading initial data for date: ${_selectedDate.toIso8601String()}');
@@ -146,7 +156,7 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
       final currentTime = DateTime(now.year, now.month, now.day, now.hour, now.minute);
       final selectedCheckIn = DateTime(now.year, now.month, now.day, checkIn.hour, checkIn.minute);
 
-      if (selectedCheckIn.isBefore(currentTime)) {
+      if (selectedCheckIn.isBefore(currentTime.subtract(const Duration(minutes: 1)))) {
         setState(() {
           _isTimeValid = false;
           _timeValidationMessage = 'Cannot select past times for today';
@@ -303,15 +313,23 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
     _checkInTimes = allPossibleTimes.where((time) {
       final parsedTime = _parseTime(time);
       final hour = parsedTime.hour;
-      final isTimePassed = isToday && parsedTime.isBefore(now);
+
+      final slotDateTime = DateTime(
+        now.year, now.month, now.day,
+        parsedTime.hour, parsedTime.minute,
+      );
+      final slotEnd = slotDateTime.add(const Duration(minutes: 30));
+
+      final isSlotPassed = isToday && slotEnd.isBefore(now.add(const Duration(seconds: 1)));
+      if (isSlotPassed) return false;
 
       // For daily booking, only check if time has passed
       if (_isDailyBooking) {
-        return !isTimePassed;
+        return !isSlotPassed;
       }
 
       // For custom time, check availability
-      return !isTimePassed && _isHourAvailable(hour);
+      return !isSlotPassed && _isHourAvailable(hour);
     }).toList();
 
     print('   Available check-in times: ${_checkInTimes.length}');
@@ -357,21 +375,21 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
     }
   }
 
-  /// Generates hourly time slots between start and end times
   List<String> _generateTimeSlots(DateTime start, DateTime end) {
     final slots = <String>[];
-    final format = DateFormat('h:mm a');
+    final format = DateFormat("h:mm a");
 
     DateTime current = DateTime(
       start.year,
       start.month,
       start.day,
       start.hour,
+      0, // Set minutes to 0 for full hours
     );
 
     while (current.isBefore(end)) {
       slots.add(format.format(current));
-      current = current.add(Duration(hours: 1));
+      current = current.add(const Duration(hours: 1)); // Increment by 1 hour
     }
 
     return slots;
@@ -450,7 +468,7 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
 
           final isTimePassed = isToday && parsedTime.isBefore(now);
           final isAvailable = _isDailyBooking || _isHourAvailable(hour);
-          final isDisabled = !isEnabled || (isToday && isTimePassed) || (!_isDailyBooking && !isAvailable);
+          final isDisabled = !isEnabled || (!_isDailyBooking && !isAvailable);
 
           return Padding(
             padding: const EdgeInsets.only(right: 8),

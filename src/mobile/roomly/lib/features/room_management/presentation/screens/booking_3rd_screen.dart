@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/service_locator/service_locator.dart';
@@ -39,36 +38,20 @@ class ReviewBookingScreen extends StatefulWidget {
 
 class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
   String? _selectedPayment;
-  bool _isRedeemLoyaltySelected = false;
-  final TextEditingController _loyaltyPointsController = TextEditingController();
+  bool _useAllLoyaltyPoints = false;
   String? _errorMessage;
-  int _pointsToRedeem = 0;
 
   @override
   void initState() {
     super.initState();
     context.read<LoyaltyPointsCubit>().loadLoyaltyPoints();
-    _loyaltyPointsController.addListener(_updatePointsToRedeem);
   }
 
-  @override
-  void dispose() {
-    _loyaltyPointsController.removeListener(_updatePointsToRedeem);
-    _loyaltyPointsController.dispose();
-    super.dispose();
-  }
-
-  void _updatePointsToRedeem() {
-    setState(() {
-      _pointsToRedeem = int.tryParse(_loyaltyPointsController.text) ?? 0;
-    });
-  }
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<LoyaltyPointsCubit>(
-
           create: (context) => context.read<LoyaltyPointsCubit>(),
         ),
         BlocProvider<BookingCubit>(
@@ -101,7 +84,7 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(state.message)),
                   );
-                  if (_isRedeemLoyaltySelected) {
+                  if (_useAllLoyaltyPoints) {
                     _makeReservation(context);
                   }
                 }
@@ -117,7 +100,6 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Booking successful!')),
                   );
-                  // context.go('/cards');
                   context.push('/payment', extra: {
                     'amount': widget.totalPrice,
                     'paymentFor': '${widget.room.name} Booking',
@@ -139,7 +121,6 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
               } else if (state is LoyaltyPointsActionSuccess) {
                 availablePoints = state.loyaltyPoints.totalPoints;
               } else if (state is LoyaltyPointsError) {
-                // Optionally show error message
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(state.message)),
@@ -166,9 +147,9 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                           const SizedBox(height: 16),
                           _buildPaymentMethod(availablePoints),
                           const SizedBox(height: 24),
-                          _buildPaymentSummary(),
+                          _buildPaymentSummary(availablePoints),
                           const SizedBox(height: 32),
-                          _buildReserveButton(context, availablePoints),
+                          _buildReserveButton(context),
                         ],
                       ),
                     ),
@@ -185,7 +166,6 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
   Widget _buildRequestButton(BuildContext context) {
     return TextButton(
       onPressed: () async {
-
         final getStaffIdUseCase = sl<GetStaffIdUseCase>();
         final staffId = await getStaffIdUseCase(widget.workspaceId);
         if (staffId != null) {
@@ -424,8 +404,6 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
     );
   }
 
-
-// 3. Remove the separate loyalty points checkbox and update _buildPaymentOption
   Widget _buildPaymentOption({
     required String title,
     required IconData icon,
@@ -459,20 +437,15 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
       ),
     );
   }
-// 4. Update the payment summary to show points deduction
-// Update the payment summary calculation
-  Widget _buildPaymentSummary() {
+
+  Widget _buildPaymentSummary(int availablePoints) {
     final subtotal = widget.totalPrice;
     final serviceFee = subtotal * 0.14;
+    final double pointsValue = _useAllLoyaltyPoints ? availablePoints * 0.1 : 0;
 
-    // Calculate points deduction (1 point = 0.1 EGP)
-    double pointsValue = _pointsToRedeem * 0.1;
-
-    // Calculate total after points deduction
     double totalBeforePoints = subtotal + serviceFee;
     double totalAfterPoints = totalBeforePoints - pointsValue;
 
-    // Adjust points if they would make total negative
     double actualPointsDeduction = pointsValue;
     double remainingPoints = 0;
 
@@ -503,11 +476,14 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
           _buildPaymentRow('Subtotal', 'EGP ${subtotal.toStringAsFixed(2)}'),
           const SizedBox(height: 8),
           _buildPaymentRow('Service fee ⓒ', 'EGP ${serviceFee.toStringAsFixed(2)}'),
-          if (_pointsToRedeem > 0)
+          if (_useAllLoyaltyPoints && actualPointsDeduction > 0)
             Column(
               children: [
                 const SizedBox(height: 8),
-                _buildPaymentRow('Points redeemed (${_pointsToRedeem} pts)', '-EGP ${actualPointsDeduction.toStringAsFixed(2)}'),
+                _buildPaymentRow(
+                    'Points redeemed (${(actualPointsDeduction / 0.1).toStringAsFixed(0)} pts)',
+                    '-EGP ${actualPointsDeduction.toStringAsFixed(2)}'
+                ),
                 if (remainingPoints > 0)
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
@@ -523,7 +499,7 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
             ),
           const Divider(height: 24),
           _buildPaymentRow('Total', 'EGP ${totalAfterPoints.toStringAsFixed(2)}', isTotal: true),
-          if (_pointsToRedeem > 0)
+          if (_useAllLoyaltyPoints)
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(
@@ -562,44 +538,13 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
     );
   }
 
-// Update the reserve button logic
-  Widget _buildReserveButton(BuildContext context, int availablePoints) {
-    // Recalculate the total with points to validate
-    final subtotal = widget.totalPrice;
-    final serviceFee = subtotal * 0.14;
-    final pointsValue = _pointsToRedeem * 0.1;
-    double totalBeforePoints = subtotal + serviceFee;
-    double totalAfterPoints = totalBeforePoints - pointsValue;
-
-    // Adjust if points would make total negative
-    if (totalAfterPoints < 0) {
-      totalAfterPoints = 0;
-    }
-
-    final isAllValid = _selectedPayment != null &&
-        (_pointsToRedeem == 0 ||
-            (_pointsToRedeem <= availablePoints && totalAfterPoints >= 0));
+  Widget _buildReserveButton(BuildContext context) {
+    final isAllValid = _selectedPayment != null;
 
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: isAllValid ? () {
-          if (_pointsToRedeem > availablePoints) {
-            setState(() {
-              _errorMessage = 'Insufficient points for redemption';
-            });
-            return;
-          }
-
-          if (totalAfterPoints < 0) {
-            setState(() {
-              _errorMessage = 'Cannot redeem more points than the total amount';
-            });
-            return;
-          }
-
-          _makeReservation(context);
-        } : null,
+        onPressed: isAllValid ? () => _makeReservation(context) : null,
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           backgroundColor: isAllValid
@@ -615,7 +560,6 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
     );
   }
 
-// Update the payment method section to show the conversion rate
   Widget _buildPaymentMethod(int availablePoints) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -654,35 +598,27 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                 'Available Points: $availablePoints (${(availablePoints * 0.1).toStringAsFixed(1)} EGP)',
                 style: TextStyle(color: Colors.grey.shade600),
               ),
-              TextField(
-                controller: _loyaltyPointsController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: 'Enter points to redeem (optional)',
-                  errorText: _errorMessage,
-                ),
-                onChanged: (value) {
-                  final points = int.tryParse(value) ?? 0;
-                  setState(() {
-                    _pointsToRedeem = points;
-                    if (points > availablePoints) {
-                      _errorMessage = 'Insufficient points';
-                    } else {
-                      // Calculate if points would make total negative
-                      final subtotal = widget.totalPrice;
-                      final serviceFee = subtotal * 0.14;
-                      final totalBeforePoints = subtotal + serviceFee;
-                      final pointsValue = points * 0.1;
-
-                      if (totalBeforePoints - pointsValue < 0) {
-                        _errorMessage = 'Maximum redeemable: ${(totalBeforePoints / 0.1).toStringAsFixed(0)} points';
-                      } else {
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Checkbox(
+                    value: _useAllLoyaltyPoints,
+                    onChanged: (value) {
+                      setState(() {
+                        _useAllLoyaltyPoints = value ?? false;
                         _errorMessage = null;
-                      }
-                    }
-                  });
-                },
+                      });
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  const Text('Use all my loyalty points'),
+                ],
               ),
+              if (_errorMessage != null)
+                Text(
+                  _errorMessage!,
+                  style: const TextStyle(color: Colors.red),
+                ),
             ],
           ),
         ),
@@ -690,21 +626,25 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
     );
   }
 
-// Update the reservation method to handle partial points redemption
   Future<void> _makeReservation(BuildContext context) async {
     final userId = AppSession().userId;
     final paymentMethod = _selectedPayment!.toUpperCase().replaceAll(' ', '_');
     final startTime = _formatDateTime(widget.selectedDate, widget.checkInTime);
     final endTime = _formatDateTime(widget.selectedDate, widget.checkOutTime);
 
-    // Calculate actual points to redeem (may be less than requested if it would make total negative)
+    final availablePoints = context.read<LoyaltyPointsCubit>().state is LoyaltyPointsLoaded
+        ? (context.read<LoyaltyPointsCubit>().state as LoyaltyPointsLoaded).loyaltyPoints.totalPoints
+        : 0;
+
     final subtotal = widget.totalPrice;
     final serviceFee = subtotal * 0.14;
     final totalBeforePoints = subtotal + serviceFee;
     final maxPointsValue = totalBeforePoints;
-    final actualPointsToRedeem = (_pointsToRedeem * 0.1 > maxPointsValue)
+    final actualPointsToRedeem = _useAllLoyaltyPoints
+        ? (availablePoints * 0.1 > maxPointsValue)
         ? (maxPointsValue / 0.1).toInt()
-        : _pointsToRedeem;
+        : availablePoints
+        : 0;
 
     final bookingRequest = BookingRequest(
       paymentMethod: paymentMethod,
@@ -714,10 +654,9 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
       userId: userId,
       workspaceId: widget.workspaceId,
       roomId: widget.room.id ?? 'default_room',
-      loyalityPoint: _pointsToRedeem
+      loyalityPoint: actualPointsToRedeem,
     );
 
-    // If points are being redeemed, call the redeem API first
     if (actualPointsToRedeem > 0) {
       try {
         await context.read<LoyaltyPointsCubit>().redeemPoints(actualPointsToRedeem);
@@ -745,7 +684,6 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
         parsedTime.minute,
       );
 
-      // 🧼 احذفي .000 عبر format واضح
       return DateFormat("yyyy-MM-ddTHH:mm:ss").format(dateTime);
     } catch (e) {
       print('❌ Error parsing time: $time - $e');
