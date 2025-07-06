@@ -203,7 +203,7 @@ private handleError(error: any): void {
     this.loadAddedRooms();
   }
 
-private navigateToAmenities(workspaceId: string, roomId: string): void {
+ navigateToAmenities(workspaceId: string, roomId: string): void {
   if (!roomId) {
     this.showError('Room ID is missing');
     return;

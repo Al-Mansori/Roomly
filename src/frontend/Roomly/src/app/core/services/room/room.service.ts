@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { IOffer } from '../../../interfaces/iworkspace';
+import { IOffer, IRoom } from '../../../interfaces/iworkspace';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { IRecommendationResponse } from '../../../interfaces/irecommendation';
@@ -28,6 +28,15 @@ export class RoomService {
       catchError(error => {
         console.error('Error fetching recommendations:', error);
         return throwError(() => new Error('Failed to fetch recommendations'));
+      })
+    );
+  }
+
+  getRoomById(roomId: string): Observable<IRoom> {
+    return this.http.get<IRoom>(`/api/staff/room/${roomId}`).pipe(
+      catchError(error => {
+        console.error(`Error fetching room ${roomId}:`, error);
+        return throwError(() => new Error('Failed to fetch room details'));
       })
     );
   }

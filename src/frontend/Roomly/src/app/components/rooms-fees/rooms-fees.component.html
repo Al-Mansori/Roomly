@@ -1,7 +1,6 @@
 <div class="rooms-fees bg-light min-vh-100">
   <div class="container-fluid">
     <div class="row">
-
       <!-- Sidebar -->
       <div class="col-12 col-md-2">
         <app-side-navbar></app-side-navbar>
@@ -9,7 +8,6 @@
 
       <!-- Main Content -->
       <div class="col-12 col-md-9 mx-auto px-4 py-4">
-
         <!-- Title -->
         <h5 class="text-primary fw-bold mb-4">
           <i class="bi bi-coin"></i>
@@ -18,43 +16,67 @@
 
         <!-- Search Bar -->
         <div class="input-group mb-4 w-50">
-          <input type="text" class="form-control rounded-pill border-success-subtle" placeholder="Search" />
+          <input type="text" class="form-control rounded-pill border-success-subtle"
+            placeholder="Search by name, type, or price" (input)="onSearch($event)" />
           <span class="input-group-text bg-white border-0"><i class="bi bi-search"></i></span>
         </div>
 
+        <!-- Error Message -->
+        @if (errorMessage) {
+        <div class="alert alert-danger" role="alert">
+          {{ errorMessage }}
+        </div>
+        }
+
+        <!-- Loading State -->
+        @if (isLoading) {
+        <div class="d-flex flex-column gap-3">
+          @for (i of [1, 2, 3]; track i) {
+          <div class="row align-items-center bg-white rounded-4 px-3 py-2">
+            <div class="col d-flex align-items-center gap-2">
+              <ngx-skeleton-loader appearance="circle"
+                [theme]="{ width: '40px', height: '40px' }"></ngx-skeleton-loader>
+              <ngx-skeleton-loader></ngx-skeleton-loader>
+            </div>
+            <div class="col"><ngx-skeleton-loader></ngx-skeleton-loader></div>
+            <div class="col"><ngx-skeleton-loader></ngx-skeleton-loader></div>
+            <div class="col"><ngx-skeleton-loader></ngx-skeleton-loader></div>
+            <div class="col"><ngx-skeleton-loader></ngx-skeleton-loader></div>
+            <div class="col text-end"><ngx-skeleton-loader [theme]="{ width: '80px' }"></ngx-skeleton-loader></div>
+          </div>
+          }
+        </div>
+        } @else {
         <!-- Table Headers -->
-        <div class="row fw-semibold text-secondary border-bottom pb-2 mb-3">
-          <div class="col">ID</div>
-          <div class="col">Name</div>
-          <div class="col">Room Type</div>
-          <div class="col">Price per hour</div>
-          <div class="col">Completion rate</div>
-          <div class="col">Cancellation rate</div>
-          <div class="col">Recommended fee</div>
-          <div class="col text-end"></div>
+        <div class="row fw-semibold text-primary border-bottom pb-2 mb-3">
+          <div class="col-3">Name</div>
+          <div class="col-2">Room Type</div>
+          <div class="col-2">Price per hour</div>
+          <div class="col-2">Completion rate</div>
+          <div class="col-2">Cancellation rate</div>
+          <div class="col-1">Recommended fee</div>
         </div>
 
         <!-- Room Rows -->
         <div class="d-flex flex-column gap-3">
-          @for (room of rooms; track room.id) {
+          @for (rec of filteredRecommendations; track rec.room_name) {
           <div class="row align-items-center bg-white rounded-4 px-3 py-2">
-            <div class="col">{{ room.id }}</div>
-            <div class="col d-flex align-items-center gap-2">
-              <img [src]="room.image" class="rounded-circle" width="40" height="40" />
-              <span>{{ room.name }}</span>
+            <div class="col-3 d-flex align-items-center gap-2">
+              <img [src]="getRoomImage(rec.room_name)" class="rounded-circle" width="40" height="40"
+                alt="{{ rec.room_name }}" />
+              <span>{{ rec.room_name }}</span>
             </div>
-            <div class="col">{{ room.type }}</div>
-            <div class="col">{{ room.price }}</div>
-            <div class="col">{{ room.completionRate }}</div>
-            <div class="col">{{ room.cancellationRate }}</div>
-            <div class="col">{{ room.recommendedFee }}</div>
-            <div class="col text-end">
-              <button class="apply-button btn text-white btn-sm rounded-pill px-3">Apply</button>
-            </div>
+            <div class="col-2">{{ rec.room_type }}</div>
+            <div class="col-2">${{ rec.PricePerHour | number:'1.2-2' }}/hour</div>
+            <div class="col-2">{{ rec.CompletionRate * 100 | number:'1.1-1' }}%</div>
+            <div class="col-2">{{ rec.CancellationRate * 100 | number:'1.1-1' }}%</div>
+            <div class="col-1">${{ rec.RecommendedFee | number:'1.2-2' }}</div>
           </div>
+          } @if (!filteredRecommendations.length && !errorMessage) {
+          <div class="text-muted text-center py-3">No fee recommendations available</div>
           }
         </div>
-
+        }
       </div>
     </div>
   </div>
