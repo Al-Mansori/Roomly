@@ -44,15 +44,29 @@ class WorkspaceListingsScreen extends StatelessWidget {
       //   // Navigate to RoomDetailsScreen when a room card is tapped
       //   context.push('/room/${room.id}');
       // },
+
+      // onTap: () {
+      //   final workspaceCubit = context.read<WorkspaceDetailsCubit>();
+      //   context.push(
+      //     '/room/${room.id}',
+      //     // extra: workspaceCubit,
+      //     extra: {
+      //       'workspaceCubit': workspaceCubit,
+      //     },
+      //   );
+      // },
+
       onTap: () {
         final workspaceCubit = context.read<WorkspaceDetailsCubit>();
-        context.push(
-          '/room/${room.id}',
-          // extra: workspaceCubit,
-          extra: {
-            'workspaceCubit': workspaceCubit,
-          },
-        );
+        final state = workspaceCubit.state;
+        if (state is WorkspaceDetailsLoaded) {
+          context.push(
+            '/room/${room.id}',
+            extra: {
+              'workspaceId': state.workspace.id,
+            },
+          );
+        }
       },
 
       child: Container(
