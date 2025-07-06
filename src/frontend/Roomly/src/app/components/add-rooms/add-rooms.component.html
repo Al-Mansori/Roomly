@@ -80,6 +80,30 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Added Rooms Section -->
+                            <div class="card p-3 mt-4">
+                                <h6 class="fw-semibold my-3">Added rooms</h6>
+                                
+                                <div *ngIf="addedRooms.length === 0" class="text-center py-3">
+                                    <p>No added rooms yet</p>
+                                </div>
+
+                                <div *ngIf="addedRooms.length > 0" class="row">
+                                    <div *ngFor="let room of addedRooms" class="col-md-3 col-6 mb-3">
+                                            <div class="card h-100 border-0 shadow-sm" 
+                                                (click)="navigateToAmenities(room.id, room.name)"
+                                                style="cursor: pointer;">
+                                                <img [src]="room.mainImage?.[0] || './assets/Images/room03.jpg'" 
+                                                    class="card-img-top rounded" 
+                                                    style="height: 120px; object-fit: cover;">
+                                                <div class="card-body p-2 text-center">
+                                                    <h6 class="card-title fw-bold mb-0">{{ room.name }}</h6>
+                                                </div>
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Right Column -->
@@ -87,7 +111,7 @@
                             <!-- Post Overview -->
                             <div class="card p-3">
                                 <h6 class="fw-semibold mb-3">Post Overview</h6>
-                                <img [src]="roomForm.get('imageUrls')?.value?.[0] || './../assets/Images/room03.jpg'" 
+                                <img [src]="roomForm.get('imageUrls')?.value?.[0] || './assets/Images/room03.jpg'" 
                                     class="img-fluid rounded mb-3"
                                     style="height: 200px; object-fit: cover;" />
                                 <h6 class="fw-bold">{{ roomForm.get('name')?.value || 'Room Name' }}</h6>

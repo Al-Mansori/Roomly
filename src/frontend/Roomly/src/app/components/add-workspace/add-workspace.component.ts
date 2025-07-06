@@ -100,9 +100,9 @@ async onSubmit() {
   if (!this.workspaceForm.valid || this.images.length === 0 || !this.markerPosition) {
     await Swal.fire({
       icon: 'warning',
-      title: 'بيانات ناقصة',
-      text: 'يرجى إكمال جميع الحقول المطلوبة',
-      confirmButtonText: 'حسناً'
+      title: 'Not completed data',
+      text: 'Please fill the un completed fields',
+      confirmButtonText: 'Ok'
     });
     return;
   }
@@ -134,9 +134,9 @@ async onSubmit() {
     console.error('Error creating workspace:', error);
     Swal.fire({
       icon: 'error',
-      title: 'خطأ',
-      text: 'حدث خطأ أثناء إنشاء مساحة العمل',
-      confirmButtonText: 'حسناً'
+      title: 'Error',
+      text: 'Error while creating workspace',
+      confirmButtonText: 'Ok'
     });
   }
 }

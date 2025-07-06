@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { SideStepsIndicatorComponent } from "../side-steps-indicator/side-steps-indicator.component";
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -6,7 +6,10 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { UploadImageComponent } from './upload-image/upload-image.component';
 import { RoomServiceService } from '../../core/services/room/room-service.service';
 import Swal from 'sweetalert2';
-
+import { WorkspaceService } from '../../core/services/workspace/workspace.service';
+import { IRoom } from '../../interfaces/iworkspace';
+import { RoomService } from '../../core/services/room/room.service';
+import { MyRoom } from '../../interfaces/isimple-room';
 @Component({
   selector: 'app-add-rooms',
   standalone: true,
@@ -17,17 +20,12 @@ import Swal from 'sweetalert2';
     FormsModule,
     UploadImageComponent, 
     RouterModule
+    
   ],
   templateUrl: './add-rooms.component.html',
   styleUrls: ['./add-rooms.component.scss']
 })
 export class AddRoomsComponent {
-  // steps = [
-  //   { icon: 'Add Worksapce step indicator.png', label: 'Add Workspace', active: true },
-  //   { icon: 'Add Rooms step indicator.png', label: 'Rooms', active: true },
-  //   { icon: 'Add amenities step indicator.png', label: 'Amenities', active: false },
-  //   { icon: 'Reception hours step indicator.png', label: 'Recipients', active: false }
-  // ];
 
   workspaceId: string | null = null;
   roomForm: FormGroup;
@@ -37,7 +35,9 @@ export class AddRoomsComponent {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private roomService: RoomServiceService,
-    private router: Router
+    private router: Router,
+    private WorkspaceService : WorkspaceService,
+    private RoomService : RoomService
   ) {
     this.roomForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(50)]],
@@ -52,7 +52,9 @@ export class AddRoomsComponent {
       imageUrls: [[], [Validators.required, Validators.minLength(1)]]
     });
   }
-
+    ngAfterViewInit() {
+      this.loadAddedRooms();
+    }
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.workspaceId = params['workspaceId'] || null;
@@ -60,7 +62,37 @@ export class AddRoomsComponent {
         console.log('تم استقبال workspaceId:', this.workspaceId);
       }
     });
+    this.loadAddedRooms();
   }
+
+  addedRooms: MyRoom[] = [];
+  errorMessage: string = '';
+
+  private loadAddedRooms() {
+    const workspaceId = this.workspaceId;
+    
+    if (workspaceId) {
+      this.WorkspaceService.getRoomsByWorkspace(workspaceId).subscribe({
+        next: (rooms: any[]) => {
+          // تحويل البيانات لتتناسب مع احتياجاتك
+          this.addedRooms = rooms.map(room => ({
+            id: room.id,
+            name: room.name,
+            mainImage: room.roomImages?.[0]?.imageUrl || './assets/Images/room03.jpg'
+          }));
+          this.errorMessage = '';
+        },
+        error: (err) => {
+          console.error('Error loading rooms:', err);
+          this.errorMessage = 'حدث خطأ في تحميل الغرف';
+          this.addedRooms = [];
+        }
+      });
+    } else {
+      this.addedRooms = [];
+    }
+  }
+
 
   updateImages(imageUrls: string[]): void {
     this.roomForm.patchValue({ imageUrls });
@@ -72,42 +104,117 @@ export class AddRoomsComponent {
   return user?.id || '';
   }
   createRoom(): void {
+    // 1. التحقق من حالة الإرسال
     if (this.isSubmitting) return;
 
-    this.roomForm.markAllAsTouched();
-    if (this.roomForm.invalid) {
-      this.showError('Please fill all required fields correctly');
-      return;
-    }
-
-    this.isSubmitting = true;
+    // 2. التحقق من اكتمال البيانات الأساسية
     const staffId = this.getUserId();
     const workspaceId = this.workspaceId;
-
+    
     if (!staffId || !workspaceId) {
       this.showError('Missing required information (staffId or workspaceId)');
-      this.isSubmitting = false;
       return;
     }
 
+    // 3. التحقق الشامل للنموذج
+    this.roomForm.markAllAsTouched();
+    
+    if (this.roomForm.invalid) {
+      this.highlightEmptyFields();
+      this.showError('Please complete all required fields correctly');
+      return;
+    }
+
+    // 4. التحقق من الصور (مثال لتحسين التحقق)
+    if (!this.roomForm.get('imageUrls')?.value?.length) {
+      this.showError('At least one image is required');
+      return;
+    }
+
+    // 5. بدء عملية الإرسال
+    this.isSubmitting = true;
     const roomData = this.roomForm.value;
 
     this.roomService.createRoom(roomData, staffId, workspaceId)
       .then(result => {
         if (result.success) {
-          this.showSuccess('Room created successfully!');
-          this.router.navigate(['/rooms'], { queryParams: { workspaceId } });
+          this.handleSuccess(result, workspaceId);
+        } else {
+          this.showError('Failed to create room');
         }
       })
       .catch(error => {
-        console.error('Error creating room:', error);
-        this.showError('Failed to create room. Please try again.');
+        this.handleError(error);
       })
       .finally(() => {
         this.isSubmitting = false;
       });
   }
 
+  private highlightEmptyFields(): void {
+  Object.keys(this.roomForm.controls).forEach(key => {
+    const control = this.roomForm.get(key);
+    if (control?.invalid) {
+      control.markAsTouched();
+    }
+  });
+}
+
+private handleSuccess(result: any, workspaceId: string): void {
+  const successAlert = Swal.fire({
+    icon: 'success',
+    title: 'Room created successfully!',
+    text: 'What would you like to do next?',
+    showDenyButton: true,
+    confirmButtonText: 'Add More Rooms',
+    denyButtonText: 'Go to Amenities',
+    reverseButtons: true,
+    allowOutsideClick: false
+  });
+
+  successAlert.then((choice) => {
+    if (choice.isConfirmed) {
+      this.resetForm();
+    } else if (choice.isDenied) {
+      this.navigateToAmenities(workspaceId, result.data?.roomId);
+    }
+  });
+}
+
+private handleError(error: any): void {
+  console.error('Error creating room:', error);
+  const errorMsg = error.error?.message || 
+                  error.message || 
+                  'Failed to create room. Please try again.';
+  this.showError(errorMsg);
+}
+
+  private resetForm(): void {
+    this.roomForm.reset({
+      type: 'MEETING',
+      capacity: 0,
+      pricePerHour: 0,
+      dayPrice: 0,
+      monthPrice: 0,
+      priceNegotiable: false,
+      active: true,
+      imageUrls: []
+    });
+    this.loadAddedRooms();
+  }
+
+private navigateToAmenities(workspaceId: string, roomId: string): void {
+  if (!roomId) {
+    this.showError('Room ID is missing');
+    return;
+  }
+  this.router.navigate(['/add-amenities'], { 
+    queryParams: { 
+      workspaceId: workspaceId,
+      roomId: roomId
+    } 
+  });
+}
   private showSuccess(message: string): void {
     Swal.fire({
       icon: 'success',
@@ -149,4 +256,42 @@ export class AddRoomsComponent {
     }
     return 'Invalid value';
   }
+  // في AddRoomsComponent
+
+editRoom(roomId: string): void {
+  this.router.navigate(['/edit-room'], { 
+    queryParams: { 
+      workspaceId: this.workspaceId,
+      roomId: roomId
+    }
+  });
 }
+
+deleteRoom(roomId: string): void {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You won\'t be able to revert this!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.RoomService.deleteRoom(roomId).subscribe({
+        next: () => {
+          this.showSuccess('Room deleted successfully');
+          this.loadAddedRooms(); // Refresh the list
+        },
+        error: (error) => {
+          console.error('Error deleting room:', error);
+          this.showError('Failed to delete room');
+        }
+      });
+    }
+  });
+}
+
+
+}
+

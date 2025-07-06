@@ -21,6 +21,7 @@ export interface IWorkspace {
 }
 
 export interface IRoom {
+  imageUrls: never[];
   id: string;
   name: string;
   type: string;
@@ -35,6 +36,8 @@ export interface IRoom {
 
   offers: IOffer[] | null;
 }
+
+
 export interface IReview {
   id: string;
   rating: number;

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environment/environments';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import { firstValueFrom } from 'rxjs';
 
@@ -25,7 +25,7 @@ export class CreateWorkspaceService {
         }
       }
 
-      const url = `${this.baseUrl}/api/staff/create-workspace?${queryParams.toString()}`;
+      const url = `${this.baseUrl}/staff/create-workspace?${queryParams.toString()}`;
 
       const result: any = await firstValueFrom(this.http.post(url, {}));
 
@@ -62,6 +62,28 @@ export class CreateWorkspaceService {
   }
 
 
+  // reception-hours.service.ts
+async setReceptionHours(schedules: any[], workspaceId: string): Promise<any> {
+  const url = `${this.baseUrl}/staff/workspace-schedules-list`;
+
+  const validatedSchedules = schedules.map(schedule => ({
+    day: schedule.day,
+    startTime: schedule.startTime,
+    endTime: schedule.endTime,
+    workspaceId: workspaceId
+  }));
+
+  const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+
+return await firstValueFrom(this.http.post(url, validatedSchedules)).then((res: any) => {
+  return {
+    success: true, // افترضي إنه ناجح لو وصل هنا
+    message: res?.message || 'تم الحفظ بنجاح',
+    data: res
+  };
+});
+
+}
 
 
 }
