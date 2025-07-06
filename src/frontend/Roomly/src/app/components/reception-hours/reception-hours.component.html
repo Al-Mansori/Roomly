@@ -3,35 +3,55 @@
     <div class="row">
       <!-- Sidebar -->
       <div class="col-12 col-md-1">
-        <app-side-steps-indicator ></app-side-steps-indicator>
+        <app-side-steps-indicator></app-side-steps-indicator>
       </div>
 
       <!-- Main Content -->
-      <div class="col-md-10 px-4 py-4 mx-auto ">
+      <div class="col-md-10 px-4 py-4 mx-auto">
         <div class="card p-4 rounded-4">
-          <h5 class="fw-semibold mb-4">Workspace Available Times</h5>
+          <h5 class="fw-semibold mb-4">Workspace Reception Hours</h5>
 
-          <div class="d-flex flex-column gap-3">
-            @for (day of days(); track day.id) {
-            <div class="row align-items-center">
-              <div class="col-md-2">
-                <label class="form-check-label text-capitalize">{{ day.label }}</label>
-              </div>
-              <div class="col-md-4">
-                <input type="time" class="form-control" [(ngModel)]="day.startTime" />
-              </div>
-              <div class="col-md-1 text-center">
-                <span class="text-muted">to</span>
-              </div>
-              <div class="col-md-4">
-                <input type="time" class="form-control" [(ngModel)]="day.endTime" />
-              </div>
+          <!-- All Days Time -->
+          <div class="row align-items-center mb-4">
+            <div class="col-md-2">
+              <label class="form-check-label text-capitalize fw-bold">{{ days[0].label }}</label>
             </div>
+            <div class="col-md-4">
+              <input type="time" class="form-control" [(ngModel)]="days[0].startTime" />
+            </div>
+            <div class="col-md-1 text-center">
+              <span class="text-muted">to</span>
+            </div>
+            <div class="col-md-4">
+              <input type="time" class="form-control" [(ngModel)]="days[0].endTime" />
+            </div>
+            <div class="col-md-1">
+              <button class="btn btn-sm btn-outline-primary" (click)="applyToAllDays()">Apply to All</button>
+            </div>
+          </div>
+
+          <!-- Individual Days -->
+          <div class="d-flex flex-column gap-3">
+            @for (day of days.slice(1); track day.id) {
+              <div class="row align-items-center">
+                <div class="col-md-2">
+                  <label class="form-check-label text-capitalize">{{ day.label }}</label>
+                </div>
+                <div class="col-md-4">
+                  <input type="time" class="form-control" [(ngModel)]="day.startTime" />
+                </div>
+                <div class="col-md-1 text-center">
+                  <span class="text-muted">to</span>
+                </div>
+                <div class="col-md-4">
+                  <input type="time" class="form-control" [(ngModel)]="day.endTime" />
+                </div>
+              </div>
             }
           </div>
 
           <div class="text-end mt-4">
-            <button class="btn btn-primary rounded-pill px-4">Finish</button>
+            <button class="btn btn-primary rounded-pill px-4" (click)="submitHours()">Finish</button>
           </div>
         </div>
       </div>

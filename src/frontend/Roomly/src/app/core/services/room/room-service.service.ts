@@ -9,12 +9,11 @@ import { environment } from '../../environment/environments';
 })
 export class RoomServiceService {
   private readonly baseUrl = environment.baseUrl;
-  private readonly createRoomEndpoint = `${this.baseUrl}/api/staff/create-room`;
+  private readonly createRoomEndpoint = `${this.baseUrl}/staff/create-room`;
 
   constructor(private http: HttpClient) { }
 
   /**
-   * إنشاء غرفة جديدة
    * @param roomData بيانات الغرفة
    * @param staffId معرف الموظف
    * @param workspaceId معرف مساحة العمل
@@ -107,10 +106,9 @@ export class RoomServiceService {
   }
 }
 
-// واجهات TypeScript لتحسين نوعية الكود
 interface RoomResponse {
-  id: string;
-  // يمكن إضافة المزيد من الخصائص حسب استجابة API
+  Workspace: string;
+  roomId: string;
 }
 
 interface RoomCreationResult {
