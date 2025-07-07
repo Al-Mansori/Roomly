@@ -75,7 +75,7 @@ class BookingsCubit extends Cubit<BookingsState> {
     try {
       await cancelReservationUseCase(
           reservationId: reservationId, userId: userId);
-      await loadBookings(userId); // Refresh bookings after cancel
+      await loadBookings(userId); // here i refresh bookings after cancel
     } catch (e) {
       emit(BookingsError(e.toString()));
     }
