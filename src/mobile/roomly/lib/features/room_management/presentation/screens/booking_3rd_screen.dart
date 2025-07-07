@@ -132,7 +132,8 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                 children: [
                   Expanded(
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -178,7 +179,8 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No staff available for this workspace')),
+            const SnackBar(
+                content: Text('No staff available for this workspace')),
           );
         }
       },
@@ -358,7 +360,20 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
   }
 
   String _formatDate(DateTime date) {
-    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    final months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
     final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     return '${weekdays[date.weekday - 1]}, ${date.day} ${months[date.month - 1]} ${date.year}';
   }
@@ -475,15 +490,15 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
           const SizedBox(height: 12),
           _buildPaymentRow('Subtotal', 'EGP ${subtotal.toStringAsFixed(2)}'),
           const SizedBox(height: 8),
-          _buildPaymentRow('Service fee ⓒ', 'EGP ${serviceFee.toStringAsFixed(2)}'),
+          _buildPaymentRow(
+              'Service fee ⓒ', 'EGP ${serviceFee.toStringAsFixed(2)}'),
           if (_useAllLoyaltyPoints && actualPointsDeduction > 0)
             Column(
               children: [
                 const SizedBox(height: 8),
                 _buildPaymentRow(
                     'Points redeemed (${(actualPointsDeduction / 0.1).toStringAsFixed(0)} pts)',
-                    '-EGP ${actualPointsDeduction.toStringAsFixed(2)}'
-                ),
+                    '-EGP ${actualPointsDeduction.toStringAsFixed(2)}'),
                 if (remainingPoints > 0)
                   Padding(
                     padding: const EdgeInsets.only(top: 4),
@@ -498,7 +513,9 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
               ],
             ),
           const Divider(height: 24),
-          _buildPaymentRow('Total', 'EGP ${totalAfterPoints.toStringAsFixed(2)}', isTotal: true),
+          _buildPaymentRow(
+              'Total', 'EGP ${totalAfterPoints.toStringAsFixed(2)}',
+              isTotal: true),
           if (_useAllLoyaltyPoints)
             Padding(
               padding: const EdgeInsets.only(top: 8),
@@ -547,14 +564,13 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
         onPressed: isAllValid ? () => _makeReservation(context) : null,
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
-          backgroundColor: isAllValid
-              ? const Color(0xFF0A3FB3)
-              : Colors.grey,
+          backgroundColor: isAllValid ? const Color(0xFF0A3FB3) : Colors.grey,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
         child: const Text(
           'Reserve',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
     );
@@ -564,7 +580,8 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Payment Method', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text('Payment Method',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(16),
@@ -583,37 +600,38 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
                 icon: Icons.money,
                 value: 'CASH',
               ),
-              const SizedBox(height: 12),
-              const Text(
-                'Loyalty Points (Optional)',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                '1 point = 0.1 EGP',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Available Points: $availablePoints (${(availablePoints * 0.1).toStringAsFixed(1)} EGP)',
-                style: TextStyle(color: Colors.grey.shade600),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Checkbox(
-                    value: _useAllLoyaltyPoints,
-                    onChanged: (value) {
-                      setState(() {
-                        _useAllLoyaltyPoints = value ?? false;
-                        _errorMessage = null;
-                      });
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  const Text('Use all my loyalty points'),
-                ],
-              ),
+              // const SizedBox(height: 12),
+              // const Text(
+              //   'Loyalty Points (Optional)',
+              //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              // ),
+              // const SizedBox(height: 4),
+              // const Text(
+              //   '1 point = 0.1 EGP',
+              //   style: TextStyle(fontSize: 12, color: Colors.grey),
+              // ),
+              // const SizedBox(height: 4),
+              // Text(
+              //   'Available Points: $availablePoints (${(availablePoints * 0.1).toStringAsFixed(1)} EGP)',
+              //   style: TextStyle(color: Colors.grey.shade600),
+              // ),
+              // const SizedBox(height: 8),
+              // Row(
+              //   children: [
+              //     Checkbox(
+              //       value: _useAllLoyaltyPoints,
+              //       onChanged: (value) {
+              //         setState(() {
+              //           _useAllLoyaltyPoints = value ?? false;
+              //           _errorMessage = null;
+              //         });
+              //       },
+              //     ),
+              //     const SizedBox(width: 8),
+              //     const Text('Use all my loyalty points'),
+              //   ],
+              // ),
+
               if (_errorMessage != null)
                 Text(
                   _errorMessage!,
@@ -632,9 +650,12 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
     final startTime = _formatDateTime(widget.selectedDate, widget.checkInTime);
     final endTime = _formatDateTime(widget.selectedDate, widget.checkOutTime);
 
-    final availablePoints = context.read<LoyaltyPointsCubit>().state is LoyaltyPointsLoaded
-        ? (context.read<LoyaltyPointsCubit>().state as LoyaltyPointsLoaded).loyaltyPoints.totalPoints
-        : 0;
+    final availablePoints =
+        context.read<LoyaltyPointsCubit>().state is LoyaltyPointsLoaded
+            ? (context.read<LoyaltyPointsCubit>().state as LoyaltyPointsLoaded)
+                .loyaltyPoints
+                .totalPoints
+            : 0;
 
     final subtotal = widget.totalPrice;
     final serviceFee = subtotal * 0.14;
@@ -642,8 +663,8 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
     final maxPointsValue = totalBeforePoints;
     final actualPointsToRedeem = _useAllLoyaltyPoints
         ? (availablePoints * 0.1 > maxPointsValue)
-        ? (maxPointsValue / 0.1).toInt()
-        : availablePoints
+            ? (maxPointsValue / 0.1).toInt()
+            : availablePoints
         : 0;
 
     final bookingRequest = BookingRequest(
@@ -659,7 +680,9 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
 
     if (actualPointsToRedeem > 0) {
       try {
-        await context.read<LoyaltyPointsCubit>().redeemPoints(actualPointsToRedeem);
+        await context
+            .read<LoyaltyPointsCubit>()
+            .redeemPoints(actualPointsToRedeem);
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error redeeming points: $e')),
@@ -687,8 +710,8 @@ class _ReviewBookingScreenState extends State<ReviewBookingScreen> {
       return DateFormat("yyyy-MM-ddTHH:mm:ss").format(dateTime);
     } catch (e) {
       print('❌ Error parsing time: $time - $e');
-      return DateFormat("yyyy-MM-ddTHH:mm:ss").format(
-          DateTime(date.year, date.month, date.day, 9, 0));
+      return DateFormat("yyyy-MM-ddTHH:mm:ss")
+          .format(DateTime(date.year, date.month, date.day, 9, 0));
     }
   }
 }
