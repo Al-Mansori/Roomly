@@ -8,6 +8,7 @@ import 'package:roomly/features/auth/data/models/google_user_model.dart';
 import '../../../../core/network/app_api.dart';
 import '../../domain/entities/login_request_entity.dart';
 import '../../domain/entities/registration_request_entity.dart';
+import '../../domain/entities/user_entity.dart';
 import '../models/login_request_model.dart';
 import '../models/registration_request_model.dart';
 import '../models/user_model.dart';
@@ -147,28 +148,32 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<Map<String, dynamic>> completeProfile(
-      Map<String, dynamic> profileData) async {
-    final userId = AppSession().currentUser?.id; // Or from your state management
+  Future<Map<String, dynamic>> completeProfile(Map<String, dynamic> profileData) async {
+    final userId = AppSession().currentUser?.id;
 
     final completeData = {
-      'id': userId, // Add the required ID field
-      ...profileData, // Include all other fields
+      'id': userId,
+      ...profileData,
     };
 
     final response = await client.post(
       Uri.parse('${AppApi.baseUrl}/api/users/auth/complete-profile'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(completeData), // Send the complete data including ID
+      body: jsonEncode(completeData),
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      final responseData = jsonDecode(response.body);
+
+      // Update the session with the new user data
+      final user = UserEntity.fromJson(responseData['user']); // Adjust based on your API response structure
+      AppSession().setUser(user);
+
+      return responseData;
     } else {
       throw Exception('Failed to complete profile: ${response.statusCode}');
     }
   }
-
   @override
   Future<Map<String, dynamic>> sendForgotPasswordOtp(String email) async {
     try {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:roomly/features/GlobalWidgets/app_session.dart';
 import '../../../GlobalWidgets/pop_p.dart';
 import '../../../GlobalWidgets/show_custom_pop_up.dart';
@@ -88,16 +89,16 @@ class _ProfileFormState extends State<ProfileForm> {
 
     final shouldExit = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Unsaved Changes'),
         content: const Text('You have unsaved changes. Are you sure you want to exit?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () => Navigator.of(dialogContext).pop(false), // Cancel: return false
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => Navigator.of(dialogContext).pop(true), // Exit: return true
             child: const Text('Exit'),
           ),
         ],
@@ -106,7 +107,6 @@ class _ProfileFormState extends State<ProfileForm> {
 
     return shouldExit ?? false;
   }
-
   @override
   void dispose() {
     _firstNameController.removeListener(_checkChanges);
@@ -134,14 +134,17 @@ class _ProfileFormState extends State<ProfileForm> {
         child: BlocConsumer<AuthCubit, AuthState>(
           listener: (context, state) {
             if (state is AuthProfileCompleted) {
-              Navigator.of(context).pop();
+              // Pop the profile form screen
+              Navigator.of(context, rootNavigator: true).pop();
+              // Show success dialog using the current context
               showCustomDialog(
-                context: context,
+                context: context, // Use the current context
                 title: 'Success',
                 message: state.response['message'] ?? 'Profile updated successfully',
                 alertType: AlertType.success,
                 buttonText: 'OK',
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {},
+
               );
             } else if (state is AuthError) {
               showCustomDialog(
@@ -150,7 +153,7 @@ class _ProfileFormState extends State<ProfileForm> {
                 message: state.message,
                 alertType: AlertType.error,
                 buttonText: 'OK',
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {},
               );
             }
           },

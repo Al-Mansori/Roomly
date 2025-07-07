@@ -19,7 +19,7 @@ void showCustomDialog({
       message: message,
       alertType: alertType,
       buttonText: buttonText,
-      onPressed: onPressed ?? () => Navigator.of(context).pop(),
+      onPressed: () => Navigator.of(context).pop(),
     ),
   );
 }
