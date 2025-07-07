@@ -2,6 +2,7 @@ import { Component, ElementRef, Renderer2, ViewChild } from '@angular/core';
 import { NavbarComponent } from "../../components/navbar/navbar.component";
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { OfferModalComponent } from "../../components/offer-modal/offer-modal/offer-modal.component";
 
 @Component({
   selector: 'app-blank-layout',

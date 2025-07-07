@@ -28,9 +28,9 @@ export class WorkspaceService {
       })
     );
   }
-
+  // https://feminist-abigael-roomly-5d3753ef.koyeb.app/api/staff/workspace?workspaceId=8f9512fb-c555-4d1b-a148-8bc19a725327
   deleteWorkspace(workspaceId: string): Observable<any> {
-    const url = `/api/staff/workspaces/${workspaceId}`;
+    const url = `/api/staff/workspace?workspaceId=${workspaceId}`;
     return this.http.delete(url).pipe(
       catchError(error => {
         console.error('Error deleting workspace:', error);
