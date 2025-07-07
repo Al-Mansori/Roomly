@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:roomly/features/GlobalWidgets/ReusableCarrasoul.dart';
 import 'package:roomly/features/workspace/domain/entities/workspace_entity.dart';
 import 'package:roomly/features/workspace/presentation/cubits/workspace_details_cubit.dart';
 import 'package:roomly/features/workspace/presentation/screens/location_map_widget.dart';
@@ -21,7 +22,7 @@ class WorkspaceDetailsScreen extends StatefulWidget {
 class _WorkspaceDetailsScreenState extends State<WorkspaceDetailsScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _selectedIndex = 0; // For bottom navigation bar
-  PageController _pageController = PageController();
+  // PageController _pageController = PageController();
   int _currentImageIndex = 0;
 
   @override
@@ -42,120 +43,75 @@ class _WorkspaceDetailsScreenState extends State<WorkspaceDetailsScreen> with Si
   @override
   void dispose() {
     _tabController.dispose();
-    _pageController.dispose();
+    // _pageController.dispose();
     super.dispose();
   }
 
-  Widget _buildImageCarousel(List<dynamic> images) {
-    if (images.isEmpty) {
-      // Fallback to original logo if no images
-      return _buildDefaultLogo();
-    }
+  Widget _buildImageSection(List<dynamic> images) {
+    // Extract image URLs from the images list
+    final imageUrls = images
+        .map((image) => image.imageUrl)
+        .whereType<String>()
+        .toList();
 
-    return Column(
+    return Stack(
       children: [
-        // Image carousel
-        Container(
+        ReusableCarousel(
+          images: imageUrls.isNotEmpty
+              ? imageUrls
+              : ['https://media.istockphoto.com/id/1337718884/photo/modern-office-at-home.jpg?s=612x612&w=0&k=20&c=kXlpCzVsqV360jaC9UkaXGhcGh8VLURkybD9NqBfQKE='],
           height: 200,
-          child: PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentImageIndex = index;
-              });
-            },
-            itemCount: images.length,
-            itemBuilder: (context, index) {
-              final imageUrl = images[index].imageUrl;
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      spreadRadius: 2,
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    imageUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.grey.shade200,
-                        child: const Center(
-                          child: Icon(
-                            Icons.image_not_supported,
-                            size: 50,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      );
-                    },
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Container(
-                        color: Colors.grey.shade200,
-                        child: const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              );
-            },
-          ),
+          autoPlay: true,
         ),
-        const SizedBox(height: 12),
-        // Dots indicator
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(images.length, (index) {
-            return Container(
-              width: 8,
-              height: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 2),
+        // Back button
+        Positioned(
+          top: 20,
+          left: 10,
+          child: GestureDetector(
+            onTap: () => context.pop(),
+            child: Container(
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.7),
                 shape: BoxShape.circle,
-                color: index == _currentImageIndex ? Colors.orange : Colors.grey.shade300,
               ),
-            );
-          }),
+              child: const Icon(Icons.arrow_back, color: Colors.black),
+            ),
+          ),
         ),
       ],
     );
   }
 
   Widget _buildDefaultLogo() {
-    return Column(
+    return Stack(
       children: [
-        // Roomly small SVG logo
-        SvgPicture.asset(
-          'assets/images/roomly_small.svg',
-          width: 120,
-          height: 120,
+        Container(
+          height: 200,
+          color: Colors.grey.shade200,
+          child: Center(
+            child: SvgPicture.asset(
+              'assets/images/roomly_small.svg',
+              width: 120,
+              height: 120,
+            ),
+          ),
         ),
-        const SizedBox(height: 12),
-        // Static dots for default logo
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(4, (index) {
-            return Container(
-              width: 8,
-              height: 8,
-              margin: const EdgeInsets.symmetric(horizontal: 2),
+        // Back button
+        Positioned(
+          top: 20,
+          left: 10,
+          child: GestureDetector(
+            onTap: () => context.pop(),
+            child: Container(
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.7),
                 shape: BoxShape.circle,
-                color: index == 0 ? Colors.grey : Colors.grey.shade300,
               ),
-            );
-          }),
+              child: const Icon(Icons.arrow_back, color: Colors.black),
+            ),
+          ),
         ),
       ],
     );
@@ -259,109 +215,97 @@ class _WorkspaceDetailsScreenState extends State<WorkspaceDetailsScreen> with Si
       body: SafeArea(
         child: Column(
           children: [
-            // Header with logo and navigation
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Row(
-                children: [
-                  // Back button
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios, size: 18),
-                      onPressed: () {
-                        context.pop(); // Go back using GoRouter
-                      },
-                    ),
-                  ),
-                  const Spacer(),
-                  // Favorite and share buttons
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.favorite_border, size: 18),
-                      onPressed: () {
-                        // Favorite action
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.share, size: 18),
-                      onPressed: () {
-                        // Share action
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
             // Image carousel or logo section
             BlocBuilder<WorkspaceDetailsCubit, WorkspaceDetailsState>(
               builder: (context, state) {
                 if (state is WorkspaceDetailsLoaded) {
                   final workspace = state.workspace;
-                  // Check if workspace is a WorkspaceModel with images
                   if (workspace is WorkspaceModel && 
                       workspace.workspaceImages != null && 
                       workspace.workspaceImages!.isNotEmpty) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: _buildImageCarousel(workspace.workspaceImages!),
-                    );
+                    return _buildImageSection(workspace.workspaceImages!);
                   }
                 }
-                // Fallback to default logo
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: _buildDefaultLogo(),
-                );
+                return _buildDefaultLogo();
               },
             ),
 
             const SizedBox(height: 16),
 
             // Tab bar
+
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: TabBar(
-                controller: _tabController,
-                indicator: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
-                      spreadRadius: 1,
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                labelColor: Colors.black,
-                unselectedLabelColor: Colors.grey,
-                tabs: const [
-                  Tab(text: 'WorkSpace Listings'),
-                  Tab(text: 'WorkSpace Details'),
-                ],
-              ),
-            ),
+  margin: const EdgeInsets.symmetric(horizontal: 16),
+  decoration: BoxDecoration(
+    color: Colors.grey.shade200,
+    borderRadius: BorderRadius.circular(35),
+  ),
+  child: TabBar(
+    controller: _tabController,
+    indicator: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(35),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.2),
+          spreadRadius: 1,
+          blurRadius: 4,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    ),
+    // This makes the indicator wider by reducing space between tab label and indicator edges
+    indicatorPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+    // This makes the indicator take more width relative to the tab
+    indicatorSize: TabBarIndicatorSize.tab,
+    labelColor: Colors.black,
+    unselectedLabelColor: Colors.grey,
+    tabs: const [
+      Tab(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8), // Add padding to tab text
+          child: Text('WorkSpace Listings'),
+        ),
+      ),
+      Tab(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8), // Add padding to tab text
+          child: Text('WorkSpace Details'),
+        ),
+      ),
+    ],
+  ),
+),
+
+            // Container(
+            //   margin: const EdgeInsets.symmetric(horizontal: 16),
+            //   decoration: BoxDecoration(
+            //     color: Colors.grey.shade200,
+            //     borderRadius: BorderRadius.circular(35),
+            //   ),
+            //   child: TabBar(
+            //     controller: _tabController,
+            //     indicator: BoxDecoration(
+            //       color: Colors.white,
+            //       borderRadius: BorderRadius.circular(35),
+            //       boxShadow: [
+            //         BoxShadow(
+            //           color: Colors.grey.withOpacity(0.2),
+            //           spreadRadius: 1,
+            //           blurRadius: 4,
+            //           offset: const Offset(0, 2),
+                      
+            //         ),
+            //       ],
+            //     ),
+            //     labelColor: Colors.black,
+            //     unselectedLabelColor: Colors.grey,
+            //     tabs: const [
+            //       Tab(text: 'WorkSpace Listings'),
+            //       Tab(text: 'WorkSpace Details'),
+            //     ],
+            //   ),
+            // ),
 
             const SizedBox(height: 16),
 
@@ -529,25 +473,25 @@ class _WorkspaceDetailsScreenState extends State<WorkspaceDetailsScreen> with Si
               ),
             ),
 
-            // Bottom Navigation Bar
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey.shade800,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildNavItem(0, Icons.home, 'Home'),
-                  _buildNavItem(1, Icons.search, 'Search'),
-                  _buildNavItem(2, Icons.calendar_today, 'Booking'),
-                  _buildNavItem(3, Icons.favorite, 'Favorit'),
-                  _buildNavItem(4, Icons.person, 'Account'),
-                ],
-              ),
-            ),
+            // // Bottom Navigation Bar
+            // Container(
+            //   decoration: BoxDecoration(
+            //     color: Colors.grey.shade800,
+            //     borderRadius: BorderRadius.circular(30),
+            //   ),
+            //   margin: const EdgeInsets.all(16),
+            //   padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+            //     children: [
+            //       _buildNavItem(0, Icons.home, 'Home'),
+            //       _buildNavItem(1, Icons.search, 'Search'),
+            //       _buildNavItem(2, Icons.calendar_today, 'Booking'),
+            //       _buildNavItem(3, Icons.favorite, 'Favorit'),
+            //       _buildNavItem(4, Icons.person, 'Account'),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),

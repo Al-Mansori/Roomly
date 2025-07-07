@@ -54,5 +54,7 @@ export interface IOffer {
   discountPercentage: number;
   validFrom: string;
   validTo: string;
-  status: string;
+  // status: string;
+  status: 'Active' | 'Inactive';
+
 }

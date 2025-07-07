@@ -29,7 +29,6 @@ export class WorkspaceService {
       })
     );
   }
-
 deleteWorkspace(workspaceId: string): Observable<any> {
   const url = `api/staff/workspace?workspaceId=${workspaceId}`;
   

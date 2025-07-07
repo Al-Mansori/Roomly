@@ -311,7 +311,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
             const SizedBox(height: 16),
             const Text(
-              'Unable to load cards',
+              'No Avilable Cards',
               style: TextStyle(
                 fontSize: 20,
                 color: Colors.red,

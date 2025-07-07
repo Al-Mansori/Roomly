@@ -39,8 +39,8 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
   bool _isOperatingHoursLoading = true;
   OperatingHours? _operatingHours;
 
-  String _checkInTime = '9:30 AM';
-  String _checkOutTime = '10:30 AM';
+  String _checkInTime = '';
+  String _checkOutTime = '';
   bool _noAvailabilityData = false;
 
   int _numberOfSeats = 2;
@@ -61,7 +61,6 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
     _availabilityCubit = context.read<SeatsAvailabilityCubit>();
     _scrollController.addListener(_handleScroll);
 
-    // Initialize with default times      _checkInTimes = List.generate(
     _checkInTimes = List.generate(
       48,
           (index) => DateFormat('h:mm a').format(
@@ -75,10 +74,9 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
       ),
     );
 
-
     _loadInitialData();
   }
-  /// Load both operating hours and availability data
+
   void _loadInitialData() {
     print('🚀 Loading initial data for date: ${_selectedDate.toIso8601String()}');
     _loadOperatingHours();
@@ -97,7 +95,6 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
   }
 
   void _loadOperatingHours() {
-
     setState(() => _isOperatingHoursLoading = true);
     _operatingHoursCubit.loadOperatingHours(
       workspaceId: widget.workspaceId,
@@ -124,11 +121,10 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
       _timeValidationMessage = '';
     });
 
-    // Daily booking validation
     if (_isDailyBooking) {
       final minSeats = _calculateMinAvailableSeats(
-          _operatingHours?.startTime.hour ?? 9,
-          _operatingHours?.endTime.hour ?? 23
+        _operatingHours?.startTime.hour ?? 9,
+        _operatingHours?.endTime.hour ?? 23,
       );
       if (minSeats <= 0) {
         setState(() {
@@ -139,7 +135,6 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
       return;
     }
 
-    // Basic time selection validation
     if (_checkInTime.isEmpty || _checkOutTime.isEmpty) {
       setState(() {
         _isTimeValid = false;
@@ -151,7 +146,6 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
     final checkIn = _parseTime(_checkInTime);
     final checkOut = _parseTime(_checkOutTime);
 
-    // Past time validation
     if (isToday && !_isDailyBooking) {
       final currentTime = DateTime(now.year, now.month, now.day, now.hour, now.minute);
       final selectedCheckIn = DateTime(now.year, now.month, now.day, checkIn.hour, checkIn.minute);
@@ -165,7 +159,6 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
       }
     }
 
-    // Time range validation
     if (checkOut.isBefore(checkIn)) {
       setState(() {
         _isTimeValid = false;
@@ -177,7 +170,6 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
         _timeValidationMessage = 'Check-out cannot be same as check-in';
       });
     } else {
-      // Enhanced availability validation for all hours in range
       final checkInHour = checkIn.hour;
       final checkOutHour = checkOut.hour;
       bool allHoursAvailable = true;
@@ -191,18 +183,10 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
         }
       }
 
-      if (!allHoursAvailable) {
-        setState(() {
-          _isTimeValid = false;
-          _timeValidationMessage = 'Hour $unavailableHour is not available';
-        });
-      }
     }
   }
 
-  /// Check if a specific hour is available for booking
   bool _isHourAvailable(int hour) {
-    // If no availability data, all hours within operating hours are available
     if (_noAvailabilityData) {
       if (_operatingHours != null) {
         final startHour = _operatingHours!.startTime.hour;
@@ -212,14 +196,13 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
       return true; // Default to available if no operating hours data
     }
 
-    // If we have availability data, check if hour exists and has available seats
     final slot = _availability.firstWhere(
           (slot) => slot.hour == hour,
       orElse: () => SeatsAvailability(
         roomId: widget.room.id,
         date: _selectedDate,
         hour: hour,
-        availableSeats: widget.room.capacity ?? 30, // Default to full capacity
+        availableSeats: widget.room.capacity ?? 30,
         capacity: widget.room.capacity ?? 30,
         status: 'AVAILABLE',
       ),
@@ -234,7 +217,6 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
         _isDailyBooking = value;
 
         if (_isDailyBooking) {
-          // Set daily booking times based on operating hours
           if (_operatingHours != null) {
             _checkInTime = DateFormat('h:mm a').format(_operatingHours!.startTime.toLocal());
             _checkOutTime = DateFormat('h:mm a').format(_operatingHours!.endTime.toLocal());
@@ -243,7 +225,10 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
             _checkOutTime = '6:00 PM';
           }
 
-          _maxSeats = widget.room.capacity ?? 30;
+          _maxSeats = _noAvailabilityData ? (widget.room.capacity ?? 30) : _calculateMinAvailableSeats(
+            _operatingHours?.startTime.hour ?? 9,
+            _operatingHours?.endTime.hour ?? 23,
+          );
           if (_numberOfSeats > _maxSeats) {
             _numberOfSeats = _maxSeats;
           }
@@ -272,7 +257,7 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
   }
 
   DateTime _parseTime(String time) {
-    final cleanedTime = time.replaceAll(RegExp(r'\\s+'), ' ').trim();
+    final cleanedTime = time.replaceAll(RegExp(r'\s+'), ' ').trim();
 
     try {
       return DateFormat('h:mm a').parse(cleanedTime);
@@ -282,7 +267,7 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
         return DateFormat('H:mm').parse(cleanedTime);
       } catch (e2) {
         print('Error parsing 24-hour time: $time, error: $e2');
-        return DateTime.now(); // Fallback
+        return DateTime.now();
       }
     }
   }
@@ -301,15 +286,12 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
     final now = DateTime.now();
     final isToday = isSameDay(_selectedDate, now);
 
-    // Convert operating hours to local time
     final localStart = _operatingHours!.startTime.toLocal();
     final localEnd = _operatingHours!.endTime.toLocal();
 
-    // Generate all possible time slots within operating hours
     final allPossibleTimes = _generateTimeSlots(localStart, localEnd);
     print('   Generated ${allPossibleTimes.length} possible time slots');
 
-    // Update available check-in times
     _checkInTimes = allPossibleTimes.where((time) {
       final parsedTime = _parseTime(time);
       final hour = parsedTime.hour;
@@ -323,33 +305,27 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
       final isSlotPassed = isToday && slotEnd.isBefore(now.add(const Duration(seconds: 1)));
       if (isSlotPassed) return false;
 
-      // For daily booking, only check if time has passed
-      if (_isDailyBooking) {
-        return !isSlotPassed;
+      if (_noAvailabilityData) {
+        return true; // All times within operating hours are available
       }
 
-      // For custom time, check availability
-      return !isSlotPassed && _isHourAvailable(hour);
+      return _isHourAvailable(hour);
     }).toList();
 
     print('   Available check-in times: ${_checkInTimes.length}');
 
-    // Update check-out times based on selected check-in
     if (_checkInTime.isNotEmpty && _checkInTimes.contains(_checkInTime)) {
       final checkInHour = _parseTime(_checkInTime).hour;
 
       _checkOutTimes = allPossibleTimes.where((time) {
         final checkOutHour = _parseTime(time).hour;
 
-        // Rule 1: Check-out must be after check-in
         if (checkOutHour <= checkInHour) return false;
 
-        // For daily booking, allow any time after check-in within operating hours
-        if (_isDailyBooking) {
-          return true;
+        if (_noAvailabilityData) {
+          return true; // All times after check-in within operating hours are available
         }
 
-        // Rule 2: All hours between check-in and check-out must be available
         for (int hour = checkInHour; hour < checkOutHour; hour++) {
           if (!_isHourAvailable(hour)) {
             return false;
@@ -360,12 +336,10 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
 
       print('   Available check-out times: ${_checkOutTimes.length}');
 
-      // Update maximum available seats
       if (_checkOutTime.isNotEmpty) {
         final checkOutHour = _parseTime(_checkOutTime).hour;
-        _maxSeats = _calculateMinAvailableSeats(checkInHour, checkOutHour);
+        _maxSeats = _noAvailabilityData ? (widget.room.capacity ?? 30) : _calculateMinAvailableSeats(checkInHour, checkOutHour);
 
-        // Adjust selected seats if exceeding new maximum
         if (_numberOfSeats > _maxSeats) {
           setState(() => _numberOfSeats = _maxSeats > 0 ? _maxSeats : 1);
         }
@@ -384,31 +358,29 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
       start.month,
       start.day,
       start.hour,
-      0, // Set minutes to 0 for full hours
+      0,
     );
 
     while (current.isBefore(end)) {
       slots.add(format.format(current));
-      current = current.add(const Duration(hours: 1)); // Increment by 1 hour
+      current = current.add(const Duration(hours: 1));
     }
 
     return slots;
   }
 
-  /// Calculates minimum available seats in a time range
   int _calculateMinAvailableSeats(int startHour, int endHour) {
-    int minSeats = widget.room.capacity ?? 30; // Start with full capacity
+    if (_noAvailabilityData) {
+      return widget.room.capacity ?? 30; // Full capacity if no availability data
+    }
 
-    // For daily booking, check all operating hours
+    int minSeats = widget.room.capacity ?? 30;
+
     if (_isDailyBooking) {
       startHour = _operatingHours?.startTime.hour ?? 9;
       endHour = _operatingHours?.endTime.hour ?? 23;
     }
 
-    // If no availability data, return full capacity
-    if (_noAvailabilityData) return minSeats;
-
-    // Find minimum available seats in the selected range
     for (int hour = startHour; hour < endHour; hour++) {
       if (_isHourAvailable(hour)) {
         final slot = _availability.firstWhere(
@@ -427,7 +399,6 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
           minSeats = slot.availableSeats;
         }
       } else {
-        // If any hour is not available, return 0
         return 0;
       }
     }
@@ -467,7 +438,7 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
           final hour = parsedTime.hour;
 
           final isTimePassed = isToday && parsedTime.isBefore(now);
-          final isAvailable = _isDailyBooking || _isHourAvailable(hour);
+          final isAvailable = _noAvailabilityData || _isDailyBooking || _isHourAvailable(hour);
           final isDisabled = !isEnabled || (!_isDailyBooking && !isAvailable);
 
           return Padding(
@@ -519,6 +490,10 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                 _availability = state.availability;
                 _noAvailabilityData = state.availability.isEmpty;
                 _updateAvailableTimes();
+                _maxSeats = _noAvailabilityData ? (widget.room.capacity ?? 30) : _calculateMinAvailableSeats(
+                  _operatingHours?.startTime.hour ?? 9,
+                  _operatingHours?.endTime.hour ?? 23,
+                );
               });
             } else if (state is SeatsAvailabilityError) {
               print('❌ Seat availability error: ${state.message}');
@@ -563,28 +538,27 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Debug information (remove in production)
                   if (_operatingHours != null)
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blue[200]!),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Debug Info:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue[800])),
-                          Text('Operating Hours: ${DateFormat('h:mm a').format(_operatingHours!.startTime.toLocal())} - ${DateFormat('h:mm a').format(_operatingHours!.endTime.toLocal())}'),
-                          Text('No Availability Data: $_noAvailabilityData'),
-                          Text('Available Slots: ${_availability.length}'),
-                          Text('Check-in Options: ${_checkInTimes.length}'),
-                          Text('Check-out Options: ${_checkOutTimes.length}'),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   padding: const EdgeInsets.all(8),
+                    //   margin: const EdgeInsets.only(bottom: 16),
+                    //   decoration: BoxDecoration(
+                    //     color: Colors.blue[50],
+                    //     borderRadius: BorderRadius.circular(8),
+                    //     border: Border.all(color: Colors.blue[200]!),
+                    //   ),
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //     children: [
+                    //       Text('Debug Info:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue[800])),
+                    //       Text('Operating Hours: ${DateFormat('h:mm a').format(_operatingHours!.startTime.toLocal())} - ${DateFormat('h:mm a').format(_operatingHours!.endTime.toLocal())}'),
+                    //       Text('No Availability Data: $_noAvailabilityData'),
+                    //       Text('Available Slots: ${_availability.length}'),
+                    //       Text('Check-in Options: ${_checkInTimes.length}'),
+                    //       Text('Check-out Options: ${_checkOutTimes.length}'),
+                    //     ],
+                    //   ),
+                    // ),
 
                   Row(
                     children: [
@@ -774,12 +748,15 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
             Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: Text(
-                !_isTimeValid ? _timeValidationMessage :
-                !isPriceValid ? 'Invalid booking duration' :
-                !isSeatsValid ?
-                (_numberOfSeats < 1 ? 'Number of seats must be at least 1' :
-                'Maximum available seats: $minAvailableSeats') :
-                'Cannot select past dates',
+                !_isTimeValid
+                    ? _timeValidationMessage
+                    : !isPriceValid
+                    ? 'Invalid booking duration'
+                    : !isSeatsValid
+                    ? (_numberOfSeats < 1
+                    ? 'Number of seats must be at least 1'
+                    : 'Maximum available seats: $minAvailableSeats')
+                    : 'Cannot select past dates',
                 style: TextStyle(
                   color: Colors.red[300],
                   fontSize: 12,
@@ -871,9 +848,7 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                       Text(
                         'Total ${totalPrice.toStringAsFixed(1)} EGP',
                         style: TextStyle(
-                          color: isAllDataValid
-                              ? Colors.white
-                              : Colors.grey,
+                          color: isAllDataValid ? Colors.white : Colors.grey,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
@@ -883,9 +858,7 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                         Text(
                           '${widget.discountedPrice.toStringAsFixed(1)} EGP/hour × $_numberOfSeats seats',
                           style: TextStyle(
-                            color: isAllDataValid
-                                ? Colors.white70
-                                : Colors.grey,
+                            color: isAllDataValid ? Colors.white70 : Colors.grey,
                             fontSize: 12,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -894,9 +867,7 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                         Text(
                           '${widget.discountedPrice.toStringAsFixed(1)} EGP/hour',
                           style: TextStyle(
-                            color: isAllDataValid
-                                ? Colors.white70
-                                : Colors.grey,
+                            color: isAllDataValid ? Colors.white70 : Colors.grey,
                             fontSize: 12,
                           ),
                           overflow: TextOverflow.ellipsis,
@@ -906,7 +877,8 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: isAllDataValid ? () {
+                  onPressed: isAllDataValid
+                      ? () {
                     context.push(
                       '/review-booking',
                       extra: {
@@ -922,11 +894,10 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                         'availableSeats': _maxSeats,
                       },
                     );
-                  } : null,
+                  }
+                      : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isAllDataValid
-                        ? const Color(0xFF0A3FB3)
-                        : Colors.grey[700],
+                    backgroundColor: isAllDataValid ? const Color(0xFF0A3FB3) : Colors.grey[700],
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -966,4 +937,3 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
     );
   }
 }
-
