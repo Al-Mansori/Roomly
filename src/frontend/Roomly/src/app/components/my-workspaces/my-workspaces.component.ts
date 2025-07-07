@@ -4,13 +4,13 @@ import { Component, signal } from '@angular/core';
 import { SideNavbarComponent } from "../side-navbar/side-navbar.component";
 import { SwiperOptions } from 'swiper';
 import { Router } from '@angular/router';
-import { IOffer, IReview, IRoom, IWorkspace } from '../../interfaces/iworkspace';
+import { IOffer, IReview, IRoom, IRoomAmenity, IWorkspace } from '../../interfaces/iworkspace';
 import { WorkspaceService } from '../../core/services/workspace/workspace.service';
-import { AuthStateService } from '../../core/services/auth-state/auth-state.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpClientJsonpModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-my-workspaces',
@@ -24,10 +24,12 @@ export class MyWorkspacesComponent {
   selectedWorkspace = signal<IWorkspace | null>(null);
   selectedWorkspaceRooms = signal<IRoom[]>([]);
   selectedRoom = signal<IRoom | null>(null);
-  // selectedWorkspaceReviews = signal<IReview[]>([]);
   isLoading = signal(true);
   error = signal<string | null>(null);
+  amenities = signal<IRoomAmenity[]>([]);
   offerForm: FormGroup;
+  amenityForm: FormGroup;
+  isEditingAmenity = signal(false);
 
 
   // Swiper configuration
@@ -52,16 +54,33 @@ export class MyWorkspacesComponent {
 
   ) {
     this.offerForm = this.fb.group({
-      offerTitle: ['', Validators.required],
-      description: ['', Validators.required],
-      discountPercentage: ['', [Validators.required, Validators.pattern(/^\d*\.?\d+$/), Validators.min(0), Validators.max(100)]],
+      offerTitle: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
+      description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
+      discountPercentage: ['', [Validators.required, Validators.pattern(/^\d*\.?\d+$/), Validators.min(1), Validators.max(99)]],
       validFrom: ['', Validators.required],
       validTo: ['', Validators.required],
-      status: ['Active'] // Default status as per example
+      status: ['Active', Validators.required]
+    }, { validators: this.dateRangeValidator() });
+    this.amenityForm = this.fb.group({
+      id: [''],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+      type: ['', Validators.required],
+      description: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(200)]],
+      totalCount: ['', [Validators.required, Validators.min(1)]]
     });
   }
   ngOnInit(): void {
     this.fetchWorkspaces();
+  }
+  private dateRangeValidator() {
+    return (group: FormGroup) => {
+      const from = group.get('validFrom')?.value;
+      const to = group.get('validTo')?.value;
+      if (from && to && new Date(from) > new Date(to)) {
+        return { dateRangeInvalid: true };
+      }
+      return null;
+    };
   }
 
   fetchWorkspaces(): void {
@@ -84,7 +103,6 @@ export class MyWorkspacesComponent {
     // Use the real staffId from the logged-in user
     this.workspaceService.getWorkspacesByStaff(staffId).subscribe({
       next: (workspaces) => {
-        console.log(staffId)
         this.workspaces.set(workspaces);
         if (workspaces.length > 0) {
           this.selectWorkspace(workspaces[0]);
@@ -95,6 +113,8 @@ export class MyWorkspacesComponent {
         this.error.set('Failed to load workspaces. Please try again.');
         this.isLoading.set(false);
         console.error('Error fetching workspaces:', err);
+        Swal.fire('Error!', 'Failed to load workspaces.', 'error');
+
       }
     });
   }
@@ -102,6 +122,8 @@ export class MyWorkspacesComponent {
   selectWorkspace(workspace: IWorkspace): void {
     this.selectedWorkspace.set(workspace);
     this.selectedRoom.set(null); // Reset selected room when workspace changes
+    this.amenities.set([]);
+
 
     this.workspaceService.getRoomsByWorkspace(workspace.id).subscribe({
       next: (rooms) => {
@@ -109,23 +131,32 @@ export class MyWorkspacesComponent {
         const mappedRooms = rooms.map(room => ({
           ...room,
           // roomImages: room.roomImages?.length ? room.roomImages.map(img => img.imageUrl) : null
-          roomImages: room.roomImages
+          roomImages: room.roomImages,
+          amenities: room.amenities || []
+
         }));
         this.selectedWorkspaceRooms.set(mappedRooms || []);
       },
       error: (err) => {
         console.error('Error fetching rooms:', err);
         this.selectedWorkspaceRooms.set([]);
+        Swal.fire('Error!', 'Failed to load rooms.', 'error');
       }
     });
   }
 
 
   selectRoom(room: IRoom): void {
+    console.log('Selected Room ID:', room.id); // Debug line
+    console.log('Selected Room Amenitites:', room.amenities); // Debug line
     this.selectedRoom.set(room);
+    this.amenities.set(room.amenities || []);
+
   }
   deselectRoom(): void {
     this.selectedRoom.set(null);
+    this.amenities.set([]);
+
   }
 
   goToRecommendedFees(workspaceId: string): void {
@@ -143,38 +174,7 @@ export class MyWorkspacesComponent {
     }
   }
 
-  // onAddOffer(): void {
-  //   if (this.offerForm.valid && this.selectedRoom()) {
-  //     const offer: IOffer = {
-  //       // id: '', // Will be generated by the API
-  //       offerTitle: this.offerForm.value.offerTitle,
-  //       description: this.offerForm.value.description,
-  //       discountPercentage: parseFloat(this.offerForm.value.discountPercentage),
-  //       validFrom: this.offerForm.value.validFrom,
-  //       validTo: this.offerForm.value.validTo,
-  //       status: this.offerForm.value.status
-  //     };
 
-  //     const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
-  //     const staffId = user?.id || 'stf001';
-
-  //     this.roomService.addOffer(staffId, this.selectedRoom()!.id, offer).subscribe({
-  //       next: (response) => {
-  //         console.log('Offer added successfully:', response);
-  //         this.offerForm.reset();
-  //         this.offerForm.patchValue({ status: 'Active' }); // Reset to default status
-  //         document.getElementById('addOfferModal')?.classList.remove('show');
-  //         document.body.classList.remove('modal-open');
-  //         document.querySelector('.modal-backdrop')?.remove();
-  //         this.selectWorkspace(this.selectedWorkspace()!);
-  //       },
-  //       error: (err) => {
-  //         console.error('Error adding offer:', err);
-  //         this.error.set('Failed to add offer. Please try again.');
-  //       }
-  //     });
-  //   }
-  // }
   onAddOffer(): void {
     if (!this.offerForm.valid || !this.selectedRoom()) return;
 
@@ -191,6 +191,8 @@ export class MyWorkspacesComponent {
     const staffId = user?.id;
     if (!staffId) {
       this.error.set('User not authenticated. Please log in.');
+      Swal.fire('Error!', 'User not authenticated.', 'error');
+
       return;
     }
 
@@ -222,24 +224,6 @@ export class MyWorkspacesComponent {
     });
   }
 
-  private handleSuccess(response: any): void {
-    console.log('Offer created:', response);
-    // Update your UI state here
-    this.offerForm.reset();
-    this.closeModal();
-  }
-
-  private handleError(error: any): void {
-    console.error('Offer creation failed:', error);
-    this.error.set(this.getErrorMessage(error));
-  }
-
-  private getErrorMessage(error: any): string {
-    if (error.status === 403) {
-      return 'You do not have permission to create offers';
-    }
-    return error.message || 'Failed to create offer. Please try again.';
-  }
   // Workspace Actions
   confirmRemoveWorkspace(workspaceId: string): void {
     Swal.fire({
@@ -323,6 +307,145 @@ export class MyWorkspacesComponent {
     // Navigate to offers list component
     this.router.navigate(['/offers', roomId]); // Adjust route as needed
   }
+  fetchAmenities(roomId: string): void {
+    this.isLoading.set(true);
+    this.error.set(null);
+    this.amenityForm.reset();
+    this.isEditingAmenity.set(false);
+
+    this.roomService.getAmenitiesByRoom(roomId).subscribe({
+      next: (amenities) => {
+        console.log('Fetched Amenities for Room ID', roomId, ':', amenities); // Debug line
+        this.amenities.set(amenities || []);
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        this.error.set('Failed to load amenities. Please try again.');
+        this.isLoading.set(false);
+        console.error('Error fetching amenities:', err);
+        Swal.fire('Error!', 'Failed to load amenities.', 'error');
+      }
+    });
+  }
+
+
+  showAddAmenityForm(): void {
+    this.amenityForm.reset();
+    this.isEditingAmenity.set(false);
+  }
+
+  editAmenity(amenity: IRoomAmenity): void {
+    this.amenityForm.patchValue({
+      id: amenity.id,
+      name: amenity.name,
+      type: amenity.type,
+      description: amenity.description,
+      totalCount: amenity.totalCount
+    });
+    this.isEditingAmenity.set(true);
+  }
+  onAddAmenity(): void {
+    if (!this.amenityForm.valid || !this.selectedRoom()) return;
+
+    const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+    const staffId = user?.id;
+    if (!staffId) {
+      this.error.set('User not authenticated. Please log in.');
+      Swal.fire('Error!', 'User not authenticated.', 'error');
+      return;
+    }
+
+    const amenity: IRoomAmenity = this.amenityForm.value;
+    const requestBody = { ...amenity, staffId };
+
+    if (this.isEditingAmenity()) {
+      // Update Amenity
+      this.roomService.updateAmenity(requestBody).subscribe({
+        next: () => {
+          const updatedAmenities = this.amenities().map(a => a.id === amenity.id ? { ...a, ...amenity } : a);
+          this.amenities.set(updatedAmenities);
+          this.updateRoomAmenities(updatedAmenities);
+          this.amenityForm.reset();
+          this.isEditingAmenity.set(false);
+          Swal.fire('Success!', 'Amenity updated successfully.', 'success');
+        },
+        error: (err) => {
+          console.error('Error updating amenity:', err);
+          this.error.set(`Failed to update amenity: ${err.message || 'Please try again.'}`);
+          Swal.fire('Error!', 'Failed to update amenity.', 'error');
+        }
+      });
+    } else {
+      // Add Amenity
+      this.roomService.addAmenity(this.selectedRoom()!.id, requestBody).subscribe({
+        next: (response) => {
+          const newAmenity = response.body?.id ? { ...amenity, id: response.body.id } : amenity;
+          const updatedAmenities = [...this.amenities(), newAmenity];
+          this.amenities.set(updatedAmenities);
+          this.updateRoomAmenities(updatedAmenities);
+          this.amenityForm.reset();
+          Swal.fire('Success!', 'Amenity added successfully.', 'success');
+        },
+        error: (err) => {
+          console.error('Error adding amenity:', err);
+          this.error.set(`Failed to add amenity: ${err.message || 'Please try again.'}`);
+          Swal.fire('Error!', 'Failed to add amenity.', 'error');
+        }
+      });
+    }
+  }
+
+  confirmDeleteAmenity(amenityId: string): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will permanently delete the amenity!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deleteAmenity(amenityId);
+      }
+    });
+  }
+
+  deleteAmenity(amenityId: string): void {
+    this.roomService.deleteAmenity(amenityId).subscribe({
+      next: () => {
+        const updatedAmenities = this.amenities().filter(a => a.id !== amenityId);
+        this.amenities.set(updatedAmenities);
+        this.updateRoomAmenities(updatedAmenities);
+        Swal.fire('Deleted!', 'Amenity has been removed.', 'success');
+      },
+      error: (err) => {
+        console.error('Error deleting amenity:', err);
+        this.error.set('Failed to delete amenity. Please try again.');
+        Swal.fire('Error!', 'Failed to delete amenity.', 'error');
+      }
+    });
+  }
+  resetAmenityForm(): void {
+    this.amenityForm.reset();
+    this.isEditingAmenity.set(false);
+  }
+  resetOfferForm(): void {
+    this.offerForm.reset();
+    this.offerForm.patchValue({ status: 'Active' });
+  }
+  private updateRoomAmenities(amenities: IRoomAmenity[]): void {
+    const currentRoom = this.selectedRoom();
+    if (currentRoom) {
+      const updatedRoom = { ...currentRoom, amenities };
+      this.selectedRoom.set(updatedRoom);
+      const updatedRooms = this.selectedWorkspaceRooms().map(r => r.id === currentRoom.id ? updatedRoom : r);
+      this.selectedWorkspaceRooms.set(updatedRooms);
+    }
+  }
+
+
+
 
 }
 
