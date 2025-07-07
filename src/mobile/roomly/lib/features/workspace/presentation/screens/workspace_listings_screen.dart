@@ -14,7 +14,8 @@ class WorkspaceListingsScreen extends StatelessWidget {
         if (state is WorkspaceDetailsLoaded) {
           final workspace = state.workspace;
           if (workspace.rooms == null || workspace.rooms!.isEmpty) {
-            return const Center(child: Text('No rooms available for this workspace.'));
+            return const Center(
+                child: Text('No rooms available for this workspace.'));
           }
           return ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -32,7 +33,8 @@ class WorkspaceListingsScreen extends StatelessWidget {
         } else if (state is WorkspaceDetailsError) {
           return Center(child: Text('Error: ${state.message}'));
         } else {
-          return const Center(child: Text('Load workspace details to see rooms.'));
+          return const Center(
+              child: Text('Load workspace details to see rooms.'));
         }
       },
     );
@@ -89,7 +91,8 @@ class WorkspaceListingsScreen extends StatelessWidget {
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(8)),
                   child: Image.network(
                     room.roomImages != null && room.roomImages!.isNotEmpty
                         ? room.roomImages!.first.imageUrl
@@ -113,23 +116,23 @@ class WorkspaceListingsScreen extends StatelessWidget {
                   ),
                 ),
                 // Favorite button on image
-                Positioned(
-                  right: 8,
-                  bottom: 8,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.favorite_border,
-                          size: 18, color: Colors.grey),
-                      onPressed: () {
-                        // Favorite action
-                      },
-                    ),
-                  ),
-                ),
+                // Positioned(
+                //   right: 8,
+                //   bottom: 8,
+                //   child: Container(
+                //     decoration: const BoxDecoration(
+                //       color: Colors.white,
+                //       shape: BoxShape.circle,
+                //     ),
+                //     child: IconButton(
+                //       icon: const Icon(Icons.favorite_border,
+                //           size: 18, color: Colors.grey),
+                //       onPressed: () {
+                //         // Favorite action
+                //       },
+                //     ),
+                //   ),
+                // ),
               ],
             ),
 
@@ -176,14 +179,25 @@ class WorkspaceListingsScreen extends StatelessWidget {
                       const SizedBox(height: 4),
                       ElevatedButton(
                         onPressed: () {
-                          // Book action
+                          final workspaceCubit =
+                              context.read<WorkspaceDetailsCubit>();
+                          final state = workspaceCubit.state;
+                          if (state is WorkspaceDetailsLoaded) {
+                            context.push(
+                              '/room/${room.id}',
+                              extra: {
+                                'workspaceId': state.workspace.id,
+                              },
+                            );
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
                         ),
                         child: const Text(
                           'Book Now',
@@ -205,5 +219,3 @@ class WorkspaceListingsScreen extends StatelessWidget {
     );
   }
 }
-
-
