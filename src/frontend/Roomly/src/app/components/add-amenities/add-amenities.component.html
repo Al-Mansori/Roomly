@@ -11,21 +11,20 @@
         <div class="row g-4">
           <!-- Left Column -->
           <div class="col-lg-8">
-            <!-- Left: Add Amenities -->
+            <!-- Left: Add/Edit Amenities -->
             <div class="card p-3">
-              <h5 class="fw-semibold mb-4">Add Amenities</h5>
+              <h5 class="fw-semibold mb-4">{{ isEditing ? 'Edit Amenity' : 'Add Amenities' }}</h5>
               <form [formGroup]="amenityForm" (ngSubmit)="onSubmit()">
                 <div class="row g-3">
                   <!-- Image -->
                   <div class="col-md-5">
                     <label class="form-label">Amenity cover image</label>
-                                    <app-upload-image 
-                                        (imagesChange)="updateImages($event)"
-                                        [class.is-invalid]="isFieldInvalid('imageUrls')">
-                                    </app-upload-image>
-                                    <div *ngIf="isFieldInvalid('imageUrls')" class="invalid-feedback d-block">
-                                        {{ getErrorMessage('imageUrls') }}
-                                    </div>
+                    <app-upload-image (imagesChange)="updateImages($event)"
+                      [class.is-invalid]="isFieldInvalid('imageUrls')">
+                    </app-upload-image>
+                    <div *ngIf="isFieldInvalid('imageUrls')" class="invalid-feedback d-block">
+                      {{ getErrorMessage('imageUrls') }}
+                    </div>
                   </div>
 
                   <!-- Inputs -->
@@ -33,11 +32,8 @@
                     <div class="mb-3">
                       <label class="form-label">Name</label>
                       <input type="text" class="form-control" formControlName="name" />
-                      <div *ngIf="amenityForm.get('name')?.invalid && 
-                                 (amenityForm.get('name')?.dirty || 
-                                  amenityForm.get('name')?.touched)"
-                           class="text-danger small">
-                        Name is required (max 50 characters)
+                      <div *ngIf="isFieldInvalid('name')" class="text-danger small">
+                        {{ getErrorMessage('name') }}
                       </div>
                     </div>
                     <div class="mb-3">
@@ -47,36 +43,46 @@
                         <option value="Service">Service</option>
                         <option value="Facility">Facility</option>
                       </select>
+                      <div *ngIf="isFieldInvalid('type')" class="text-danger small">
+                        {{ getErrorMessage('type') }}
+                      </div>
                     </div>
                     <div class="mb-3">
-                      <label class="form-label">Description 
+                      <label class="form-label">Description
                         <span class="float-end">
                           {{ amenityForm.get('description')?.value?.length || 0 }}/110
                         </span>
                       </label>
-                      <textarea class="form-control" rows="3" 
-                                formControlName="description" maxlength="110"></textarea>
+                      <textarea class="form-control" rows="3" formControlName="description" maxlength="110"></textarea>
+                      <div *ngIf="isFieldInvalid('description')" class="text-danger small">
+                        {{ getErrorMessage('description') }}
+                      </div>
                     </div>
                     <div class="mb-3">
                       <label class="form-label">Total Count</label>
                       <input type="number" class="form-control" formControlName="totalCount" />
+                      <div *ngIf="isFieldInvalid('totalCount')" class="text-danger small">
+                        {{ getErrorMessage('totalCount') }}
+                      </div>
                     </div>
                     <div class="mb-3">
                       <label class="form-label">Available Count</label>
                       <input type="number" class="form-control" formControlName="availableCount" />
+                      <div *ngIf="isFieldInvalid('availableCount')" class="text-danger small">
+                        {{ getErrorMessage('availableCount') }}
+                      </div>
                     </div>
                   </div>
                 </div>
                 <div class="d-flex justify-content-end mt-3">
-                  <button class="btn btn-primary" type="submit" 
-                          [disabled]="amenityForm.invalid || !selectedRoomId">
-                    Done
+                  <button class="btn btn-primary" type="submit" [disabled]="amenityForm.invalid || !selectedRoomId">
+                    {{ isEditing ? 'Update Amenity' : 'Add Amenity' }}
                   </button>
                 </div>
               </form>
             </div>
 
-            <!--Left: Defined Amenities Dropdown -->
+            <!-- Left: Defined Amenities Dropdown -->
             <div class="card p-3 mt-4">
               <label class="mb-2 fw-semibold">Defined Amenities</label>
               <select class="form-select w-25">
@@ -91,30 +97,27 @@
           <!-- Right Column -->
           <div class="col-lg-4">
             <div class="card p-3">
-              <h6 class="fw-semibold mb-3">Click on a room to add its amenities</h6>
+              <h6 class="fw-semibold mb-3">Click on a room to {{ isEditing ? 'edit its amenity' : 'add its amenities' }}
+              </h6>
               <div class="d-flex flex-column gap-3">
                 @for (room of addedRooms; track room.id) {
-                  <div class="card h-100 border-0 shadow-sm" 
-                      [class.border-primary]="selectedRoomId === room.id"
-                      (click)="selectRoom(room.id , room.name)"
-                      style="cursor: pointer;">
-                      <img [src]="room.mainImage" 
-                          class="card-img-top rounded" 
-                          style="height: 120px; object-fit: cover;">
-                      <div class="card-body p-2 text-center">
-                          <h6 class="card-title fw-bold mb-0">{{ room.name }}</h6>
-                      </div>
+                <div class="card h-100 border-0 shadow-sm" [class.border-primary]="selectedRoomId === room.id"
+                  (click)="selectRoom(room.id, room.name)" style="cursor: pointer;">
+                  <img [src]="room.mainImage" class="card-img-top rounded" style="height: 120px; object-fit: cover;">
+                  <div class="card-body p-2 text-center">
+                    <h6 class="card-title fw-bold mb-0">{{ room.name }}</h6>
                   </div>
+                </div>
                 }
                 @if (addedRooms.length === 0 && !errorMessage) {
-                  <div class="text-center py-3">
-                    <p>No rooms available</p>
-                  </div>
+                <div class="text-center py-3">
+                  <p>No rooms available</p>
+                </div>
                 }
                 @if (errorMessage) {
-                  <div class="alert alert-danger">
-                    {{ errorMessage }}
-                  </div>
+                <div class="alert alert-danger">
+                  {{ errorMessage }}
+                </div>
                 }
               </div>
             </div>
