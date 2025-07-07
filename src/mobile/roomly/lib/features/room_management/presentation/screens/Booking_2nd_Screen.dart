@@ -539,26 +539,26 @@ class _SelectDataScreenState extends State<SelectDataScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (_operatingHours != null)
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.blue[200]!),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Debug Info:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue[800])),
-                          Text('Operating Hours: ${DateFormat('h:mm a').format(_operatingHours!.startTime.toLocal())} - ${DateFormat('h:mm a').format(_operatingHours!.endTime.toLocal())}'),
-                          Text('No Availability Data: $_noAvailabilityData'),
-                          Text('Available Slots: ${_availability.length}'),
-                          Text('Check-in Options: ${_checkInTimes.length}'),
-                          Text('Check-out Options: ${_checkOutTimes.length}'),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   padding: const EdgeInsets.all(8),
+                    //   margin: const EdgeInsets.only(bottom: 16),
+                    //   decoration: BoxDecoration(
+                    //     color: Colors.blue[50],
+                    //     borderRadius: BorderRadius.circular(8),
+                    //     border: Border.all(color: Colors.blue[200]!),
+                    //   ),
+                    //   child: Column(
+                    //     crossAxisAlignment: CrossAxisAlignment.start,
+                    //     children: [
+                    //       Text('Debug Info:', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue[800])),
+                    //       Text('Operating Hours: ${DateFormat('h:mm a').format(_operatingHours!.startTime.toLocal())} - ${DateFormat('h:mm a').format(_operatingHours!.endTime.toLocal())}'),
+                    //       Text('No Availability Data: $_noAvailabilityData'),
+                    //       Text('Available Slots: ${_availability.length}'),
+                    //       Text('Check-in Options: ${_checkInTimes.length}'),
+                    //       Text('Check-out Options: ${_checkOutTimes.length}'),
+                    //     ],
+                    //   ),
+                    // ),
 
                   Row(
                     children: [
