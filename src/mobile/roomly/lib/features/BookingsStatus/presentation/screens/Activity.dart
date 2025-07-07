@@ -186,15 +186,15 @@ class _ActivityScreenState extends State<ActivityScreen> {
       case 0: // Upcoming
         return bookings
             .where((b) =>
-                b.reservation.reservationDate.isAfter(DateTime.now()) &&
-                b.reservation.status != 'CANCELLED')
+                // b.reservation.reservationDate.isAfter(DateTime.now()) &&
+                b.reservation.status != 'CONFIRMED')
             .toList();
       case 1: // On-going
         return bookings
             .where((b) =>
                 b.reservation.startTime.isBefore(DateTime.now()) &&
                 b.reservation.endTime.isAfter(DateTime.now()) &&
-                b.reservation.status != 'CANCELLED')
+                b.reservation.status != 'CONFIRMED')
             .toList();
       case 2: // Pending
         return bookings
@@ -204,7 +204,8 @@ class _ActivityScreenState extends State<ActivityScreen> {
         return bookings
             .where((b) =>
                 b.reservation.endTime.isBefore(DateTime.now()) ||
-                b.reservation.status == 'CANCELLED')
+                b.reservation.status == 'CANCELLED' ||
+                b.reservation.status == 'COMPLETED')
             .toList();
       default:
         return [];
