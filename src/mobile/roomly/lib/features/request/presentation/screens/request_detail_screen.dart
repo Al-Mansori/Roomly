@@ -42,7 +42,7 @@ class RequestDetailScreen extends StatelessWidget {
                   _buildDetailRow('Request ID:', request.id),
                   _buildDetailRow('Type:', request.type),
                   _buildDetailRow('Request Date:', request.requestDate),
-                  _buildDetailRow('Response Date:', request.responseDate),
+                  _buildDetailRow('Response Date:', request.responseDate ?? 'N/A'),
                   _buildDetailRow('Status:', request.status),
                   const SizedBox(height: 16.0),
                   const Text(
@@ -61,7 +61,7 @@ class RequestDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4.0),
                   Text(
-                    request.requestResponse,
+                    request.requestResponse ?? 'N/A',
                     style: const TextStyle(fontSize: 16.0, color: Colors.black87),
                   ),
                 ],

@@ -218,35 +218,41 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                     ),
 
                     // Loyalty points section
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(8),
+                    GestureDetector(
+                      onTap: () {
+                        // Navigate to loyalty points screen
+                        context.push('/loyalty');
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.blue,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(Icons.card_giftcard,
+                                  color: Colors.white),
                             ),
-                            child: const Icon(Icons.card_giftcard,
-                                color: Colors.white),
-                          ),
-                          const SizedBox(width: 12),
-                          const Expanded(
-                            child: Text(
-                              'Use Your Loyalty Point To Save Some money',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Text(
+                                'Use Your Loyalty Point To Save Some money',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
-                          ),
-                          const Icon(Icons.chevron_right),
-                        ],
+                            const Icon(Icons.chevron_right),
+                          ],
+                        ),
                       ),
                     ),
 
@@ -600,7 +606,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                               return;
                             }
 
-                            if ((room.availableCount ?? 0) > 0) {
+                            else {
                               // Proceed to booking if seats are available
                               print(
                                   'Navigating to date screen for room: ${room.id}');
@@ -611,6 +617,17 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                                     .workspaceId, // تأكد أن room تحتوي على workspaceId
                               });
                             }
+                            // if ((room.availableCount ?? 0) > 0) {
+                            //   // Proceed to booking if seats are available
+                            //   print(
+                            //       'Navigating to date screen for room: ${room.id}');
+                            //   context.push('/select-data', extra: {
+                            //     'room': room,
+                            //     'discountedPrice': discountedPrice,
+                            //     'workspaceId': widget
+                            //         .workspaceId, // تأكد أن room تحتوي على workspaceId
+                            //   });
+                            // }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: _isRecoveryMode
@@ -630,9 +647,7 @@ class _RoomDetailsScreenState extends State<RoomDetailsScreen> {
                             child: Text(
                               _isRecoveryMode
                                   ? 'Maintenance'
-                                  : (room.availableCount ?? 0) > 0
-                                      ? 'Select Date'
-                                      : 'No Seats Available',
+                                  : 'Select Date',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
