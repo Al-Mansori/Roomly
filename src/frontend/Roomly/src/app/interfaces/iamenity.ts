@@ -14,3 +14,8 @@ export interface IAmenity {
   imageUrls: string[];
   staffId: string;
 }
+
+export interface IExtendedAmenity extends IAmenity {
+  id?: string; // For update-amenity and getAmenityById
+  availableCount?: number; // For form, not sent to APIs
+}

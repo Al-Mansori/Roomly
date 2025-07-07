@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SideStepsIndicatorComponent } from "../side-steps-indicator/side-steps-indicator.component";
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { UploadImageComponent } from './upload-image/upload-image.component';
@@ -7,6 +7,7 @@ import { WorkspaceService } from '../../core/services/workspace/workspace.servic
 import { AmenityService } from '../../core/services/amenity/amenity.service';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
+import { IExtendedAmenity } from '../../interfaces/iamenity';
 
 @Component({
   selector: 'app-add-amenities',
@@ -21,13 +22,15 @@ import Swal from 'sweetalert2';
   templateUrl: './add-amenities.component.html',
   styleUrls: ['./add-amenities.component.scss']
 })
-export class AddAmenitiesComponent {
+export class AddAmenitiesComponent implements OnInit {
   workspaceId: string | null = null;
   roomId: string | null = null;
+  amenityId: string | null = null;
   amenityForm: FormGroup;
   addedRooms: any[] = [];
   errorMessage: string = '';
   selectedRoomId: string | null = null;
+  isEditing: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -50,22 +53,24 @@ export class AddAmenitiesComponent {
     this.route.queryParams.subscribe(params => {
       this.workspaceId = params['workspaceId'] || null;
       this.roomId = params['roomId'] || null;
-      
+      this.amenityId = params['amenityId'] || null;
+      this.isEditing = !!this.amenityId;
+
       if (this.workspaceId) {
         console.log('Workspace ID:', this.workspaceId);
         this.loadAddedRooms();
       }
-      
+
       if (this.roomId) {
         console.log('Room ID:', this.roomId);
         this.selectedRoomId = this.roomId;
       }
-    });
-  }
 
-  updateImages(imageUrls: string[]): void {
-    this.amenityForm.patchValue({ imageUrls });
-    this.amenityForm.controls['imageUrls'].markAsTouched();
+      if (this.amenityId) {
+        console.log('Amenity ID:', this.amenityId);
+        this.loadAmenityDetails();
+      }
+    });
   }
 
   private loadAddedRooms() {
@@ -88,54 +93,89 @@ export class AddAmenitiesComponent {
     }
   }
 
-selectRoom(roomId: string, roomName: string) {
-  Swal.fire({
-    title: 'Add Amenity',
-    html: `Do you want to add an amenity to the room <b>${roomName}</b>?`,
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, add amenity',
-    cancelButtonText: 'Cancel',
-    customClass: {
-      confirmButton: 'btn btn-primary mx-2',
-      cancelButton: 'btn btn-secondary mx-2'
-    },
-    buttonsStyling: false
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.selectedRoomId = roomId;
-      // You can add any additional action here on confirmation
+  private loadAmenityDetails() {
+    if (this.amenityId) {
+      this.amenityService.getAmenityById(this.amenityId).subscribe({
+        next: (amenity: IExtendedAmenity) => {
+          this.amenityForm.patchValue({
+            name: amenity.name,
+            type: amenity.type,
+            description: amenity.description,
+            totalCount: amenity.totalCount,
+            availableCount: amenity.availableCount || amenity.totalCount,
+            imageUrls: amenity.imageUrls || []
+          });
+          this.updateImages(amenity.imageUrls || []);
+        },
+        error: (err) => {
+          console.error('Error fetching amenity details:', err);
+          Swal.fire('Error', 'Failed to load amenity details', 'error');
+        }
+      });
     }
-  });
-}
+  }
 
+  selectRoom(roomId: string, roomName: string) {
+    Swal.fire({
+      title: this.isEditing ? 'Edit Amenity' : 'Add Amenity',
+      html: `Do you want to ${this.isEditing ? 'edit the amenity for' : 'add an amenity to'} the room <b>${roomName}</b>?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: this.isEditing ? 'Yes, edit amenity' : 'Yes, add amenity',
+      cancelButtonText: 'Cancel',
+      customClass: {
+        confirmButton: 'btn btn-primary mx-2',
+        cancelButton: 'btn btn-secondary mx-2'
+      },
+      buttonsStyling: false
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.selectedRoomId = roomId;
+      }
+    });
+  }
 
-onSubmit() {
+  updateImages(imageUrls: string[]): void {
+    this.amenityForm.patchValue({ imageUrls });
+    this.amenityForm.controls['imageUrls'].markAsTouched();
+  }
+
+  onSubmit() {
     if (this.amenityForm.invalid || !this.selectedRoomId) {
       this.amenityForm.markAllAsTouched();
       Swal.fire('Error', 'Please fill all required fields and select a room', 'error');
       return;
     }
 
-    const formData = {
-      ...this.amenityForm.value,
+    // Create IAmenity for createAmenity, IExtendedAmenity for updateAmenity
+    const formData: IExtendedAmenity = {
+      id: this.amenityId ?? undefined, // Convert null to undefined to match IExtendedAmenity
+      name: this.amenityForm.value.name,
+      type: this.amenityForm.value.type,
+      description: this.amenityForm.value.description,
+      totalCount: this.amenityForm.value.totalCount,
       roomId: this.selectedRoomId,
-      staffId: this.getStaffId()
+      staffId: this.getStaffId(),
+      imageUrls: this.amenityForm.value.imageUrls
+      // availableCount is not included in API calls
     };
 
-    this.amenityService.createAmenity(formData).subscribe({
+    const apiCall = this.isEditing
+      ? this.amenityService.updateAmenity(formData)
+      : this.amenityService.createAmenity(formData);
+
+    apiCall.subscribe({
       next: (response) => {
         Swal.fire({
           title: 'Success!',
-          text: 'Amenity added successfully!',
+          text: this.isEditing ? 'Amenity updated successfully!' : 'Amenity added successfully!',
           icon: 'success',
           showCancelButton: true,
           confirmButtonText: 'Add Reception Hours',
-          cancelButtonText: 'Continue Adding Amenities',
+          cancelButtonText: this.isEditing ? 'Back to Workspaces' : 'Continue Adding Amenities',
           reverseButtons: true
         }).then((result) => {
           if (result.isConfirmed) {
-            // الانتقال إلى صفحة Reception Hours
             this.router.navigate(['/reception-hours'], {
               queryParams: {
                 workspaceId: this.workspaceId,
@@ -143,24 +183,32 @@ onSubmit() {
               }
             });
           } else {
-            this.amenityForm.reset();
-            this.updateImages([]);
-            this.selectedRoomId = null; 
+            if (this.isEditing) {
+              this.router.navigate(['/my-workspaces'], {
+                queryParams: { workspaceId: this.workspaceId }
+              });
+            } else {
+              this.amenityForm.reset();
+              this.amenityForm.patchValue({ type: 'Equipment', totalCount: 1, availableCount: 1 });
+              this.updateImages([]);
+              this.selectedRoomId = this.roomId || null;
+            }
           }
         });
       },
       error: (error) => {
-        console.error('Error creating amenity:', error);
-        Swal.fire('Error', 'Failed to add amenity', 'error');
+        console.error(`Error ${this.isEditing ? 'updating' : 'creating'} amenity:`, error);
+        Swal.fire('Error', `Failed to ${this.isEditing ? 'update' : 'add'} amenity`, 'error');
       }
     });
   }
 
   private getStaffId(): string {
-  const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
-  return user?.id || '';
+    const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+    return user?.id || '';
   }
-    getErrorMessage(field: string): string {
+
+  getErrorMessage(field: string): string {
     const control = this.amenityForm.get(field);
     if (!control || !control.errors) return '';
 
@@ -170,18 +218,14 @@ onSubmit() {
       return `Maximum length is ${control.errors['maxlength'].requiredLength} characters`;
     } else if (control.hasError('min')) {
       return `Minimum value is ${control.errors['min'].min}`;
-    } else if (control.hasError('max')) {
-      return `Maximum value is ${control.errors['max'].max}`;
     } else if (control.hasError('minLength')) {
       return `At least ${control.errors['minLength'].requiredLength} image is required`;
     }
     return 'Invalid value';
   }
 
-    isFieldInvalid(field: string): boolean {
+  isFieldInvalid(field: string): boolean {
     const control = this.amenityForm.get(field);
     return control ? control.invalid && (control.dirty || control.touched) : false;
   }
-
-
 }

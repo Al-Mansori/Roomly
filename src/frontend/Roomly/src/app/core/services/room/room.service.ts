@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { IOffer, IRoom } from '../../../interfaces/iworkspace';
+import { IOffer, IRoom, IRoomAmenity } from '../../../interfaces/iworkspace';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { IRecommendationResponse } from '../../../interfaces/irecommendation';
@@ -37,6 +37,43 @@ export class RoomService {
       catchError(error => {
         console.error(`Error fetching room ${roomId}:`, error);
         return throwError(() => new Error('Failed to fetch room details'));
+      })
+    );
+  }
+  getAmenitiesByRoom(roomId: string): Observable<IRoomAmenity[]> {
+    return this.http.get<IRoomAmenity[]>(`/api/staff/amenity/room/${roomId}`).pipe(
+      catchError(error => {
+        console.error(`Error fetching amenities for room ${roomId}:`, error);
+        return throwError(() => new Error('Failed to fetch amenities'));
+      })
+    );
+  }
+
+
+
+  addAmenity(roomId: string, amenity: any): Observable<any> {
+    return this.http.post(`/api/staff/amenity/${roomId}`, amenity).pipe(
+      catchError(error => {
+        console.error('Error adding amenity:', error);
+        return throwError(() => new Error('Failed to add amenity'));
+      })
+    );
+  }
+
+  updateAmenity(amenity: any): Observable<any> {
+    return this.http.post(`/api/staff/amenity`, amenity).pipe(
+      catchError(error => {
+        console.error('Error updating amenity:', error);
+        return throwError(() => new Error('Failed to update amenity'));
+      })
+    );
+  }
+
+  deleteAmenity(amenityId: string): Observable<string> {
+    return this.http.delete(`/api/staff/amenity/${amenityId}`, { responseType: 'text' }).pipe(
+      catchError(error => {
+        console.error('Error deleting amenity:', error);
+        return throwError(() => new Error('Failed to delete amenity'));
       })
     );
   }
