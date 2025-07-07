@@ -26,10 +26,16 @@
           <!-- Search & Actions -->
           <div class="d-flex gap-2 flex-wrap align-items-center">
             <div class="input-group input-group-sm w-25">
-              <input type="text" class="form-control" placeholder="Search by ID, listing name" />
+              <input type="text" class="form-control" placeholder="Search by ID, offer title"
+                (input)="onSearch($event)" />
             </div>
-            <button class="btn btn-outline-secondary btn-sm">Filter</button>
-            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addOfferModal">+ New Offer</button>
+            <select class="form-select form-select-sm w-25" (change)="onFilterChange($event)">
+              <option value="all">All Statuses</option>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addOfferModal">+ New
+              Offer</button>
           </div>
         </div>
 
@@ -41,39 +47,89 @@
     </div>
   </div>
 
+
+</div>
   <!-- Add/Edit/Reapply Offer Modal -->
-  <div class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addOfferModalLabel" aria-hidden="true">
+  <div #offerListModal class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addOfferModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content p-4 rounded-3 shadow-sm">
         <div class="d-flex justify-content-between align-items-start mb-3">
           <h5 class="modal-title fw-semibold" id="addOfferModalLabel">
-            @if (selectedOffer() && selectedOffer()!.status === 'present') { Edit Offer for Room {{ getRoomId() }} }
-            @else if (selectedOffer() && selectedOffer()!.status === 'expired') { Reapply Offer for Room {{ getRoomId() }} }
-            @else { Add New Offer for Room {{ getRoomId() }} }
-          </h5>
+            @if (isEditOffer()) {
+            Edit Offer for Room {{ getRoomId() }}
+            } @else if (isReapplyOffer()) {
+            Reapply Offer for Room {{ getRoomId() }}
+            } @else {
+            Add New Offer for Room {{ getRoomId() }}
+            }</h5>
           <button type="button" class="btn-close" (click)="closeModal()" aria-label="Close"></button>
         </div>
-        <form [formGroup]="offerForm" (ngSubmit)="onAddOffer()">
+        <form [formGroup]="offerForm" (ngSubmit)="isEditOffer() ? onEditOffer() : onAddOffer()">
           <div class="mb-3">
             <label for="offerTitle" class="form-label">Offer Title</label>
             <input type="text" class="form-control" id="offerTitle" formControlName="offerTitle" />
+            @if (offerForm.get('offerTitle')?.hasError('required') && offerForm.get('offerTitle')?.touched) {
+            <div class="text-danger">Offer title is required.</div>
+            }
+            @if (offerForm.get('offerTitle')?.hasError('minlength') && offerForm.get('offerTitle')?.touched) {
+            <div class="text-danger">Offer title must be at least 5 characters.</div>
+            }
+            @if (offerForm.get('offerTitle')?.hasError('maxlength') && offerForm.get('offerTitle')?.touched) {
+            <div class="text-danger">Offer title cannot exceed 100 characters.</div>
+            }
           </div>
           <div class="mb-3">
             <label for="description" class="form-label">Description</label>
             <textarea class="form-control" id="description" formControlName="description"></textarea>
+            @if (offerForm.get('description')?.hasError('required') && offerForm.get('description')?.touched) {
+            <div class="text-danger">Description is required.</div>
+            }
+            @if (offerForm.get('description')?.hasError('minlength') && offerForm.get('description')?.touched) {
+            <div class="text-danger">Description must be at least 10 characters.</div>
+            }
+            @if (offerForm.get('description')?.hasError('maxlength') && offerForm.get('description')?.touched) {
+            <div class="text-danger">Description cannot exceed 500 characters.</div>
+            }
           </div>
           <div class="mb-3">
             <label for="discountPercentage" class="form-label">Discount Percentage</label>
-            <input type="number" class="form-control" id="discountPercentage" formControlName="discountPercentage" step="0.1" />
+            <input type="number" class="form-control" id="discountPercentage" formControlName="discountPercentage"
+              step="0.1" />
+            @if (offerForm.get('discountPercentage')?.hasError('required') &&
+            offerForm.get('discountPercentage')?.touched) {
+            <div class="text-danger">Discount percentage is required.</div>
+            }
+            @if (offerForm.get('discountPercentage')?.hasError('pattern') &&
+            offerForm.get('discountPercentage')?.touched) {
+            <div class="text-danger">Discount must be a valid number.</div>
+            }
+            @if (offerForm.get('discountPercentage')?.hasError('min') && offerForm.get('discountPercentage')?.touched) {
+            <div class="text-danger">Discount cannot be negative.</div>
+            }
+            @if (offerForm.get('discountPercentage')?.hasError('max') && offerForm.get('discountPercentage')?.touched) {
+            <div class="text-danger">Discount cannot exceed 100%.</div>
+            }
           </div>
           <div class="row g-2 mb-3">
             <div class="col-md-6">
               <label for="validFrom" class="form-label">Valid From</label>
               <input type="date" class="form-control" id="validFrom" formControlName="validFrom" />
+              @if (offerForm.get('validFrom')?.hasError('required') && offerForm.get('validFrom')?.touched) {
+              <div class="text-danger">Valid from date is required.</div>
+              }
+              @if (offerForm.hasError('validFromInPast') && offerForm.get('validFrom')?.touched) {
+              <div class="text-danger">Valid from date cannot be in the past for new or edited offers.</div>
+              }
             </div>
             <div class="col-md-6">
               <label for="validTo" class="form-label">Valid To</label>
               <input type="date" class="form-control" id="validTo" formControlName="validTo" />
+              @if (offerForm.get('validTo')?.hasError('required') && offerForm.get('validTo')?.touched) {
+              <div class="text-danger">Valid to date is required.</div>
+              }
+              @if (offerForm.hasError('dateRangeInvalid') && offerForm.get('validTo')?.touched) {
+              <div class="text-danger">Valid to date cannot be before valid from date.</div>
+              }
             </div>
           </div>
           <div class="mb-3">
@@ -82,13 +138,19 @@
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
+            @if (offerForm.get('status')?.hasError('required') && offerForm.get('status')?.touched) {
+            <div class="text-danger">Status is required.</div>
+            }
           </div>
           <div class="text-center">
             <button type="submit" class="btn btn-outline-primary px-5" [disabled]="offerForm.invalid">
-              @if (selectedOffer() && selectedOffer()!.status === 'present') { Save Changes }
-              @else if (selectedOffer() && selectedOffer()!.status === 'expired') { Reapply Offer }
-              @else { Create Offer }
-            </button>
+              @if (isEditOffer()) {
+              Save Changes
+              } @else if (isReapplyOffer()) {
+              Reapply Offer
+              } @else {
+              Create Offer
+              }</button>
           </div>
         </form>
       </div>
