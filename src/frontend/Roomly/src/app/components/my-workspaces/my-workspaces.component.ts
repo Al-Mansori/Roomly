@@ -217,6 +217,8 @@ export class MyWorkspacesComponent {
         this.error.set(`Failed to add offer: ${err.message || 'Please try again or contact support.'}`);
         Swal.fire('Error!', 'Failed to add offer.', 'error');
       }
+
+      
     });
   }
 
