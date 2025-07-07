@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SideNavbarComponent } from "../side-navbar/side-navbar.component";
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
+import { PlanService } from '../../core/services/plan/plan.service';
+import { WorkspaceService } from '../../core/services/workspace/workspace.service';
 
 @Component({
   selector: 'app-my-plans',
@@ -10,72 +13,147 @@ import { CommonModule } from '@angular/common';
   templateUrl: './my-plans.component.html',
   styleUrl: './my-plans.component.scss'
 })
-export class MyPlansComponent {
-  plans = [
-    {
-      id: 1,
-      title: 'Basic Plan',
-      description: 'Access to one workspace with standard support and limited hours per week.',
-      price: 299,
-      allowedFeatures: [
-        'Access to 1 workspace',
-        'Standard support (Email only)',
-        '20 hours/week usage limit'
-      ],
-      deniedFeatures: [
-        'No guest passes',
-        'No priority bookings'
-      ]
-    },
-    {
-      id: 2,
-      title: 'Standard Plan',
-      description: 'Perfect for regular users who need access to multiple rooms and extended hours.',
-      price: 599,
-      allowedFeatures: [
-        'Access to 3 workspaces',
-        'Priority email support',
-        '60 hours/week usage limit',
-        '2 guest passes per month',
-        'Room booking priority'
-      ],
-      deniedFeatures: []
-    },
-    {
-      id: 3,
-      title: 'Premium Plan',
-      description: 'Unlimited workspace access with premium support and exclusive perks.',
-      price: 999,
-      allowedFeatures: [
-        'Unlimited workspace access',
-        'Unlimited usage hours',
-        'Unlimited guest passes',
-        'Priority workspace reservations',
-        'Access to private rooms & meeting spaces',
-        'Dedicated account manager'
-      ],
-      deniedFeatures: []
-    }
-  ];
+export class MyPlansComponent implements OnInit {
+  plans: any[] = [];
+  workspaces: any[] = [];
+  selectedWorkspaceId: string | null = null;
+  isLoading = false;
 
-  // Modal Form Inputs
+  // Modal Form Inputs (only prices are actually sent)
   newPlan = {
-    id: 0,
-    title: '',
-    description: '',
-    price: 0,
-    billing: 'monthly',
-    allowedFeatures: [] as string[],
+    dailyPrice: 0,
+    monthPrice: 0,
+    yearPrice: 0,
+    // UI-only fields
+    title: 'Workspace Plan',
+    description: 'Custom pricing plan for this workspace',
+    allowedFeatures: [
+      'Access to workspace facilities',
+      'Standard support',
+      'Flexible hours'
+    ],
     deniedFeatures: [] as string[]
   };
 
-  // Input fields for features
+  // Input fields for features (UI only)
   allowedInput: string = '';
   deniedInput: string = '';
-  allowedFeatures: string[] = [];
+  allowedFeatures: string[] = [...this.newPlan.allowedFeatures];
   deniedFeatures: string[] = [];
 
-  // Add Allowed Feature
+  constructor(
+    private planService: PlanService,
+    private workspaceService: WorkspaceService
+  ) {}
+
+  ngOnInit() {
+    this.fetchWorkspaces();
+    this.fetchPlans();
+  }
+
+  fetchWorkspaces() {
+    this.isLoading = true;
+    const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+    const staffId = user?.id;
+    
+    if (!staffId) {
+      Swal.fire('Error', 'User not authenticated', 'error');
+      this.isLoading = false;
+      return;
+    }
+
+    this.workspaceService.getWorkspacesByStaff(staffId).subscribe({
+      next: (workspaces) => {
+        this.workspaces = workspaces;
+        if (workspaces.length > 0) {
+          this.selectedWorkspaceId = workspaces[0].id;
+          this.fetchWorkspaces();
+        }
+        this.isLoading = false;
+      },
+      error: (error) => {
+        Swal.fire('Error', 'Failed to fetch workspaces', 'error');
+        this.isLoading = false;
+      }
+    });
+  }
+
+  onWorkspaceChange() {
+    if (this.selectedWorkspaceId) {
+      this.fetchWorkspaces();
+    }
+  }
+  
+  private getStaffId(): string {
+  const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+  return user?.id || '';
+  }
+
+  //   fetchPlansByStaff() {
+  //   if (!this.selectedWorkspaceId) return;
+
+  //   this.isLoading = true;
+  //   this.planService.getPlanByStaff(this.getStaffId()).subscribe({
+  //     next: (data: any) => {
+  //       this.plans = [{
+  //         id: 1, // Assuming single plan per workspace
+  //         title: this.newPlan.title,
+  //         description: this.newPlan.description,
+  //         dailyPrice: data.dailyPrice || 0,
+  //         monthPrice: data.monthPrice || 0,
+  //         yearPrice: data.yearPrice || 0,
+  //         allowedFeatures: this.allowedFeatures,
+  //         deniedFeatures: this.deniedFeatures
+  //       }];
+  //       this.isLoading = false;
+  //     },
+  //     error: (error) => {
+  //       Swal.fire('Error', 'Failed to fetch plans', 'error');
+  //       this.isLoading = false;
+  //     }
+  //   });
+  // }
+
+
+fetchPlans() {
+  if (!this.selectedWorkspaceId) return;
+
+  this.isLoading = true;
+  this.planService.getPlan(this.selectedWorkspaceId).subscribe({
+    next: (data: any) => {
+      console.log('Plan API Response:', data);  // DEBUGGING
+
+      if (!data || Object.keys(data).length === 0) {
+        Swal.fire('Info', 'No plan found for this workspace', 'info');
+        this.plans = [];
+        this.isLoading = false;
+        return;
+      }
+
+      this.plans = [{
+        id: data.id || 1,
+        title: data.title || this.newPlan.title,
+        description: data.description || this.newPlan.description,
+        dailyPrice: data.dailyPrice ?? 0,
+        monthPrice: data.monthPrice ?? 0,
+        yearPrice: data.yearPrice ?? 0,
+        allowedFeatures: data.allowedFeatures || [],
+        deniedFeatures: data.deniedFeatures || []
+      }];
+
+      this.allowedFeatures = [...this.plans[0].allowedFeatures];
+      this.deniedFeatures = [...this.plans[0].deniedFeatures];
+      this.isLoading = false;
+    },
+    error: (error) => {
+      console.error('Error fetching plan:', error);
+      Swal.fire('Error', 'Failed to fetch plans', 'error');
+      this.isLoading = false;
+    }
+  });
+}
+
+  // Add/remove features (UI only)
   addAllowedFeature() {
     const feature = this.allowedInput.trim();
     if (feature) {
@@ -84,12 +162,10 @@ export class MyPlansComponent {
     }
   }
 
-  // Remove Allowed Feature
   removeAllowed(index: number) {
     this.allowedFeatures.splice(index, 1);
   }
 
-  // Add Denied Feature
   addDeniedFeature() {
     const feature = this.deniedInput.trim();
     if (feature) {
@@ -98,37 +174,55 @@ export class MyPlansComponent {
     }
   }
 
-  // Remove Denied Feature
   removeDenied(index: number) {
     this.deniedFeatures.splice(index, 1);
   }
 
-  // Save Plan
   savePlan() {
-    if (!this.newPlan.title || !this.newPlan.price || !this.newPlan.description) return;
+    if (!this.selectedWorkspaceId) {
+      Swal.fire('Warning', 'Please select a workspace first', 'warning');
+      return;
+    }
 
-    const newId = Date.now();
-    this.plans.push({
-      ...this.newPlan,
-      id: newId,
-      price: Number(this.newPlan.price),
-      allowedFeatures: [...this.allowedFeatures],
-      deniedFeatures: [...this.deniedFeatures]
+    // Only these fields are actually sent to the API
+    const planData = {
+      dailyPrice: this.newPlan.dailyPrice,
+      monthPrice: this.newPlan.monthPrice,
+      yearPrice: this.newPlan.yearPrice
+    };
+
+    this.isLoading = true;
+    this.planService.updatePlan(planData , this.selectedWorkspaceId).subscribe({
+      next: () => {
+        Swal.fire('Success', 'Plan updated successfully!', 'success');
+        this.fetchPlans();
+        this.isLoading = false;
+        document.getElementById('closeModal')?.click();
+      },
+      error: () => {
+        Swal.fire('Error', 'Failed to update plan', 'error');
+        this.isLoading = false;
+      }
     });
+  }
 
-    // Reset all fields
+  resetForm() {
     this.newPlan = {
-      id: 0,
-      title: '',
-      description: '',
-      price: 0,
-      billing: 'monthly',
-      allowedFeatures: [],
+      dailyPrice: 0,
+      monthPrice: 0,
+      yearPrice: 0,
+      title: 'Workspace Plan',
+      description: 'Custom pricing plan for this workspace',
+      allowedFeatures: [
+        'Access to workspace facilities',
+        'Standard support',
+        'Flexible hours'
+      ],
       deniedFeatures: []
     };
+    this.allowedFeatures = [...this.newPlan.allowedFeatures];
+    this.deniedFeatures = [];
     this.allowedInput = '';
     this.deniedInput = '';
-    this.allowedFeatures = [];
-    this.deniedFeatures = [];
   }
 }

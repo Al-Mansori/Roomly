@@ -90,4 +90,28 @@ export class CustomerService {
       })
     );
   }
+
+  updateStaffProfile(staffData: any): Observable<any> {
+    const payload = {
+      ...staffData,
+    };
+    return this.http.put(`/api/staff/update-staff`, payload)
+      .pipe(
+        catchError(error => {
+          console.error('Error updating staff profile:', error);
+          return throwError(() => new Error('Failed to update profile'));
+        })
+      );
+  }
+
+
+    getStaffDetails(staffId: string): Observable<any> {
+    return this.http.get(`/api/staff/staffdetails?staffId=${staffId}`)
+      .pipe(
+        catchError(error => {
+          console.error('Error fetching staff details:', error);
+          return throwError(() => new Error('Failed to fetch staff details'));
+        })
+      );
+  }
 }

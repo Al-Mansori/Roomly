@@ -8,20 +8,38 @@
 
             <!-- Main Content -->
             <div class="col-12 col-md-9 px-4 py-4">
+                <!-- Workspace Selector -->
+                <div class="mb-4">
+                    <label for="workspaceSelect" class="form-label fw-bold">Select Workspace</label>
+                    <select id="workspaceSelect" class="form-select" [(ngModel)]="selectedWorkspaceId" 
+                            (change)="onWorkspaceChange()" [disabled]="isLoading">
+                        <option *ngFor="let workspace of workspaces" [value]="workspace.id">
+                            {{ workspace.name }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Loading Indicator -->
+                @if (isLoading) {
+                <div class="text-center my-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                }
+            <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#addPlanModal">
+                Add New Plan
+            </button>
+
+
                 <!-- Title Section -->
                 <div class="text-center mb-4">
                     <p class="text-primary fs-5 fw-semibold">Pricing</p>
-                    <h2 class="text-black fw-bold">Create and manage subscription plans for<br />your workspace
-                        customers.</h2>
-                </div>
-
-                <!-- Toggle Section -->
-                <div class="d-flex justify-content-center mb-4">
-                    <button class="btn btn-primary btn-sm rounded-end-0 py-2 px-3">Monthly</button>
-                    <button class="btn btn-outline-primary btn-sm rounded-start-0 py-2 px-3">Yearly</button>
+                    <h2 class="text-black fw-bold">Create and manage subscription plans for<br />your workspace customers.</h2>
                 </div>
 
                 <!-- Plans Grid -->
+                @if (selectedWorkspaceId && !isLoading) {
                 <div class="row g-4">
                     @for (plan of plans; track plan.id) {
                     <div class="col-lg-4">
@@ -34,8 +52,19 @@
                             <p class="text-secondary small mb-3">{{ plan.description }}</p>
 
                             <div class="price mb-3">
-                                <h3 class="fw-bold ">{{ plan.price }}$</h3>
+                                <h3 class="fw-bold">{{ plan.monthPrice | currency }}</h3>
                                 <span class="fw-semibold">/Per Month</span>
+                            </div>
+
+                            <div class="d-flex gap-3 mb-3">
+                                <div>
+                                    <small class="text-muted">Daily</small>
+                                    <p class="fw-bold">{{ plan.dailyPrice | currency }}</p>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Yearly</small>
+                                    <p class="fw-bold">{{ plan.yearPrice | currency }}</p>
+                                </div>
                             </div>
 
                             <!-- Features -->
@@ -56,70 +85,49 @@
                                 }
                             </ul>
 
-                            <!-- Buttons -->
-                            <div class="d-flex flex-column justify-content-center align-items-center gap-2">
-                                <button class="btn btn-outline-primary p-2 btn-sm w-50">Edit</button>
-                                <button class="btn btn-danger btn-sm p-2 w-50">Remove</button>
+                            <!-- Edit Button -->
+                            <div class="d-flex justify-content-center">
+                                <button class="btn btn-outline-primary p-2 btn-sm w-50" 
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#addPlanModal">
+                                    Edit Plan
+                                </button>
                             </div>
                         </div>
                     </div>
                     }
                 </div>
-
-                <!-- Add Plan Button -->
-                <!-- <div class="text-center mt-4">
-                    <button class="btn btn-primary rounded-pill px-4">+ New Plan</button>
-                </div> -->
-                <!-- Add Plan Button -->
-                <!-- New Plan Button -->
-                <div class="text-center mt-4">
-                    <button class="btn btn-primary rounded-pill px-4" data-bs-toggle="modal"
-                        data-bs-target="#addPlanModal">
-                        + New Plan
-                    </button>
+                }
+                @else if (!isLoading && workspaces.length === 0) {
+                <div class="alert alert-warning">
+                    You don't have any workspaces yet. Please create a workspace first.
                 </div>
+                }
 
                 <!-- Bootstrap Modal -->
                 <div class="modal fade" id="addPlanModal" tabindex="-1" aria-labelledby="addPlanModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <div class="modal-content p-4 rounded-4">
-                            <h5 class="fw-semibold text-center mb-3">Add New Plan</h5>
+                            <h5 class="fw-semibold text-center mb-3">Edit Pricing Plan</h5>
 
-                            <!-- Title  -->
+                            <!-- Pricing -->
                             <div class="mb-3 d-flex">
-                                <label class="form-label w-50">Title</label>
-                                <input type="text" class="form-control" [(ngModel)]="newPlan.title">
+                                <label class="form-label w-50">Daily Price</label>
+                                <input type="number" class="form-control" [(ngModel)]="newPlan.dailyPrice">
                             </div>
-                            <!-- description -->
+                            
                             <div class="mb-3 d-flex">
-                                <label class="form-label w-50">Description</label>
-                                <textarea class="form-control" rows="3" [(ngModel)]="newPlan.description"></textarea>
+                                <label class="form-label w-50">Monthly Price</label>
+                                <input type="number" class="form-control" [(ngModel)]="newPlan.monthPrice">
                             </div>
-                            <!-- price -->
+                            
                             <div class="mb-3 d-flex">
-                                <label class="form-label w-50">Plan Price</label>
-                                <input type="text" class="form-control" [(ngModel)]="newPlan.price">
-                            </div>
-
-                            <!-- Billing -->
-                            <div class="d-flex">
-                                <label class="form-label w-50 ">Billing Cycle</label>
-                                <div class="mb-3 d-flex gap-3">
-                                    <div class="form-check">
-                                        <input type="radio" id="monthly" name="billing" [(ngModel)]="newPlan.billing"
-                                            value="monthly" class="form-check-input" />
-                                        <label for="monthly" class="form-check-label">Monthly</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input type="radio" id="yearly" name="billing" [(ngModel)]="newPlan.billing"
-                                            value="yearly" class="form-check-input" />
-                                        <label for="yearly" class="form-check-label">Yearly</label>
-                                    </div>
-                                </div>
+                                <label class="form-label w-50">Yearly Price</label>
+                                <input type="number" class="form-control" [(ngModel)]="newPlan.yearPrice">
                             </div>
 
-                            <!-- Allowed Features -->
+                            <!-- Allowed Features (UI only) -->
                             <div class="mb-4">
                                 <div class="d-flex">
                                     <div class="w-50">
@@ -137,7 +145,6 @@
                                                 <span class="text-white fw-semibold fs-4 m-0">+</span>
                                             </div>
                                         </button>
-
                                     </div>
                                 </div>
                                 <ul class="list-group">
@@ -153,7 +160,7 @@
                                 </ul>
                             </div>
 
-                            <!-- Denied Features -->
+                            <!-- Denied Features (UI only) -->
                             <div class="mb-4">
                                 <div class="d-flex">
                                     <div class="w-50">
@@ -187,13 +194,19 @@
                                 </ul>
                             </div>
 
-                            <!-- You can then add Allowed/Denied features and actions like Save/Cancel -->
                             <div class="d-flex gap-4 justify-content-center mt-4">
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                                <button class="btn btn-primary" (click)="savePlan()">Save Plan</button>
+                                <button type="button" class="btn btn-danger" id="closeModal" data-bs-dismiss="modal">Cancel</button>
+                                <button class="btn btn-primary" (click)="savePlan()" [disabled]="isLoading">
+                                    @if (isLoading) {
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                    Saving...
+                                    } @else {
+                                    Save Plan
+                                    }
+                                </button>
                             </div>
-
                         </div>
+                        
                     </div>
                 </div>
             </div>

@@ -20,6 +20,11 @@ export class LeftSideComponent {
   async onFileSelected(event: any): Promise<void> {
     const file: File = event.target.files[0];
     
+          if (typeof file === 'string') {
+        this.tempImages.push(file);
+        this.imagesChange.emit(this.tempImages);
+      } 
+
     if (!file) return;
 
     // التحقق من نوع الملف

@@ -18,6 +18,22 @@ export class WorkspacePlanComponent implements OnInit {
   selectedPaymentType: string = '';
   workspaceType: string = '';
 
+// قيم افتراضية للاختيارات
+paymentTypes = [
+  { value: 'cash', label: 'Cash' },
+  { value: 'card', label: 'Credit Card' },
+  { value: 'both', label: 'Both' }
+];
+
+workspaceTypes = [
+  'Tech Hub', 
+  'Co-working Space',
+  'Private Office',
+  'Meeting Room',
+  'Creative Studio'
+];
+
+
   ngOnInit() {
     // إرسال البيانات الأولية عند تهيئة المكون
     this.emitPlanData();

@@ -1,0 +1,93 @@
+<div class="add-workspace min-vh-100 bg-light">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-12 col-md-2 mb-4 mb-md-0 pt-4 ps-3">
+      <app-side-steps-indicator></app-side-steps-indicator>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-12 col-md-10 d-flex pt-4 flex-column gap-4">
+      <div class="container-fluid">
+        <div class="row g-4">
+
+          <!-- Left: Workspace Details + Form -->
+          <div class="col-lg-8">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="fw-semibold mb-4">Details</h6>
+                <div class="d-flex flex-column flex-md-row gap-4">
+                  <!-- Image Section -->
+                  <app-left-side (imagesChange)="updateImages($event)"></app-left-side>
+
+                  <!-- Form Section -->
+                  <app-right-side
+                    [form]="workspaceForm"
+                    (formChange)="onFormChange($event)"
+                    (locationChange)="updateLocation($event.marker, $event.address)">
+                  </app-right-side>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Post Preview -->
+          <div class="col-lg-4">
+            <div class="card">
+              <div class="card-body">
+                <h6 class="fw-semibold mb-3">Post Overview</h6>
+                <app-post-preview 
+                  [images]="images" 
+                  [workspaceName]="workspaceForm.get('name')?.value" 
+                  [phone]="workspaceForm.get('phone')?.value" 
+                  [description]="workspaceForm.get('description')?.value" 
+                  [markerPosition]="markerPosition" 
+                  [address]="selectedAddress"
+                  [town]="workspaceForm.get('town')?.value"
+                  [city]="workspaceForm.get('city')?.value"
+                  [country]="workspaceForm.get('country')?.value">
+                </app-post-preview>
+              </div>
+            </div>
+            <div class="py-3"></div>
+            <div class="card">
+              <div class="card-body">
+                <h6 class="fw-semibold mb-3">Workspace Plan</h6>
+                    <div class="workspace-plan p-3">
+                    <h5 class="mb-3">Workspace Plan</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Payment Type</label>
+                        <select class="form-select" 
+>
+                        <option value="">Select Payment Type</option>
+                        <option value="both">Cash</option>
+                        <option value="both">Credit</option>
+                        <option value="both">Both</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Workspace Type</label>
+                        <input type="text" class="form-control" 
+                            placeholder="e.g., Office, Co-working Space">
+                    </div>
+                    </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="px-4 py-3 border-top bg-light mt-4">
+<button class="btn btn-primary w-100 cursor-pointer" 
+        [disabled]="isSubmitDisabled()"
+        (click)="onSubmit()">
+  Edit Workspace
+</button>
+  </div>
+</div>

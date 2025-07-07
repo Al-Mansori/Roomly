@@ -10,7 +10,7 @@ describe('RoomService', () => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(RoomService);
   });
-
+})
 //   it('should be created', () => {
 //     expect(service).toBeTruthy();
 //   });

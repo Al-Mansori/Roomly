@@ -141,7 +141,12 @@ export const routes: Routes = [
       {
         path: 'add-workspace',
         loadComponent: () => import('./components/add-workspace/add-workspace.component').then(m => m.AddWorkspaceComponent)
-      },
+      },      
+// في ملف app.routes.ts أو ما يعادله
+{
+  path: 'edit-workspace/:id',  // لاحظ إضافة :id للمعامل
+  loadComponent: () => import('./components/edit-workspace/edit-workspace.component').then(m => m.EditWorkspaceComponent)
+},
       {
         path: 'add-rooms', loadComponent: () => import('./components/add-rooms/add-rooms.component').then((m) => m.AddRoomsComponent)
       },
