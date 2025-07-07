@@ -143,7 +143,6 @@ class _ProfileFormState extends State<ProfileForm> {
                 message: state.response['message'] ?? 'Profile updated successfully',
                 alertType: AlertType.success,
                 buttonText: 'OK',
-                onPressed: () {},
 
               );
             } else if (state is AuthError) {
@@ -153,7 +152,6 @@ class _ProfileFormState extends State<ProfileForm> {
                 message: state.message,
                 alertType: AlertType.error,
                 buttonText: 'OK',
-                onPressed: () {},
               );
             }
           },
