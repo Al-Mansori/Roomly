@@ -146,6 +146,9 @@ export const routes: Routes = [
 {
   path: 'edit-workspace/:id',  // لاحظ إضافة :id للمعامل
   loadComponent: () => import('./components/edit-workspace/edit-workspace.component').then(m => m.EditWorkspaceComponent)
+},{
+  path: 'edit-room/:id',  // لاحظ إضافة :id للمعامل
+  loadComponent: () => import('./components/edit-room/edit-room.component').then(m => m.EditRoomComponent)
 },
       {
         path: 'add-rooms', loadComponent: () => import('./components/add-rooms/add-rooms.component').then((m) => m.AddRoomsComponent)

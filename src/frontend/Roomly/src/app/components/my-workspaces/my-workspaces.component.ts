@@ -99,27 +99,25 @@ export class MyWorkspacesComponent {
     });
   }
 
-  selectWorkspace(workspace: IWorkspace): void {
-    this.selectedWorkspace.set(workspace);
-    this.selectedRoom.set(null); // Reset selected room when workspace changes
+selectWorkspace(workspace: IWorkspace): void {
+  this.selectedWorkspace.set(workspace);
+  this.selectedRoom.set(null);
 
-    this.workspaceService.getRoomsByWorkspace(workspace.id).subscribe({
-      next: (rooms) => {
-        // Map the API response to match IRoom structure
-        const mappedRooms = rooms.map(room => ({
-          ...room,
-          // roomImages: room.roomImages?.length ? room.roomImages.map(img => img.imageUrl) : null
-          roomImages: room.roomImages
-        }));
-        this.selectedWorkspaceRooms.set(mappedRooms || []);
-      },
-      error: (err) => {
-        console.error('Error fetching rooms:', err);
-        this.selectedWorkspaceRooms.set([]);
-      }
-    });
-  }
-
+  this.workspaceService.getRoomsByWorkspace(workspace.id).subscribe({
+    next: (rooms) => {
+      console.log('Rooms data:', rooms); // أضف هذا السطر
+      const mappedRooms = rooms.map(room => ({
+        ...room,
+        roomImages: room.roomImages
+      }));
+      this.selectedWorkspaceRooms.set(mappedRooms || []);
+    },
+    error: (err) => {
+      console.error('Error fetching rooms:', err);
+      this.selectedWorkspaceRooms.set([]);
+    }
+  });
+}
 
   selectRoom(room: IRoom): void {
     this.selectedRoom.set(room);
@@ -314,10 +312,22 @@ export class MyWorkspacesComponent {
     });
   }
 
-  editRoom(roomId: string): void {
-    // Placeholder for navigation or form to edit room
-    this.router.navigate(['/edit-room', roomId]); // Adjust route as needed
+editRoom(roomId: string): void {
+  console.log('roomId before navigating:', roomId); // للتأكد
+
+  if (!roomId || !this.selectedWorkspace()) {
+    console.error('Missing required information');
+    Swal.fire('Error', 'Room ID or Workspace ID is missing', 'error');
+    return;
   }
+
+  this.router.navigate(['/edit-room', roomId], {
+    queryParams: {
+      workspaceId: this.selectedWorkspace()?.id
+    }
+  });
+  
+}
 
   showRoomOffers(roomId: string): void {
     // Navigate to offers list component

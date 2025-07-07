@@ -18,9 +18,14 @@ export class NavbarComponent {
   }
 
   logout() {
+    // حذف الـ token وبيانات المستخدم من localStorage
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // إعادة التوجيه إلى صفحة تسجيل الدخول
     this.router.navigate(['/login']);
   }
+
   @ViewChild('navEl', { static: true }) navEl!: ElementRef;
   private height = 0;
 
