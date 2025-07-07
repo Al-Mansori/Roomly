@@ -69,8 +69,8 @@ export class RoomService {
     );
   }
 
-  deleteAmenity(amenityId: string): Observable<any> {
-    return this.http.delete(`/api/staff/amenity/${amenityId}`).pipe(
+  deleteAmenity(amenityId: string): Observable<string> {
+    return this.http.delete(`/api/staff/amenity/${amenityId}`, { responseType: 'text' }).pipe(
       catchError(error => {
         console.error('Error deleting amenity:', error);
         return throwError(() => new Error('Failed to delete amenity'));
