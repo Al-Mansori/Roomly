@@ -30,7 +30,7 @@ export interface IRoom {
   availableCount: number;
   pricePerHour: number;
   status: string;
-  amenities: string[] | null;
+  amenities: IRoomAmenity[] | null;
   // roomImages: string[] | null;
   roomImages: { imageUrl: string }[] | null;
 
@@ -57,4 +57,13 @@ export interface IOffer {
   // status: string;
   status: 'Active' | 'Inactive';
 
+}
+
+export interface IRoomAmenity {
+  id: string;
+  name: string;
+  type: string;
+  description: string;
+  totalCount: number;
+  amenityImages: { imageUrl: string }[] | null;
 }

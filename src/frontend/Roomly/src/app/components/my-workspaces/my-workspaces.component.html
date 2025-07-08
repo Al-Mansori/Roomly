@@ -159,6 +159,14 @@
                                 @if (room.amenities && room.amenities.length > 0) {
                                 <p class="text-muted"><strong>Amenities:</strong> {{ room.amenities.join(', ') }}</p>
                                 }
+                                <p class="text-muted">
+                                    <strong>Amenities:</strong>
+                                    <a href="#" class="text-primary text-decoration-underline ms-2"
+                                        (click)="$event.preventDefault(); fetchAmenities(room.id)"
+                                        data-bs-toggle="modal" data-bs-target="#amenitiesModal">
+                                        View All Amenities
+                                    </a>
+                                </p>
                                 @if (room.offers && room.offers.length > 0) {
                                 <div class="mt-2">
                                     <p class="fw-bold">Offers:</p>
@@ -205,34 +213,87 @@
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <h5 class="modal-title fw-semibold" id="addOfferModalLabel">Add Offer for {{ selectedRoom()?.name ||
                         'Room' }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        (click)="offerForm.reset(); offerForm.patchValue({ status: 'Active' })"
+                        aria-label="Close"></button>
                 </div>
                 <form [formGroup]="offerForm" (ngSubmit)="onAddOffer()">
                     <div class="mb-3">
                         <label for="offerTitle" class="form-label">Offer Title</label>
                         <input type="text" class="form-control" id="offerTitle" formControlName="offerTitle"
                             placeholder="Enter offer title" />
+                        @if (offerForm.get('offerTitle')?.hasError('required') && offerForm.get('offerTitle')?.touched)
+                        {
+                        <div class="text-danger">Offer title is required.</div>
+                        }
+                        @if (offerForm.get('offerTitle')?.hasError('minlength') && offerForm.get('offerTitle')?.touched)
+                        {
+                        <div class="text-danger">Offer title must be at least 5 characters.</div>
+                        }
+                        @if (offerForm.get('offerTitle')?.hasError('maxlength') && offerForm.get('offerTitle')?.touched)
+                        {
+                        <div class="text-danger">Offer title cannot exceed 100 characters.</div>
+                        }
                     </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
                         <textarea class="form-control" id="description" formControlName="description"
                             placeholder="Enter offer description"></textarea>
+                        @if (offerForm.get('description')?.hasError('required') &&
+                        offerForm.get('description')?.touched) {
+                        <div class="text-danger">Description is required.</div>
+                        }
+                        @if (offerForm.get('description')?.hasError('minlength') &&
+                        offerForm.get('description')?.touched) {
+                        <div class="text-danger">Description must be at least 10 characters.</div>
+                        }
+                        @if (offerForm.get('description')?.hasError('maxlength') &&
+                        offerForm.get('description')?.touched) {
+                        <div class="text-danger">Description cannot exceed 500 characters.</div>
+                        }
                     </div>
                     <div class="mb-3">
                         <label for="discountPercentage" class="form-label">Discount Percentage</label>
                         <input type="number" class="form-control" id="discountPercentage"
                             formControlName="discountPercentage" placeholder="e.g. 20.0" step="0.1" />
+                        @if (offerForm.get('discountPercentage')?.hasError('required') &&
+                        offerForm.get('discountPercentage')?.touched) {
+                        <div class="text-danger">Discount percentage is required.</div>
+                        }
+                        @if (offerForm.get('discountPercentage')?.hasError('pattern') &&
+                        offerForm.get('discountPercentage')?.touched) {
+                        <div class="text-danger">Discount must be a valid number.</div>
+                        }
+                        @if (offerForm.get('discountPercentage')?.hasError('min') &&
+                        offerForm.get('discountPercentage')?.touched) {
+                        <div class="text-danger">Discount must be at least 1%.</div>
+                        }
+                        @if (offerForm.get('discountPercentage')?.hasError('max') &&
+                        offerForm.get('discountPercentage')?.touched) {
+                        <div class="text-danger">Discount cannot exceed 99%.</div>
+                        }
                     </div>
                     <div class="row g-2 mb-3">
                         <div class="col-md-6">
                             <label for="validFrom" class="form-label">Valid From</label>
                             <input type="date" class="form-control" id="validFrom" formControlName="validFrom" />
+                            @if (offerForm.get('validFrom')?.hasError('required') &&
+                            offerForm.get('validFrom')?.touched) {
+                            <div class="text-danger">Valid from date is required.</div>
+                            }
                         </div>
                         <div class="col-md-6">
                             <label for="validTo" class="form-label">Valid To</label>
                             <input type="date" class="form-control" id="validTo" formControlName="validTo" />
+                            @if (offerForm.get('validTo')?.hasError('required') && offerForm.get('validTo')?.touched) {
+                            <div class="text-danger">Valid to date is required.</div>
+                            }
                         </div>
                     </div>
+                    @if (offerForm.hasError('dateRangeInvalid') && offerForm.get('validFrom')?.touched &&
+                    offerForm.get('validTo')?.touched) {
+                    <div class="text-danger">Valid To date must be after Valid From date.</div>
+                    }
                     <div class="mb-3">
                         <label for="status" class="form-label">Status</label>
                         <select class="form-control" id="status" formControlName="status">
@@ -245,6 +306,61 @@
                             [disabled]="offerForm.invalid">Save</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Amenities Modal -->
+    <div class="modal fade" id="amenitiesModal" tabindex="-1" aria-labelledby="amenitiesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content p-4 rounded-3 shadow-sm">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="modal-title fw-semibold" id="amenitiesModalLabel">Amenities for {{ selectedRoom()?.name
+                        || 'Room' }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-primary w-100" (click)="showAddAmenityForm()">
+                        <i class="fas fa-plus me-2"></i> Add New Amenity
+                    </button>
+                </div>
+                <div class="mt-3">
+                    @if (amenities().length > 0) {
+                    <div class="list-group">
+                        @for (amenity of amenities(); track amenity.id) {
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">{{ amenity.name }} <span class="badge bg-info text-white ms-2">{{
+                                        amenity.type }}</span></h6>
+                                <p class="mb-1 text-muted">{{ amenity.description }}</p>
+                                <small class="text-muted">Total Count: {{ amenity.totalCount }}</small>
+                                @if (amenity.amenityImages && amenity.amenityImages.length > 0) {
+                                <div class="mt-2">
+                                    <small class="text-muted">Images:</small>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @for (image of amenity.amenityImages; track image.imageUrl) {
+                                        <img [src]="image.imageUrl" alt="Amenity image" class="img-thumbnail"
+                                            style="width: 50px; height: 50px; object-fit: cover;" />
+                                        }
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-warning" (click)="editAmenity(amenity)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" (click)="confirmDeleteAmenity(amenity.id)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        }
+                    </div>
+                    } @else {
+                    <p class="text-muted text-center">No amenities available for this room.</p>
+                    }
+                </div>
             </div>
         </div>
     </div>
