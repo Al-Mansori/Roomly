@@ -103,6 +103,7 @@ export class MyWorkspacesComponent implements OnInit {
     });
   }
 
+
   selectWorkspace(workspace: IWorkspace): void {
     this.selectedWorkspace.set(workspace);
     this.selectedRoom.set(null);
@@ -382,9 +383,22 @@ export class MyWorkspacesComponent implements OnInit {
     });
   }
 
-  editRoom(roomId: string): void {
-    this.router.navigate(['/edit-room', roomId]);
+editRoom(roomId: string): void {
+  console.log('roomId before navigating:', roomId); // للتأكد
+
+  if (!roomId || !this.selectedWorkspace()) {
+    console.error('Missing required information');
+    Swal.fire('Error', 'Room ID or Workspace ID is missing', 'error');
+    return;
   }
+
+  this.router.navigate(['/edit-room', roomId], {
+    queryParams: {
+      workspaceId: this.selectedWorkspace()?.id
+    }
+  });
+  
+}
 
   showRoomOffers(roomId: string): void {
     this.router.navigate(['/offers', roomId]);
