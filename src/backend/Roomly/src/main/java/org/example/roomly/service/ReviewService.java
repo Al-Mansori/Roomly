@@ -19,10 +19,10 @@ public class ReviewService {
         this.reviewRepository = reviewRepository;
     }
 
-    public Review createReview(double rating, String comment){
+    public Review createReview(double rating, String comment, String userId){
         String id = UUID.randomUUID().toString();
         Date today = Date.valueOf(LocalDate.now());
-        Review review = new Review(id,rating,comment,today);
+        Review review = new Review(id,rating,comment,today, userId);
         return review;
     }
     public int saveReview(Review review, String userId, String workspaceId) {

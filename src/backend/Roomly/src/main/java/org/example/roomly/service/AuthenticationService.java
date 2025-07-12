@@ -46,4 +46,10 @@ public class AuthenticationService {
 
         System.out.println("Email sent successfully to: " + email);
     }
+
+    public void sendPasswordResetEmail(String email, int otp) {
+        String subject = "Password Reset OTP";
+        String body = "Your OTP for password reset is: " + otp + "\nThis OTP is valid for 10 minutes.";
+        emailSenderService.sendMail(email, subject, body);
+    }
 }

@@ -13,16 +13,40 @@ public class Review {
     private String comment;
 
     private Date reviewDate;
+    private String userId;
 
     // constructors
     public Review(){}
-    public Review(String id, double rating, String comment, Date reviewDate) {
+//    public Review(String id, double rating, String comment, Date reviewDate) {
+//        this.id = id;
+//        this.rating = rating;
+//        this.comment = comment;
+//        this.reviewDate = reviewDate;
+//    }
+
+    public Review(String id, double rating, String comment, Date reviewDate, String userId) {
         this.id = id;
         this.rating = rating;
         this.comment = comment;
         this.reviewDate = reviewDate;
+        this.userId = userId;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
     //setters
 
 

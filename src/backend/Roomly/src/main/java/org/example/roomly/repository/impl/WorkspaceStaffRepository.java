@@ -48,11 +48,22 @@ public class WorkspaceStaffRepository implements org.example.roomly.repository.W
         return jdbcTemplate.query(sql, new WorkspaceStaffRowMapper());
     }
 
+//    @Override
+//    public void update(WorkspaceStaff staff) {
+//        String sql = "UPDATE WorkspaceStaff SET FName = ?, LName = ?, Email = ?, Password = ?, Phone = ? WHERE Id = ?";
+//        jdbcTemplate.update(sql, staff.getFirstName(), staff.getLastName(), staff.getEmail(),
+//                staff.getPassword(), staff.getPhone(), staff.getId());
+//    }
+
     @Override
     public void update(WorkspaceStaff staff) {
-        String sql = "UPDATE WorkspaceStaff SET FName = ?, LName = ?, Email = ?, Password = ?, Phone = ?, Type = ? WHERE Id = ?";
-        jdbcTemplate.update(sql, staff.getFirstName(), staff.getLastName(), staff.getEmail(),
-                staff.getPassword(), staff.getPhone(), staff.getType().toString(), staff.getId());
+        String sql = "UPDATE WorkspaceStaff SET FName = ?, LName = ?, Phone = ?, Type = ? WHERE Id = ?";
+        jdbcTemplate.update(sql,
+                staff.getFirstName(),
+                staff.getLastName(),
+                staff.getPhone(),
+                staff.getType().toString(),
+                staff.getId());
     }
 
     @Override
@@ -67,6 +78,13 @@ public class WorkspaceStaffRepository implements org.example.roomly.repository.W
         return jdbcTemplate.queryForObject(sql, new Object[]{email}, Integer.class) > 0;
     }
 
+    @Override
+    public boolean existsById(String id) {
+        String sql = "SELECT COUNT(*) FROM WorkspaceStaff WHERE Id = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{id}, Integer.class) > 0;
+    }
+
+
     private static class WorkspaceStaffRowMapper implements RowMapper<WorkspaceStaff> {
         @Override
         public WorkspaceStaff mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -80,5 +98,35 @@ public class WorkspaceStaffRepository implements org.example.roomly.repository.W
             staff.setType(WorkspaceStaffType.valueOf(rs.getString("Type")));
             return staff;
         }
+    }
+
+    @Override
+    public void blockUser(String staffId, String userId) {
+        String sql = "INSERT INTO suspendedusers VALUES( ?, ?)";
+        jdbcTemplate.update(sql,userId,staffId);
+    }
+
+    @Override
+    public void unblockUser(String staffId, String userId) {
+        String sql = "DELETE FROM suspendedusers WHERE UserId = ? AND StaffId = ?";
+        jdbcTemplate.update(sql, userId, staffId);
+    }
+
+    @Override
+    public List<String> getBlockedUsers(String staffId) {
+        String sql = "SELECT UserId FROM suspendedusers WHERE StaffId = ?";
+        return jdbcTemplate.queryForList(sql, String.class, staffId);
+    }
+
+    @Override
+    public List<String> findStaffIdsByWorkspaceId(String workspaceId) {
+        String sql = "SELECT StaffId FROM WorkspaceSupervise WHERE WorkspaceId = ?";
+        return jdbcTemplate.queryForList(sql, String.class, workspaceId);
+    }
+
+    @Override
+    public List<String> findWorkspaceIdsByStaffId(String staffId) {
+        String sql = "SELECT WorkspaceId FROM WorkspaceSupervise WHERE StaffId = ?";
+        return jdbcTemplate.queryForList(sql, String.class, staffId);
     }
 }

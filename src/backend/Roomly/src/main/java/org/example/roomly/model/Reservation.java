@@ -13,10 +13,12 @@ public class Reservation {
     private int amenitiesCount;
     private double totalCost;
     private Payment payment;
+    private String AccessCode;
+    private ReservationType reservationType;
 
     public Reservation(){}
 
-    public Reservation(String id, Date reservationDate, Date startTime, Date endTime, ReservationStatus status, int amenitiesCount, double totalCost, Payment payment) {
+    public Reservation(String id, Date reservationDate, Date startTime, Date endTime, ReservationStatus status, int amenitiesCount, double totalCost, Payment payment, String accessCode, ReservationType reservationType) {
         this.id = id;
         this.reservationDate = reservationDate;
         this.startTime = startTime;
@@ -25,6 +27,8 @@ public class Reservation {
         this.amenitiesCount = amenitiesCount;
         this.totalCost = totalCost;
         this.payment = payment;
+        AccessCode = accessCode;
+        this.reservationType = reservationType;
     }
 
     public String getId() {
@@ -91,6 +95,22 @@ public class Reservation {
         this.payment = payment;
     }
 
+    public String getAccessCode() {
+        return AccessCode;
+    }
+
+    public void setAccessCode(String accessCode) {
+        AccessCode = accessCode;
+    }
+
+    public ReservationType getReservationType() {
+        return reservationType;
+    }
+
+    public void setReservationType(ReservationType reservationType) {
+        this.reservationType = reservationType;
+    }
+
     @Override
     public String toString() {
         return "Reservation{" +
@@ -102,6 +122,8 @@ public class Reservation {
                 ", amenitiesCount=" + amenitiesCount +
                 ", totalCost=" + totalCost +
                 ", payment=" + payment +
+                ", AccessCode='" + AccessCode + '\'' +
+                ", reservationType=" + reservationType +
                 '}';
     }
 }

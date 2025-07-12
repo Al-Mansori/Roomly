@@ -55,6 +55,19 @@ public class ImageRepository implements org.example.roomly.repository.ImageRepos
         return jdbcTemplate.query(sql, new ImageRowMapper(), amenityId);
     }
 
+    public void deleteByWorkspaceId(String workspaceId) {
+        jdbcTemplate.update("DELETE FROM Images WHERE WorkspaceId = ?", workspaceId);
+    }
+
+    public void deleteByRoomId(String roomId) {
+        jdbcTemplate.update("DELETE FROM Images WHERE RoomId = ?", roomId);
+    }
+
+    public void deleteByAmenityId(String amenityId) {
+        jdbcTemplate.update("DELETE FROM Images WHERE AmenityId = ?", amenityId);
+    }
+
+
     // RowMapper to map the result set to the Image object
     private static final class ImageRowMapper implements RowMapper<Image> {
         @Override

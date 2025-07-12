@@ -62,6 +62,7 @@ public class ReviewRepository implements org.example.roomly.repository.ReviewRep
             review.setRating(rs.getDouble("Rating"));
             review.setComments(rs.getString("Comment"));
             review.setReviewDate(rs.getDate("ReviewDate"));
+            review.setUserId(rs.getString("userId"));
             return review;
         }
     }

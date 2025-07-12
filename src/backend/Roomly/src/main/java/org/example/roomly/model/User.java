@@ -1,9 +1,25 @@
 package org.example.roomly.model;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+
+//@JsonTypeInfo(
+//        use = JsonTypeInfo.Id.NAME, // can also use CLASS if you want full class names
+//        include = JsonTypeInfo.As.PROPERTY,
+//        property = "type" // this field must exist in JSON input
+//)
+//@JsonSubTypes({
+//        @JsonSubTypes.Type(value = Customer.class, name = "CUSTOMER"),
+//        @JsonSubTypes.Type(value = WorkspaceStaff.class, name = "WORKSPACE_STAFF"),
+//        @JsonSubTypes.Type(value = WorkspaceStaff.class, name = "ADMIN"),
+//        @JsonSubTypes.Type(value = WorkspaceStaff.class, name = "WORKER"),
+//        @JsonSubTypes.Type(value = WorkspaceStaff.class, name = "MANAGER"),
+//        @JsonSubTypes.Type(value = WorkspaceStaff.class, name = "DEFAULT")
+//})
 @Component
 public abstract class User {
     private String Id;

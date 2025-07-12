@@ -8,7 +8,7 @@ import java.util.List;
 public class Room {
     private String id;
     private String name;
-    private String type;
+    private RoomType type;
     private String description;
     private int capacity;
     private int availableCount;
@@ -21,7 +21,7 @@ public class Room {
     // Constructors
     public Room() {}
 
-    public Room(String id, String name, String type, String description, int capacity, int availableCount, double pricePerHour, RoomStatus status, List<Amenity> amenities, List<Image> roomImages, List<Offer> offers) {
+    public Room(String id, String name, RoomType type, String description, int capacity, int availableCount, double pricePerHour, RoomStatus status, List<Amenity> amenities, List<Image> roomImages, List<Offer> offers) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -51,11 +51,11 @@ public class Room {
         this.name = name;
     }
 
-    public String getType() {
+    public RoomType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(RoomType type) {
         this.type = type;
     }
 
@@ -128,7 +128,7 @@ public class Room {
         return "Room{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", type='" + type + '\'' +
+                ", type=" + type +
                 ", description='" + description + '\'' +
                 ", capacity=" + capacity +
                 ", availableCount=" + availableCount +

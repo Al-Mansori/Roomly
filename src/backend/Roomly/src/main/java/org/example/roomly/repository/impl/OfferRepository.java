@@ -3,11 +3,13 @@ package org.example.roomly.repository.impl;
 import org.example.roomly.model.Offer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+@Repository
 public class OfferRepository implements org.example.roomly.repository.OfferRepository {
     private final JdbcTemplate jdbcTemplate;
 
@@ -16,9 +18,25 @@ public class OfferRepository implements org.example.roomly.repository.OfferRepos
     }
 
     // Save Offer
-    @Override public int save(Offer offer) {
+//    @Override public int save(Offer offer) {
+//        String sql = "INSERT INTO Offers (Id, OfferTitle, Description, DiscountPercentage, ValidFrom, ValidTo, Status) VALUES (?, ?, ?, ?, ?, ?, ?)";
+//        return jdbcTemplate.update(sql, offer.getId(), offer.getOfferTitle(), offer.getDescription(), offer.getDiscountPercentage(), offer.getValidFrom(), offer.getValidTo(), offer.getStatus());
+//    }
+
+    @Override
+    public int save(Offer offer, String staffId, String roomId) {
+        // Save to Offers table
         String sql = "INSERT INTO Offers (Id, OfferTitle, Description, DiscountPercentage, ValidFrom, ValidTo, Status) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        return jdbcTemplate.update(sql, offer.getId(), offer.getOfferTitle(), offer.getDescription(), offer.getDiscountPercentage(), offer.getValidFrom(), offer.getValidTo(), offer.getStatus());
+        int result = jdbcTemplate.update(sql, offer.getId(), offer.getOfferTitle(), offer.getDescription(),
+                offer.getDiscountPercentage(), offer.getValidFrom(), offer.getValidTo(), offer.getStatus());
+
+        // Save to Apply table
+        if (result > 0 && staffId != null && roomId != null) {
+            sql = "INSERT INTO Apply (StaffId, RoomId, OfferId) VALUES (?, ?, ?)";
+            jdbcTemplate.update(sql, staffId, roomId, offer.getId());
+        }
+
+        return result;
     }
 
     // Find Offer by ID
@@ -43,10 +61,42 @@ public class OfferRepository implements org.example.roomly.repository.OfferRepos
     }
 
     // Delete Offer
+//    @Override
+//    public int delete(String id) {
+//        String sql = "DELETE FROM Offers WHERE Id = ?";
+//        return jdbcTemplate.update(sql, id);
+//    }
+
     @Override
     public int delete(String id) {
+        // First delete from Apply
+        deleteAppliedOffers(id);
+
+        // Then delete from Offers
         String sql = "DELETE FROM Offers WHERE Id = ?";
         return jdbcTemplate.update(sql, id);
+    }
+
+    @Override
+    public int deleteAppliedOffers(String offerId) {
+        String sql = "DELETE FROM Apply WHERE OfferId = ?";
+        return jdbcTemplate.update(sql, offerId);
+    }
+
+    @Override
+    public List<Offer> findOffersByRoomId(String roomId) {
+        String sql = "SELECT o.* FROM Offers o " +
+                "JOIN Apply ao ON o.Id = ao.OfferId " +
+                "WHERE ao.RoomId = ?";
+        return jdbcTemplate.query(sql, new OfferRowMapper(), roomId);
+    }
+
+    @Override
+    public List<Offer> findOffersByStaffId(String staffId) {
+        String sql = "SELECT o.* FROM Offers o " +
+                "JOIN Apply ao ON o.Id = ao.OfferId " +
+                "WHERE ao.StaffId = ?";
+        return jdbcTemplate.query(sql, new OfferRowMapper(), staffId);
     }
 
     private static class OfferRowMapper implements RowMapper<Offer> {

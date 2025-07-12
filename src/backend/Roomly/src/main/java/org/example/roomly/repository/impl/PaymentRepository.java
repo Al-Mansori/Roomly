@@ -3,6 +3,7 @@ package org.example.roomly.repository.impl;
 import org.example.roomly.model.Payment;
 import org.example.roomly.model.PaymentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -13,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 @Repository
-public class PaymentRepository implements org.example.roomly.repository.PaymentRepository {
+public class    PaymentRepository implements org.example.roomly.repository.PaymentRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -56,6 +57,17 @@ public class PaymentRepository implements org.example.roomly.repository.PaymentR
         return jdbcTemplate.update(sql, id);
     }
 
+    @Override
+    public Payment findByReservation(String reservationId) {
+        try{
+        String sql = "SELECT * FROM payment WHERE ReservationId = ?";
+        return jdbcTemplate.queryForObject(sql, new PaymentRowMapper(), reservationId);
+        }catch (EmptyResultDataAccessException e){
+            return null;
+        }
+    }
+
+
     private static class PaymentRowMapper implements RowMapper<Payment> {
         @Override
         public Payment mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -64,7 +76,7 @@ public class PaymentRepository implements org.example.roomly.repository.PaymentR
             payment.setPaymentMethod(rs.getString("PaymentMethod"));
             payment.setPaymentDate(rs.getDate("PaymentDate"));
             payment.setAmount(rs.getDouble("Amount"));
-            payment.setStatus(PaymentStatus.valueOf(rs.getString("Status"))); // Convert String to Enum
+            payment.setStatus(PaymentStatus.valueOf(rs.getString("Status").toUpperCase())); // Convert String to Enum
             return payment;
         }
     }

@@ -4,5 +4,5 @@ public enum WorkspaceStaffType {
     DEFAULT,
     ADMIN,
     WORKER,
-    MANGER
+    MANAGER
 }

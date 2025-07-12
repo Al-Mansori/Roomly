@@ -2,6 +2,7 @@ package org.example.roomly.repository.impl;
 
 import org.example.roomly.model.Amenity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -13,11 +14,16 @@ import java.util.List;
 @Repository
 public class AmenityRepository implements org.example.roomly.repository.AmenityRepository {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+    @Autowired
+    public AmenityRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
+//    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+//        this.jdbcTemplate = jdbcTemplate;
+//    }
 
     // Save Amenity
     @Override
@@ -29,8 +35,19 @@ public class AmenityRepository implements org.example.roomly.repository.AmenityR
     // Delete Amenity by ID
     @Override
     public void delete(String id) {
-        String sql = "DELETE FROM Amenity WHERE Id = ?";
-        jdbcTemplate.update(sql, id);
+        // Delete images
+        List<String> imageUrls = jdbcTemplate.queryForList(
+                "SELECT ImageUrl FROM Images WHERE AmenityId = ?",
+                String.class,
+                id
+        );
+        jdbcTemplate.update("DELETE FROM Images WHERE AmenityId = ?", id);
+
+        // Delete applied offers
+//        jdbcTemplate.update("DELETE FROM Apply WHERE OfferId IN (SELECT Id FROM Offers WHERE AmenityId = ?)", id);
+
+        // Finally delete amenity
+        jdbcTemplate.update("DELETE FROM Amenity WHERE Id = ?", id);
     }
 
     // Update Amenity
@@ -94,6 +111,16 @@ public class AmenityRepository implements org.example.roomly.repository.AmenityR
     public List<Amenity> getRoomAmenities(String roomId){
         String sql = "SELECT * FROM Amenity WHERE RoomId = ?";
         return jdbcTemplate.query(sql, new AmenityRowMapper(), roomId);
+    }
+
+    @Override
+    public String findRoomIdByAmenityId(String amenityId) {
+        String sql = "SELECT RoomId FROM Amenity WHERE Id = ?";
+        try {
+            return jdbcTemplate.queryForObject(sql, String.class, amenityId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     // RowMapper for Amenities

@@ -7,6 +7,6 @@ public interface WorkspacePlanRepository {
     void save(WorkspacePlan workspacePlan, String workspaceId);
     void delete(String workspaceId);
     List<WorkspacePlan> findAll();
-    WorkspacePlan findById(String workspaceId);
+    WorkspacePlan findById(String workspaceId);  // Gets plan by workspace ID
     void update(WorkspacePlan workspacePlan, String workspaceId);
 }
