@@ -53,6 +53,42 @@ public class LocationRepository implements org.example.roomly.repository.Locatio
         jdbcTemplate.update(sql, id);
     }
 
+    @Override
+    public List<Location> findByCity(String city) {
+        String sql = "SELECT * FROM Location WHERE City = ? ORDER BY City, Town";
+        return jdbcTemplate.query(sql, new LocationRowMapper(), city);
+    }
+
+    @Override
+    public List<Location> findByTown(String town) {
+        String sql = "SELECT * FROM Location WHERE Town = ? ORDER BY Town, City";
+        return jdbcTemplate.query(sql, new LocationRowMapper(), town);
+    }
+
+    @Override
+    public List<Location> findByCountry(String country) {
+        String sql = "SELECT * FROM Location WHERE Country = ? ORDER BY Country, City, Town";
+        return jdbcTemplate.query(sql, new LocationRowMapper(), country);
+    }
+
+    @Override
+    public List<String> findAllCities() {
+        String sql = "SELECT DISTINCT City FROM Location ORDER BY City";
+        return jdbcTemplate.queryForList(sql, String.class);
+    }
+
+    @Override
+    public List<String> findAllTowns() {
+        String sql = "SELECT DISTINCT Town FROM Location ORDER BY Town";
+        return jdbcTemplate.queryForList(sql, String.class);
+    }
+
+    @Override
+    public List<String> findAllCountries() {
+        String sql = "SELECT DISTINCT Country FROM Location ORDER BY Country";
+        return jdbcTemplate.queryForList(sql, String.class);
+    }
+
     private static class LocationRowMapper implements RowMapper<Location> {
         @Override
         public Location mapRow(ResultSet rs, int rowNum) throws SQLException {

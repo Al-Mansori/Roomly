@@ -53,6 +53,7 @@ public class RequestRepository implements org.example.roomly.repository.RequestR
     // 4. Delete a request
     @Override
     public void deleteById(String requestId) {
+        deleteUserRequesting(requestId);
         String sql = "DELETE FROM Request WHERE Id = ?";
         jdbcTemplate.update(sql, requestId);
     }
@@ -76,16 +77,30 @@ public class RequestRepository implements org.example.roomly.repository.RequestR
         jdbcTemplate.update(sql, requestId);
     }
 
+    public List<Request> findAllByUserId(String userId) {
+        String sql = "SELECT r.* FROM Request r " +
+                     "JOIN UserRequesting ur ON r.Id = ur.RequestId " +
+                     "WHERE ur.UserId = ?";
+        return jdbcTemplate.query(sql, new RequestRowMapper(), userId);
+    }
+
+    public List<Request> findAllByStaffId(String staffId) {
+        String sql = "SELECT r.* FROM Request r " +
+                "JOIN UserRequesting ur ON r.Id = ur.RequestId " +
+                "WHERE ur.StaffId = ?";
+        return jdbcTemplate.query(sql, new RequestRowMapper(), staffId);
+    }
+
     private static class RequestRowMapper implements RowMapper<Request> {
         @Override
         public Request mapRow(ResultSet rs, int rowNum) throws SQLException {
             Request request = new Request();
-            request.setId(rs.getString("RequestId"));
+            request.setId(rs.getString("Id"));
             request.setType(rs.getString("RequestType"));
             request.setRequestDate(rs.getDate("RequestDate"));
             request.setResponseDate(rs.getDate("ResponseDate"));
             request.setDetails(rs.getString("Details"));
-            request.setStatus(RequestStatus.valueOf(rs.getString("Status")));
+            request.setStatus(RequestStatus.valueOf(rs.getString("Status").toUpperCase()));
             request.setRequestResponse(rs.getString("RequestResponse"));
             return request;
         }

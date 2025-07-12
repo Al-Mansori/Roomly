@@ -1,19 +1,14 @@
 package org.example.roomly.service;
 
+import org.example.roomly.model.*;
+import org.example.roomly.utils.SimpleJwtUtil;
 import org.springframework.stereotype.Service;
 
-import org.example.roomly.model.Customer;
-import org.example.roomly.model.User;
-import org.example.roomly.model.WorkspaceStaff;
-import org.example.roomly.model.WorkspaceStaffType;
 import org.example.roomly.repository.CustomerRepository;
 import org.example.roomly.repository.WorkspaceStaffRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -27,10 +22,16 @@ public class UserService {
     @Autowired
     private AuthenticationService authenticationService;
 
+    @Autowired
+    private SimpleJwtUtil jwtUtil;
+
     private final Map<Integer, User> pendingUsers = new HashMap<Integer, User>(); // Temp storage for unverified users
     private final Random random = new Random();
 
     private final Map<String, User> profileUsers = new HashMap<String, User>();
+
+    private final Map<String, Integer> passwordResetOtpMap = new HashMap<>(); // Stores email-OTP pairs
+    private final Map<String, String> emailToUserIdMap = new HashMap<>(); // Stores email-userId pairs
 
 
     public String registerUser(String firstName, String lastName, String email, String password, String confirmPassword, String phone, boolean isStaff) {
@@ -135,35 +136,222 @@ public class UserService {
         return "User profile completed successfully!";
     }
 
-    public User logIn(String email , String password, boolean isStaff){
-        if(isStaff){
-            if(authenticationService.checkEmail(email)){
-                WorkspaceStaff workspaceStaff = workspaceStaffRepository.findByEmail(email);
-                if(workspaceStaff.getPassword().equals(password)){
-                    return workspaceStaff;
+    // Update your login method
+    public Map<String, Object> logIn(String email, String password, boolean isStaff) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            if (isStaff) {
+                WorkspaceStaff staff = workspaceStaffRepository.findByEmail(email);
+                if (staff != null && staff.getPassword().equals(password)) {
+                    String token = jwtUtil.generateToken(email, staff.getId());
+                    response.put("user", staff);
+                    response.put("token", token);
+                    return response;
                 }
-                else{
-                    return null;
+            } else {
+                Customer customer = customerRepository.findByEmail(email);
+                if (customer != null && customer.getPassword().equals(password)) {
+                    String token = jwtUtil.generateToken(email, customer.getId());
+                    response.put("user", customer);
+                    response.put("token", token);
+                    return response;
                 }
             }
-            else{
-                return null;
-            }
+        } catch (Exception e) {
+            // Log the error if needed
+        }
+
+        return null;
+    }
+
+    public Map<String, Object> logInWithGoogle(GoogleUser googleUser){
+        Customer customer;
+        customer = customerRepository.findByEmail(googleUser.getEmail());
+        if(customer==null){
+            System.out.println("add new google user");
+             customer = new Customer(googleUser.getId(), googleUser.getFirstName(), googleUser.getLastName(), googleUser.getEmail(), "googlUserPassword","","");
+            customerRepository.save(customer);
         }
         else{
-            if(authenticationService.checkEmail(email)){
-                Customer customer = customerRepository.findByEmail(email);
-                if(customer.getPassword().equals(password)){
-                    return customer;
-                }
-                else{
-                    return null;
-                }
-            }
-            else{
-                return null;
-            }
-
+            System.out.println("this user already exist!");
         }
+        Map<String,Object> response = new HashMap<>();
+        String token = jwtUtil.generateToken(googleUser.getEmail(), googleUser.getId());
+        response.put("user", customer);
+        response.put("token", token);
+        return response;
     }
+
+    // for the password reset
+    public String initiatePasswordReset(String email) {
+        // Check if email exists
+        boolean emailExists = authenticationService.checkEmail(email);
+        if (!emailExists) {
+            return "Email not found";
+        }
+
+        // Generate 6-digit OTP
+        int otp = 100000 + random.nextInt(900000);
+
+        // Store OTP and email mapping
+        passwordResetOtpMap.put(email, otp);
+
+        // Send OTP via email
+        authenticationService.sendPasswordResetEmail(email, otp);
+
+        return "OTP sent to your email";
+    }
+
+    public String verifyPasswordResetOtp(String email, int otp) {
+        // Check if OTP matches
+        if (!passwordResetOtpMap.containsKey(email) || passwordResetOtpMap.get(email) != otp) {
+            return "Invalid OTP";
+        }
+
+        // OTP is valid, store email for password reset
+        emailToUserIdMap.put(email, getUserIdByEmail(email));
+        passwordResetOtpMap.remove(email); // Remove used OTP
+
+        return "OTP verified successfully";
+    }
+
+    public String resetPassword(String email, String newPassword) {
+        // Validate password
+        if (!authenticationService.validatePassword(newPassword)) {
+            return "Password does not meet security requirements";
+        }
+
+        // Check if email is authorized for password reset
+        if (!emailToUserIdMap.containsKey(email)) {
+            return "Unauthorized password reset request";
+        }
+
+        String userId = emailToUserIdMap.get(email);
+
+        // Update password in database
+        if (customerRepository.existsByEmail(email)) {
+            Customer customer = customerRepository.findByEmail(email);
+            customer.setPassword(newPassword);
+            customerRepository.update(customer);
+        } else if (workspaceStaffRepository.existsByEmail(email)) {
+            WorkspaceStaff staff = workspaceStaffRepository.findByEmail(email);
+            staff.setPassword(newPassword);
+            workspaceStaffRepository.update(staff);
+        } else {
+            return "User not found";
+        }
+
+        // Clean up
+        emailToUserIdMap.remove(email);
+
+        return "Password updated successfully";
+    }
+
+    private String getUserIdByEmail(String email) {
+        if (customerRepository.existsByEmail(email)) {
+            return customerRepository.findByEmail(email).getId();
+        } else if (workspaceStaffRepository.existsByEmail(email)) {
+            return workspaceStaffRepository.findByEmail(email).getId();
+        }
+        return null;
+    }
+    //Function create user and staff is already exist (Register function)
+    //Create find by id (Read User)
+    public  User getUserById(String id){
+        if(customerRepository.existsById(id)){
+            Customer customer = customerRepository.findById(id);
+            return customer;
+        }
+        else if(workspaceStaffRepository.existsById(id)){
+            return workspaceStaffRepository.findById(id);
+        }
+        return null;
+    }
+    public  User getUserByEmail(String email){
+        if(customerRepository.existsByEmail(email)){
+            Customer customer = customerRepository.findByEmail(email);
+            return customer;
+        }
+        else if(workspaceStaffRepository.existsByEmail(email)){
+            return workspaceStaffRepository.findByEmail(email);
+        }
+        return null;
+    }
+
+    //Create Update function
+    public boolean updateUser(User user){
+        if(customerRepository.existsById(user.getId())){
+            customerRepository.update((Customer) user);
+            return true;
+        }
+        else if (workspaceStaffRepository.existsById(user.getId())){
+            workspaceStaffRepository.update((WorkspaceStaff) user);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean updateUserPartial(String id, Map<String, Object> updates) {
+        User user = getUserById(id);
+        if (user == null) {
+            return false;
+        }
+
+        // Apply updates to the user object
+        if (updates.containsKey("firstName")) {
+            user.setFirstName((String) updates.get("firstName"));
+        }
+        if (updates.containsKey("lastName")) {
+            user.setLastName((String) updates.get("lastName"));
+        }
+        if (updates.containsKey("phone")) {
+            user.setPhone((String) updates.get("phone"));
+        }
+
+        // Handle Customer-specific field
+        if (user instanceof Customer && updates.containsKey("address")) {
+            ((Customer) user).setAddress((String) updates.get("address"));
+        }
+
+        // Handle WorkspaceStaff-specific field
+        if (user instanceof WorkspaceStaff && updates.containsKey("type")) {
+            try {
+                WorkspaceStaffType type = WorkspaceStaffType.valueOf((String) updates.get("type"));
+                ((WorkspaceStaff) user).setType(type);
+            } catch (IllegalArgumentException e) {
+                // Invalid type value, skip this update
+            }
+        }
+
+        // Save the updated user
+        return updateUser(user);
+    }
+
+    public boolean deleteUser(String id){
+        if(customerRepository.existsById(id)){
+            customerRepository.deleteById(id);
+            return true;
+        }
+        else if(workspaceStaffRepository.existsById(id)){
+            workspaceStaffRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    public void blockUser(String staffId, String userId){
+        workspaceStaffRepository.blockUser(staffId,userId);
+    }
+
+    public void unblockUser(String staffId, String userId){
+        workspaceStaffRepository.unblockUser(staffId,userId);
+    }
+
+    public List<String> getBlockedUsers(String staffId) {
+        return workspaceStaffRepository.getBlockedUsers(staffId);
+    }
+
 }
+
+

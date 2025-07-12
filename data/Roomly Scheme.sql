@@ -118,7 +118,8 @@ CREATE TABLE Reservation (
     Status VARCHAR(50),
     TotalCost DOUBLE,
     AmenitiesCount INT,
-    AccessCode varchar(6)
+    AccessCode varchar(6),
+    ReservationType VARCHAR(50)
 );
 
 CREATE TABLE Payment (
@@ -190,7 +191,7 @@ CREATE TABLE Images (
     AmenityId VARCHAR(100) null 
 );
 
-CREATE TABLE ApplyedOffers (
+CREATE TABLE Apply (
     StaffId VARCHAR(50),
     RoomId VARCHAR(50),
     OfferId VARCHAR(50)
@@ -216,6 +217,23 @@ CREATE TABLE UserCards (
     FOREIGN KEY (CardNumber) REFERENCES CreditCard(CardNumber),
     FOREIGN KEY (UserId) REFERENCES user(Id) on delete cascade
 );
+
+CREATE TABLE Recovery (
+	RoomId varchar(100),
+    RecoveryRoomId varchar(100),
+    Reason varchar(100) default 'Maintenance'
+);
+
+CREATE TABLE RoomAvailability (
+    RoomId VARCHAR(100) NOT NULL,
+    Date DATE NOT NULL,
+    Hour INT NOT NULL,
+    AvailableSeats INT NOT NULL,
+    RoomStatus VARCHAR(50) NOT NULL,
+    Capacity INT NOT NULL,
+    PRIMARY KEY (RoomId, Date, Hour)
+);
+
 
 -- Add foreign key constraints using ALTER TABLE
 ALTER TABLE Workspace ADD CONSTRAINT fk_workspace_location FOREIGN KEY (LocationId) REFERENCES Location(Id);
@@ -248,10 +266,12 @@ ALTER TABLE Images ADD CONSTRAINT fk_images_staff FOREIGN KEY (StaffId) REFERENC
 ALTER TABLE Images ADD CONSTRAINT fk_images_workspace FOREIGN KEY (WorkspaceId) REFERENCES Workspace(Id);
 ALTER TABLE Images ADD CONSTRAINT fk_images_room FOREIGN KEY (RoomId) REFERENCES Room(Id);
 ALTER TABLE Images ADD CONSTRAINT fk_images_amenity FOREIGN KEY (AmenityId) REFERENCES Amenity(Id);
-ALTER TABLE ApplyedOffers ADD CONSTRAINT fk_applyedoffers_staff FOREIGN KEY (StaffId) REFERENCES WorkspaceStaff(Id);
-ALTER TABLE ApplyedOffers ADD CONSTRAINT fk_applyedoffers_room FOREIGN KEY (RoomId) REFERENCES Room(Id);
-ALTER TABLE ApplyedOffers ADD CONSTRAINT fk_applyedoffers_offer FOREIGN KEY (OfferId) REFERENCES Offers(Id);
+ALTER TABLE Apply ADD CONSTRAINT fk_apply_staff FOREIGN KEY (StaffId) REFERENCES WorkspaceStaff(Id);
+ALTER TABLE Apply ADD CONSTRAINT fk_apply_room FOREIGN KEY (RoomId) REFERENCES Room(Id);
+ALTER TABLE Apply ADD CONSTRAINT fk_apply_offer FOREIGN KEY (OfferId) REFERENCES Offers(Id);
 ALTER TABLE WorkspaceSchedule ADD CONSTRAINT fk_workspaceschedule_workspace FOREIGN KEY (WorkspaceId) REFERENCES Workspace(Id);
-
 ALTER TABLE UserCards ADD CONSTRAINT fk_usercards_cardnumber FOREIGN KEY (CardNumber) REFERENCES CreditCard(CardNumber);
 ALTER TABLE UserCards ADD CONSTRAINT fk_usercards_user FOREIGN KEY (UserId) REFERENCES User(Id) ON DELETE CASCADE;
+ALTER TABLE Recovery ADD CONSTRAINT fk_recovery_room1 FOREIGN KEY (RoomId) REFERENCES Room(Id);
+ALTER TABLE Recovery ADD CONSTRAINT fk_recovery_room2 FOREIGN KEY (RecoveryRoomId) REFERENCES Room(Id);
+ALTER TABLE RoomAvailability ADD CONSTRAINT fk_roomavailability_room FOREIGN KEY (RoomId) REFERENCES Room(Id);

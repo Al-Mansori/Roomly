@@ -1,0 +1,35 @@
+USE Roomly;
+
+-- Truncate All tables data
+SET FOREIGN_KEY_CHECKS = 0;
+
+TRUNCATE TABLE UserCards;
+TRUNCATE TABLE Apply;
+TRUNCATE TABLE Images;
+TRUNCATE TABLE WorkspaceSupervise;
+TRUNCATE TABLE FavouriteWorkspaceRooms;
+TRUNCATE TABLE Review;
+TRUNCATE TABLE SuspendedUsers;
+TRUNCATE TABLE UserRequesting;
+TRUNCATE TABLE Booking;
+TRUNCATE TABLE Cancellation;
+TRUNCATE TABLE LoyaltyPoints;
+TRUNCATE TABLE Payment;
+TRUNCATE TABLE Reservation;
+TRUNCATE TABLE Preference;
+TRUNCATE TABLE WorkspaceSchedule;
+TRUNCATE TABLE WorkspacePlan;
+TRUNCATE TABLE WorkspaceAnalytics;
+TRUNCATE TABLE Room;
+TRUNCATE TABLE Amenity;
+TRUNCATE TABLE Offers;
+TRUNCATE TABLE Request;
+TRUNCATE TABLE WorkspaceStaff;
+TRUNCATE TABLE Workspace;
+TRUNCATE TABLE Location;
+TRUNCATE TABLE CreditCard;
+TRUNCATE TABLE User;
+TRUNCATE TABLE Recovery;
+TRUNCATE TABLE RoomAvailability;
+
+SET FOREIGN_KEY_CHECKS = 1;

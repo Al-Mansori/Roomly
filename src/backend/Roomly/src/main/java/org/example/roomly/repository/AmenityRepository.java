@@ -10,4 +10,5 @@ public interface AmenityRepository {
     Amenity getById(String id);
     List<Amenity> findAll();
     List<Amenity> getRoomAmenities(String roomId);
+    String findRoomIdByAmenityId(String amenityId);
 }

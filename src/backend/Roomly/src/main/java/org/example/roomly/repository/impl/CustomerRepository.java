@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -36,7 +37,11 @@ public class CustomerRepository implements org.example.roomly.repository.Custome
     @Override
     public Customer findByEmail(String email) {
         String sql = "SELECT * FROM User WHERE email = ?";
-        return jdbcTemplate.queryForObject(sql, new CustomerRowMapper(), email);
+        try {
+            return jdbcTemplate.queryForObject(sql, new CustomerRowMapper(), email);
+        } catch (EmptyResultDataAccessException e) {
+            return null; // or Optional.empty() if you prefer Optional<Customer>
+        }
     }
 
     @Override
@@ -45,11 +50,22 @@ public class CustomerRepository implements org.example.roomly.repository.Custome
         return jdbcTemplate.query(sql, new CustomerRowMapper());
     }
 
+//    @Override
+//    public void update(Customer customer) {
+//        String sql = "UPDATE User SET FName = ?, LName = ?, Email = ?, Password = ?, Phone = ?, Address = ? WHERE Id = ?";
+//        jdbcTemplate.update(sql, customer.getFirstName(), customer.getLastName(), customer.getEmail(),
+//                customer.getPassword(), customer.getPhone(), customer.getAddress(), customer.getId());
+//    }
+
     @Override
     public void update(Customer customer) {
-        String sql = "UPDATE User SET FName = ?, LName = ?, Email = ?, Password = ?, Phone = ?, Address = ? WHERE Id = ?";
-        jdbcTemplate.update(sql, customer.getFirstName(), customer.getLastName(), customer.getEmail(),
-                customer.getPassword(), customer.getPhone(), customer.getAddress(), customer.getId());
+        String sql = "UPDATE User SET FName = ?, LName = ?, Phone = ?, Address = ? WHERE Id = ?";
+        jdbcTemplate.update(sql,
+                customer.getFirstName(),
+                customer.getLastName(),
+                customer.getPhone(),
+                customer.getAddress(),
+                customer.getId());
     }
 
     @Override
@@ -62,6 +78,11 @@ public class CustomerRepository implements org.example.roomly.repository.Custome
     public boolean existsByEmail(String email) {
         String sql = "SELECT COUNT(*) FROM User WHERE Email = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{email}, Integer.class) > 0;
+    }
+    @Override
+    public boolean existsById(String id) {
+        String sql = "SELECT COUNT(*) FROM User WHERE Id = ?";
+        return jdbcTemplate.queryForObject(sql, new Object[]{id}, Integer.class) > 0;
     }
 
     private static class CustomerRowMapper implements RowMapper<Customer> {

@@ -9,4 +9,5 @@ public interface PaymentRepository {
     List<Payment> findAll();
     int update(Payment payment);
     int delete(String id);
+    Payment findByReservation(String reservationId);
 }

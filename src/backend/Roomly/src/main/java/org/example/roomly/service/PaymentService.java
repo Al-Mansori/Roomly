@@ -47,4 +47,8 @@ public class PaymentService {
     public List<Payment> getAll(){
         return paymentRepository.findAll();
     }
+
+    public Payment getByReservation(String reservationId){
+        return paymentRepository.findByReservation(reservationId);
+    }
 }

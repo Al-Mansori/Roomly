@@ -11,4 +11,5 @@ public interface CustomerRepository {
     void update(Customer customer);
     void deleteById(String id);
     boolean existsByEmail(String email);
+    boolean existsById(String id);
 }

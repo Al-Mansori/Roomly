@@ -11,4 +11,13 @@ public interface WorkspaceStaffRepository {
     void update(WorkspaceStaff staff);
     void deleteById(String id);
     boolean existsByEmail(String email);
+    boolean existsById(String id);
+    void blockUser(String staffId,String userId);
+    void unblockUser(String staffId, String userId);
+    // get all blocked users for a specific staff member
+    List<String> getBlockedUsers(String staffId);
+
+    List<String> findStaffIdsByWorkspaceId(String workspaceId);
+
+    List<String> findWorkspaceIdsByStaffId(String staffId);
 }

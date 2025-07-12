@@ -18,11 +18,12 @@ public class Workspace {
     private List<Image> workspaceImages;
     //private Analytics workspaceAnalytics;
     private List<Review> reviews ;
+    private PaymentType paymentType;
 
     // Constructors
     public Workspace() {}
 
-    public Workspace(String id, String name, String description, String address, Location location, Date creationDate, double avgRating, String type, List<Room> rooms, List<Image> workspaceImages, List<Review> reviews) {
+    public Workspace(String id, String name, String description, String address, Location location, Date creationDate, double avgRating, String type, List<Room> rooms, List<Image> workspaceImages, List<Review> reviews, PaymentType paymentType) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -34,6 +35,7 @@ public class Workspace {
         this.rooms = rooms;
         this.workspaceImages = workspaceImages;
         this.reviews = reviews;
+        this.paymentType = paymentType;
     }
 
     // Getters and Setters
@@ -126,6 +128,13 @@ public class Workspace {
         this.reviews = reviews;
     }
 
+    public PaymentType getPaymentType() {
+        return paymentType;
+    }
+    public void setPaymentType(PaymentType paymentType) {
+        this.paymentType = paymentType;
+    }
+
     @Override
     public String toString() {
         return "Workspace{" +
@@ -140,6 +149,7 @@ public class Workspace {
                 ", rooms=" + rooms +
                 ", workspaceImages=" + workspaceImages +
                 ", reviews=" + reviews +
+                ", paymentType=" + paymentType +
                 '}';
     }
 }

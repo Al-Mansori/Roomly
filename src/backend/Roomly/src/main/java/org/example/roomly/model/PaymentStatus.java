@@ -1,5 +1,5 @@
 package org.example.roomly.model;
 
 public enum PaymentStatus {
-    PENDING, CONFIRMED, CANCELLED, COMPLETED
+    PENDING, CONFIRMED, CANCELLED, COMPLETED, DENIED;
 }

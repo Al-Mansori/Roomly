@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class LocationService {
@@ -19,6 +20,7 @@ public class LocationService {
     }
 
     public Location saveLocation(Location location) {
+        location.setId(UUID.randomUUID().toString());
         return locationRepository.save(location);
     }
 
@@ -36,5 +38,30 @@ public class LocationService {
 
     public void deleteLocation(String id) {
         locationRepository.deleteById(id);
+    }
+
+    public List<Location> getLocationsByCity(String city) {
+        return locationRepository.findByCity(city);
+    }
+
+    public List<Location> getLocationsByTown(String town) {
+        return locationRepository.findByTown(town);
+    }
+
+    public List<Location> getLocationsByCountry(String country) {
+        return locationRepository.findByCountry(country);
+    }
+
+    // Add distinct listing service methods
+    public List<String> getAllUniqueCities() {
+        return locationRepository.findAllCities();
+    }
+
+    public List<String> getAllUniqueTowns() {
+        return locationRepository.findAllTowns();
+    }
+
+    public List<String> getAllUniqueCountries() {
+        return locationRepository.findAllCountries();
     }
 }

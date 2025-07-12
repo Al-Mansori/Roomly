@@ -57,4 +57,11 @@ public class RequestService{
     public void deleteUserRequesting(String requestId) {
         requestRepository.deleteUserRequesting(requestId);
     }
+
+    public List<Request> findAllRequestsByUserId(String userId) {
+        return requestRepository.findAllByUserId(userId);
+    }
+    public List<Request> findAllRequestsByStaffId(String staffId) {
+        return requestRepository.findAllByStaffId(staffId);
+    }
 }

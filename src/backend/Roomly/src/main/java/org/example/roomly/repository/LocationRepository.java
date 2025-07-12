@@ -9,4 +9,12 @@ public interface LocationRepository {
     Location findById(String id);
     List<Location> findAll();
     void deleteById(String id);
+
+    List<Location> findByCity(String city);
+    List<Location> findByTown(String town);
+    List<Location> findByCountry(String country);
+
+    List<String> findAllCities();
+    List<String> findAllTowns();
+    List<String> findAllCountries();
 }

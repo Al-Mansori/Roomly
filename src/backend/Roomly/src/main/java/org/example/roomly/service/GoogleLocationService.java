@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class GoogleLocationService {
-    @Value("${google.api.key}")
+    // @Value("${google.api.key}")
     private String apiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();

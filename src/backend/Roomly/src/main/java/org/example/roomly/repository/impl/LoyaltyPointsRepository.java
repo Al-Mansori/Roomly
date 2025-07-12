@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -34,7 +35,11 @@ public class LoyaltyPointsRepository implements org.example.roomly.repository.Lo
     @Override
     public LoyaltyPoints findById(String userId) {
         String sql = "SELECT * FROM LoyaltyPoints WHERE UserId = ?";
-        return jdbcTemplate.queryForObject(sql, new LoyaltyPointsRowMapper(), userId);
+        try {
+            return jdbcTemplate.queryForObject(sql, new LoyaltyPointsRowMapper(), userId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     // 3. Update LoyaltyPoints for a specific user
